@@ -14,17 +14,29 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLoginMutation } from "../../../features/api/apiSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setCredintials } from "../../../features/auth/authSlice";
+import jwt_decode from "jwt-decode";
+import { selectCurrentUser } from "../../../features/auth/authSlice";
 
 const LoginForm = () => {
+  const user = useSelector(selectCurrentUser);
   const [email, setEmail] = useState("");
   const [pass, setPassword] = useState("");
-  const [login, { isLoading }] = useLoginMutation();
+  const [login, { isLoading, isSuccess }] = useLoginMutation();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  console.log(user);
+
+  // useEffect(() => {
+  //   if (isSuccess) {
+  //     console.log(user);
+  //   }
+  // }, [user]);
 
   const emailHandler = (e: any) => {
     setEmail(e.target.value);
@@ -39,10 +51,12 @@ const LoginForm = () => {
 
     try {
       const data = { email: email, pass: pass };
-      console.log(data);
       const userData = await login(data).unwrap();
-      console.log(userData);
-      dispatch(setCredintials({ ...userData, user: email }));
+      const decoded: any = jwt_decode(userData.accessToken);
+      localStorage.setItem("Tokens", JSON.stringify(userData));
+      dispatch(
+        setCredintials({ token: userData.accessToken, user: decoded._id })
+      );
       setEmail("");
       setPassword("");
       navigate("/");
@@ -53,8 +67,8 @@ const LoginForm = () => {
     }
   };
 
-  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+
   return (
     <Box width={["350px", "450px", "450px", "450px"]} p={"20px"}>
       <Stack pb={"50"}>
@@ -164,6 +178,7 @@ const LoginForm = () => {
           </Link>
         </Text>
       </Stack>
+      {isSuccess && "SUIIII"}
     </Box>
   );
 };

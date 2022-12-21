@@ -23,7 +23,7 @@ const LoginPage = () => {
         </Flex>
         <Box
           display={["block", "block", "none", "none"]}
-          height={"50%"}
+          height={"100px"}
           width={" 100%"}
           backgroundImage={image}
           backgroundSize={"cover"}
