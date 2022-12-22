@@ -1,11 +1,10 @@
-import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { selectCurrentToken, setCredintials } from "./authSlice";
+import { selectCurrentToken } from "./authSlice";
 import HomePage from "../../pages/HomePage";
 
 const RequireAuth = (props: any) => {
   const accessToken = useSelector(selectCurrentToken);
-  console.log(accessToken);
   const location = useLocation();
 
   // useEffect(() => {

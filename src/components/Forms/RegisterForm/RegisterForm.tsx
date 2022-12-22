@@ -1,4 +1,4 @@
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { SmallCloseIcon, ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
@@ -6,7 +6,6 @@ import {
   Divider,
   FormControl,
   FormLabel,
-  Heading,
   HStack,
   Input,
   InputGroup,
@@ -14,16 +13,19 @@ import {
   Link,
   Stack,
   Text,
+  useToast,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useRegisterMutation } from "../../../features/api/apiSlice";
 import useInput from "../../../hooks/useInput";
 
 const RegisterForm = () => {
   const navigate = useNavigate();
+  const toast = useToast();
+  const [hasError, setHasError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [register, { isLoading }] = useRegisterMutation();
+  const [register, { isLoading, isSuccess }] = useRegisterMutation();
 
   const {
     hasError: inputHasError,
@@ -39,7 +41,7 @@ const RegisterForm = () => {
     blurChangeHandler: nameBlurHandler,
     inputValue: nameValue,
     resetFields: nameReset,
-  } = useInput((name: string) => name.length > 6);
+  } = useInput((name: string) => name.length >= 6);
 
   const {
     hasError: passHasError,
@@ -49,16 +51,32 @@ const RegisterForm = () => {
     resetFields: passReset,
   } = useInput((pass: string) => pass.length > 8);
 
+  useEffect(() => {
+    if (hasError) {
+      setHasError(false);
+    }
+  }, [hasError]);
+
   const submitHandler = async (event: any) => {
     event.preventDefault();
     const isFormValid = inputHasError && nameHasError && passHasError;
     if (!isFormValid) {
-      const data = { email: emailValue, pass: passValue, username: nameValue };
-      const message = await register(data).unwrap();
-      console.log(message);
-      emailReset();
-      nameReset();
-      passReset();
+      try {
+        const data = {
+          email: emailValue,
+          pass: passValue,
+          username: nameValue,
+        };
+        const message = await register(data).unwrap();
+        console.log(message);
+        emailReset();
+        nameReset();
+        passReset();
+        navigate("/login");
+      } catch (err) {
+        setHasError(true);
+        console.log({ message: err });
+      }
     }
   };
 
@@ -69,7 +87,7 @@ const RegisterForm = () => {
           fontSize={"30px"}
           fontWeight={"bold"}
           pb={"3"}
-          textAlign={["center", "center", "left", "left"]}
+          textAlign={"center"}
         >
           NFT AWAITS
         </Text>
@@ -80,66 +98,100 @@ const RegisterForm = () => {
         <Stack>
           <FormControl id="firstName" isInvalid={nameHasError} isRequired>
             <HStack justifyContent={"space-between"}>
-              <FormLabel fontSize={"md"} mr={10} fontWeight="bold">
+              <FormLabel fontSize={"md"} fontWeight="bold">
                 Username
               </FormLabel>
-              <Input
-                type="text"
-                variant={"filled"}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                  nameInputHandler(event.target.value)
-                }
-                onBlur={nameBlurHandler}
-                value={nameValue}
-              />
+              <Box width={"65%"}>
+                <InputGroup>
+                  <Input
+                    type="text"
+                    variant={"filled"}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                      nameInputHandler(event.target.value)
+                    }
+                    onBlur={nameBlurHandler}
+                    value={nameValue}
+                  />
+                  <InputRightElement h={"full"}>
+                    <Button
+                      onClick={() => nameReset()}
+                      variant={"ghost"}
+                      h="1.75rem"
+                      size="xs"
+                    >
+                      <SmallCloseIcon />
+                    </Button>
+                  </InputRightElement>
+                </InputGroup>
+              </Box>
             </HStack>
           </FormControl>
         </Stack>
         <Stack pt={5}>
           <FormControl id="email" isInvalid={inputHasError} isRequired>
             <HStack justifyContent={"space-between"}>
-              <FormLabel fontSize={"md"} mr={"63px"} fontWeight="bold">
+              <FormLabel fontSize={"md"} fontWeight="bold">
                 Email
               </FormLabel>
-              <Input
-                type="email"
-                variant={"filled"}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  emailInputHandler(event.target.value);
-                }}
-                onBlur={emailBlurHandler}
-                value={emailValue}
-              />
+              <Box width={"65%"}>
+                <InputGroup>
+                  <Input
+                    type="email"
+                    variant={"filled"}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                      emailInputHandler(event.target.value);
+                    }}
+                    onBlur={emailBlurHandler}
+                    value={emailValue}
+                  />
+                  <InputRightElement h={"full"}>
+                    <Button
+                      onClick={() => emailReset()}
+                      variant={"ghost"}
+                      h="1.75rem"
+                      size="xs"
+                    >
+                      <SmallCloseIcon />
+                    </Button>
+                  </InputRightElement>
+                </InputGroup>
+              </Box>
             </HStack>
           </FormControl>
         </Stack>
         <Stack pt={5}>
           <FormControl id="password" isInvalid={passHasError} isRequired>
-            <HStack>
-              <FormLabel fontSize={"md"} mr={10} fontWeight="bold">
+            <HStack justifyContent={"space-between"}>
+              <FormLabel fontSize={"md"} fontWeight="bold">
                 Password
               </FormLabel>
-              <InputGroup>
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  variant={"filled"}
-                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                    passInputHandler(event.target.value);
-                  }}
-                  onBlur={passBlurHandler}
-                  value={passValue}
-                />
-                <InputRightElement h={"full"}>
-                  <Button
-                    variant={"ghost"}
-                    onClick={() =>
-                      setShowPassword((showPassword: boolean) => !showPassword)
-                    }
-                  >
-                    {showPassword ? <ViewIcon /> : <ViewOffIcon />}
-                  </Button>
-                </InputRightElement>
-              </InputGroup>
+              <Box width={"65%"}>
+                <InputGroup>
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    variant={"filled"}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                      passInputHandler(event.target.value);
+                    }}
+                    onBlur={passBlurHandler}
+                    value={passValue}
+                  />
+                  <InputRightElement h={"full"}>
+                    <Button
+                      variant={"ghost"}
+                      onClick={() =>
+                        setShowPassword(
+                          (showPassword: boolean) => !showPassword
+                        )
+                      }
+                      h="1.75rem"
+                      size="xs"
+                    >
+                      {showPassword ? <ViewIcon /> : <ViewOffIcon />}
+                    </Button>
+                  </InputRightElement>
+                </InputGroup>
+              </Box>
             </HStack>
           </FormControl>
         </Stack>
@@ -147,7 +199,7 @@ const RegisterForm = () => {
           <Divider borderColor={"#D3D3D3"} />
         </Stack>
         <Stack pt={6} direction={"row"} justify={"space-between"}>
-          <Checkbox colorScheme={"purple"}>
+          <Checkbox colorScheme={"purple"} required>
             <Text fontSize={"md"}>
               I agree{" "}
               <Link color={"purple.600"} fontWeight={"bold"} fontSize={"sm"}>
@@ -158,7 +210,7 @@ const RegisterForm = () => {
           <Button
             type="submit"
             isLoading={isLoading}
-            size="sm"
+            size="md"
             width={"100px"}
             bg={"purple.600"}
             color={"white"}
@@ -183,6 +235,30 @@ const RegisterForm = () => {
           </Link>
         </Text>
       </Stack>
+      <Box hidden>
+        {isSuccess &&
+          !toast.isActive(1) &&
+          toast({
+            id: 1,
+            title: "Account Created.",
+            status: "success",
+            duration: 2000,
+            variant: "left-accent",
+            isClosable: true,
+            position: "top-right",
+          })}
+        {hasError &&
+          !toast.isActive(2) &&
+          toast({
+            id: 2,
+            title: "Oops! Something Went Wrong.",
+            status: "error",
+            duration: 2000,
+            variant: "left-accent",
+            position: "top-right",
+            isClosable: true,
+          })}
+      </Box>
     </Box>
   );
 };
