@@ -7,6 +7,7 @@ interface Result {
 interface Body {
   email: string;
   pass: string;
+  username?: string;
 }
 
 export const marketApi = createApi({
@@ -20,7 +21,14 @@ export const marketApi = createApi({
         body: credentials,
       }),
     }),
+    register: builder.mutation({
+      query: (credentials: Body) => ({
+        url: "/user/signup",
+        method: "POST",
+        body: credentials,
+      }),
+    }),
   }),
 });
 
-export const { useLoginMutation } = marketApi;
+export const { useLoginMutation, useRegisterMutation } = marketApi;
