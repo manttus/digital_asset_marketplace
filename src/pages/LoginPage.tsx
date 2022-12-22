@@ -1,6 +1,5 @@
 import { Flex, Text, Image, Box, Stack, Link } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-
 import image from "../assets/illustration6.png";
 import logo from "../assets/logo.png";
 import LoginForm from "../components/Forms/LoginForm/LoginForm";
@@ -21,15 +20,6 @@ const LoginPage = () => {
             <Image src={logo} width="240px" height={"80px"} />
           </Box>
         </Flex>
-        <Box
-          display={["block", "block", "none", "none"]}
-          height={"100px"}
-          width={" 100%"}
-          backgroundImage={image}
-          backgroundSize={"cover"}
-          backgroundRepeat={"no-repeat"}
-          backgroundPosition={"center"}
-        />
         <LoginForm />
         <Flex
           width="100%"

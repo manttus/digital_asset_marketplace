@@ -20,45 +20,54 @@ import { useLoginMutation } from "../../../features/api/apiSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { setCredintials } from "../../../features/auth/authSlice";
 import jwt_decode from "jwt-decode";
-import { selectCurrentUser } from "../../../features/auth/authSlice";
+import useInput from "../../../hooks/useInput";
 
 const LoginForm = () => {
-  const user = useSelector(selectCurrentUser);
-  const [email, setEmail] = useState("");
-  const [pass, setPassword] = useState("");
   const [login, { isLoading, isSuccess }] = useLoginMutation();
+  const [saveEmail, setSaveEmail] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  console.log(user);
+  const {
+    hasError: emailHasError,
+    inputChangeHandler: emailChangeHandler,
+    blurChangeHandler: emailBlurHandler,
+    inputValue: emailValue,
+    resetFields: emailFieldReset,
+  } = useInput((email) => email.includes("@"));
 
-  // useEffect(() => {
-  //   if (isSuccess) {
-  //     console.log(user);
-  //   }
-  // }, [user]);
+  const {
+    hasError: passHasError,
+    inputChangeHandler: passChangeHandler,
+    blurChangeHandler: passBlurHandler,
+    inputValue: passValue,
+    resetFields: passFieldReset,
+  } = useInput((pass) => pass.length > 8);
 
-  const emailHandler = (e: any) => {
-    setEmail(e.target.value);
-  };
-
-  const passHandler = (e: any) => {
-    setPassword(e.target.value);
-  };
+  useEffect(() => {
+    emailChangeHandler(
+      localStorage.getItem("email") ? localStorage.getItem("email")! : ""
+    );
+  }, []);
 
   const submitHandler = async (e: any) => {
     e.preventDefault();
 
     try {
-      const data = { email: email, pass: pass };
+      const data = { email: emailValue, pass: passValue };
+      if (saveEmail) {
+        localStorage.setItem("email", emailValue);
+      } else {
+        localStorage.removeItem("email");
+      }
       const userData = await login(data).unwrap();
       const decoded: any = jwt_decode(userData.accessToken);
       localStorage.setItem("Tokens", JSON.stringify(userData));
       dispatch(
         setCredintials({ token: userData.accessToken, user: decoded._id })
       );
-      setEmail("");
-      setPassword("");
+      emailFieldReset();
+      passFieldReset();
       navigate("/");
     } catch (err: any) {
       if (err.status === 400) {
@@ -73,7 +82,7 @@ const LoginForm = () => {
     <Box width={["350px", "450px", "450px", "450px"]} p={"20px"}>
       <Stack pb={"50"}>
         <Text
-          fontSize={["25px", "25px", "30px", "30px"]}
+          fontSize={"30px"}
           fontWeight={"bold"}
           pb={"3"}
           textAlign={["center", "center", "left", "left"]}
@@ -83,9 +92,9 @@ const LoginForm = () => {
         <Divider borderColor={"#D3D3D3"} />
       </Stack>
       <form onSubmit={submitHandler}>
-        <FormControl id="username" isRequired>
+        <FormControl id="username" isInvalid={emailHasError} isRequired>
           <HStack>
-            <FormLabel fontSize={"sm"} mr={10} fontWeight="bold">
+            <FormLabel fontSize={"md"} mr={10} fontWeight="bold">
               Username
             </FormLabel>
             <InputGroup>
@@ -94,12 +103,18 @@ const LoginForm = () => {
                 type="email"
                 borderWidth={"1px"}
                 isRequired
-                value={email}
+                value={emailValue}
                 variant={"filled"}
-                onChange={emailHandler}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  emailChangeHandler(event.target.value);
+                }}
+                onBlur={emailBlurHandler}
               />
               <InputRightElement h={"full"}>
-                <Button onClick={() => setEmail("")} variant={"ghost"}>
+                <Button
+                  onClick={() => emailChangeHandler("")}
+                  variant={"ghost"}
+                >
                   <SmallCloseIcon />
                 </Button>
               </InputRightElement>
@@ -107,9 +122,9 @@ const LoginForm = () => {
           </HStack>
         </FormControl>
 
-        <FormControl id="password" pt={6} isRequired>
+        <FormControl id="password" isInvalid={passHasError} pt={6} isRequired>
           <HStack>
-            <FormLabel fontSize={"sm"} mr={10} fontWeight="bold">
+            <FormLabel fontSize={"md"} mr={10} fontWeight="bold">
               Password
             </FormLabel>
             <InputGroup>
@@ -117,8 +132,11 @@ const LoginForm = () => {
                 type={showPassword ? "text" : "password"}
                 borderWidth={"1px"}
                 variant={"filled"}
-                value={pass}
-                onChange={passHandler}
+                value={passValue}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  passChangeHandler(event.target.value);
+                }}
+                onBlur={passBlurHandler}
               />
               <InputRightElement h={"full"}>
                 <Button
@@ -145,12 +163,16 @@ const LoginForm = () => {
         </Stack>
 
         <Stack pt={6} direction={"row"} justify={"space-between"}>
-          <Checkbox colorScheme={"purple"}>
-            <Text fontSize={"sm"}>Remember me</Text>
+          <Checkbox
+            colorScheme={"purple"}
+            onChange={() => {
+              setSaveEmail(true);
+            }}
+          >
+            <Text fontSize={"md"}>Remember Me</Text>
           </Checkbox>
           <Button
             isLoading={isLoading}
-            loadingText="Submitting"
             size="sm"
             width={"100px"}
             bg={"purple.600"}
@@ -166,7 +188,7 @@ const LoginForm = () => {
       </form>
 
       <Stack pt={[10, 14, 14, 14]} alignItems={"center"}>
-        <Text align={"center"} fontSize={["xs", "sm"]}>
+        <Text align={"center"} fontSize={"md"}>
           Don't have an Account?
           <Link
             color={"purple.600"}
