@@ -28,7 +28,26 @@ export const marketApi = createApi({
         body: credentials,
       }),
     }),
+    verify: builder.mutation({
+      query: (credentials: { email: string; otp: string }) => ({
+        url: "/user/verifyOTP",
+        method: "POST",
+        body: credentials,
+      }),
+    }),
+    resend: builder.mutation({
+      query: (credentials: { email: string }) => ({
+        url: "/user/resendOTP",
+        method: "POST",
+        body: credentials,
+      }),
+    }),
   }),
 });
 
-export const { useLoginMutation, useRegisterMutation } = marketApi;
+export const {
+  useLoginMutation,
+  useRegisterMutation,
+  useVerifyMutation,
+  useResendMutation,
+} = marketApi;

@@ -3,10 +3,8 @@ import HomePage from "./pages/HomePage";
 import RegisterPage from "./pages/RegisterPage";
 import AuthRoute from "./routes/AuthRoute";
 import RequireAuth from "./features/auth/RequireAuth";
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { setCredintials } from "./features/auth/authSlice";
-import jwt_decode from "jwt-decode";
+
+import ForgotPassword from "./pages/ForgotPassword";
 
 const App = () => {
   return (
@@ -14,6 +12,8 @@ const App = () => {
       <Route path="/login/*" element={<AuthRoute />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/" element={<RequireAuth HomePage={HomePage} />} />
+      <Route path="/forgot" element={<ForgotPassword />} />
+      <Route path="*" element={<div>404</div>} />
     </Routes>
   );
 };

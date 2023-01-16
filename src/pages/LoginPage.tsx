@@ -1,46 +1,107 @@
-import { Flex, Text, Image, Box, Stack, Link } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
-import image from "../assets/illustration6.png";
+import { Box, Divider, Flex, Hide, Image, Show } from "@chakra-ui/react";
+import { motion } from "framer-motion";
 import logo from "../assets/logo.png";
+import illustration1 from "../assets/nice.webp";
 import LoginForm from "../components/Forms/LoginForm/LoginForm";
 
 const LoginPage = () => {
-  const navigate = useNavigate();
+  const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log("submit");
+  };
+
+  const rightVariants = {
+    hidden: {
+      x: 200,
+      opacity: 0,
+      overflow: "hidden",
+    },
+    visible: {
+      x: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: "30",
+        velocity: "0.5",
+      },
+    },
+  };
+
+  const bottomVariants = {
+    hidden: {
+      y: 500,
+      opacity: 0,
+      overflow: "hidden",
+    },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: "30",
+        velocity: "0.5",
+      },
+    },
+  };
+
   return (
-    <Flex height={"100vh"} direction={["column", "column", "row", "row"]}>
+    <>
       <Flex
-        height={"100vh"}
-        width={["100%", "100%", "50%", "50%"]}
-        justifyContent={"space-between"}
-        alignItems={"center"}
-        direction={"column"}
+        h={"100vh"}
+        overflow={"hidden"}
+        direction={{ sm: "column", md: "column", lg: "row", xl: "row" }}
       >
-        <Flex width="100%" height="80px" border={"1PX solid #E2E8F0"}>
-          <Box>
-            <Image src={logo} width="240px" height={"80px"} />
-          </Box>
-        </Flex>
-        <LoginForm />
         <Flex
-          width="100%"
+          width={{ sm: "100%", md: "100%", lg: "40%", xl: "40%" }}
+          height={"100%"}
+          flexDirection={"column"}
           justifyContent={"center"}
-          height="70px"
-          border={"1PX solid #E2E8F0"}
-          pt={5}
         >
-          <Text color="gray" fontSize="xs">
-            Copyright © 2022. All Rights Reserved.
-          </Text>
+          <Flex
+            p={"10px"}
+            height={"15%"}
+            alignItems={"center"}
+            justifyContent={"center"}
+            flexDirection={"column"}
+            backgroundPosition={"center"}
+          ></Flex>
+          <Flex
+            as={motion.div}
+            height={"85%"}
+            variants={bottomVariants}
+            p={"10px"}
+            animate={"visible"}
+            initial={"hidden"}
+            flexDirection={"column"}
+            alignItems={"center"}
+            backgroundImage={{
+              sm: illustration1,
+              md: illustration1,
+              lg: "none",
+              xl: "none",
+            }}
+            backgroundSize={"cover"}
+            backgroundPosition={"center"}
+          >
+            hELLO
+          </Flex>
         </Flex>
+        <Hide below="lg">
+          <Flex
+            height={"100%"}
+            as={motion.div}
+            width={"60%"}
+            backgroundImage={illustration1}
+            backgroundSize={"cover"}
+            backgroundRepeat={"no-repeat"}
+            backgroundPosition={"center"}
+            variants={rightVariants}
+            animate={"visible"}
+            initial={"hidden"}
+          ></Flex>
+        </Hide>
       </Flex>
-      <Flex
-        width={["100%", "100%", "50%", "50%"]}
-        backgroundImage={image}
-        backgroundSize={"cover"}
-        backgroundRepeat={"no-repeat"}
-        backgroundPosition={"center"}
-      />
-    </Flex>
+    </>
   );
 };
 
