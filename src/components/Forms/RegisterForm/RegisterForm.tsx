@@ -1,3 +1,11 @@
-const RegisterForm = () => {};
+export const FormStep1 = () => {
+  return <></>;
+};
 
-export default RegisterForm;
+export const FormStep2 = () => {
+  return <></>;
+};
+
+export const FormStep3 = () => {
+  return <></>;
+};
