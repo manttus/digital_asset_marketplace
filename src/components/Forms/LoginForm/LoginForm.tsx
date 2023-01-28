@@ -12,6 +12,7 @@ import {
   Link,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 
 interface Props {
   submitHandler: (event: React.FormEvent<HTMLFormElement>) => void;
@@ -24,16 +25,20 @@ const LoginForm = (props: Props) => {
   };
 
   return (
-    <Flex height={"80%"}>
+    <Flex height={"60%"}>
       <form onSubmit={submitHandler}>
-        <Box p={5} width="320px">
+        <Box p={5} width="350px">
           <Stack spacing={5}>
             <FormControl id="email">
-              <FormLabel> Phone / E-mail </FormLabel>
+              <FormLabel fontSize={{ sm: "sm", md: "sm", lg: "sm", xl: "sm" }}>
+                Phone / E-mail
+              </FormLabel>
               <Input type="email" variant={"flushed"} />
             </FormControl>
             <FormControl id="password">
-              <FormLabel>Password</FormLabel>
+              <FormLabel fontSize={{ sm: "sm", md: "sm", lg: "sm", xl: "sm" }}>
+                Password
+              </FormLabel>
               <InputGroup>
                 <Input
                   type={showPassword ? "text" : "password"}
@@ -59,13 +64,22 @@ const LoginForm = (props: Props) => {
               ></Stack>
 
               <Flex justifyContent={"space-between"} alignItems={"center"}>
-                <Link fontWeight={"bold"} fontSize={"sm"} color={"purple.500"}>
+                <Link
+                  fontSize={{ sm: "sm", md: "sm", lg: "sm", xl: "sm" }}
+                  color={"purple.500"}
+                >
                   Forgot Password?
                 </Link>
-                {/* <Checkbox colorScheme={"purple"}> Remember Me</Checkbox> */}
+                {/* <Checkbox size={"md"} colorScheme={"purple"}>
+                  {" "}
+                  Remember Me
+                </Checkbox> */}
                 <Button
-                  size={"md"}
+                  as={motion.button}
+                  fontWeight={"300"}
+                  fontSize={{ sm: "sm", md: "sm", lg: "sm", xl: "sm" }}
                   bg={"purple.400"}
+                  whileHover={{ scale: 1.05 }}
                   color={"white"}
                   _hover={{
                     bg: "purple.500",
