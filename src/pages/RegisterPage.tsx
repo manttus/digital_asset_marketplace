@@ -13,7 +13,6 @@ import { motion } from "framer-motion";
 import logo from "../assets/logo.png";
 import illustration2 from "../assets/nice.webp";
 import { Link as RouterLink } from "react-router-dom";
-import RegisterForm from "../components/Forms/RegisterForm/RegisterForm";
 import StepProgress from "../components/Forms/RegisterForm/Steps/StepProgress";
 
 const RegisterPage = () => {
@@ -128,35 +127,7 @@ const RegisterPage = () => {
             display={isSmallerThan900 ? "none" : "flex"}
           >
             <StepProgress />
-            {/* <Flex
-              w={"full"}
-              justifyContent={"center"}
-              alignItems={"center"}
-              direction={"column"}
-              height={"20%"}
-            >
-              <Flex direction={"column"}>
-                
-              </Flex>
-              <Button
-                as={motion.button}
-                w={"320px"}
-                variant={"outline"}
-                leftIcon={<FcGoogle />}
-                mb={"8"}
-                whileHover={{ scale: 1.05 }}
-              >
-                <Center>
-                  <Text fontWeight={"500"} fontSize={"sm"}>
-                    Sign up with Google
-                  </Text>
-                </Center>
-              </Button>
-              <Text fontSize={"xs"} mb={"5"} color={"grey"}>
-                or use phone / email
-              </Text>
-            </Flex>
-            <RegisterForm /> */}
+
             <Flex
               alignItems={"center"}
               justifyContent={"center"}

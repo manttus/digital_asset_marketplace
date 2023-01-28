@@ -5,6 +5,7 @@ import AuthRoute from "./routes/AuthRoute";
 import RequireAuth from "./features/auth/RequireAuth";
 
 import ForgotPassword from "./pages/ForgotPassword";
+import Marketplace from "./pages/Marketplace";
 
 const App = () => {
   return (
@@ -13,6 +14,7 @@ const App = () => {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/" element={<RequireAuth HomePage={HomePage} />} />
       <Route path="/forgot" element={<ForgotPassword />} />
+      <Route path="/market" element={<Marketplace />} />
       <Route path="*" element={<div>404</div>} />
     </Routes>
   );
