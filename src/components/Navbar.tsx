@@ -12,7 +12,7 @@ import { BiWalletAlt } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
 
-const Navbar = () => {
+const Navbar = (props: any) => {
   return (
     <Flex
       h={"15%"}
@@ -25,10 +25,10 @@ const Navbar = () => {
           <Image src={logo} height="100px" />
         </Box>
         <HStack w={"30%"} spacing={10}>
-          <Link to="/">Market</Link>
+          <Link to="/market">Market</Link>
           <Link to="/">Categories </Link>
           <Link to="/"> Explore </Link>
-          <Link to="/">Mint</Link>
+          <Link to="/mint">Mint</Link>
         </HStack>
       </Flex>
       <Flex
@@ -39,6 +39,7 @@ const Navbar = () => {
       >
         <Box px={"4"}>
           <Button
+            onClick={props.metaMaskHandler}
             leftIcon={<BiWalletAlt />}
             variant={"outline"}
             fontSize={"sm"}

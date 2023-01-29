@@ -6,6 +6,7 @@ import RequireAuth from "./features/auth/RequireAuth";
 
 import ForgotPassword from "./pages/ForgotPassword";
 import Marketplace from "./pages/Marketplace";
+import MintNFT from "./pages/MintNFT";
 
 const App = () => {
   return (
@@ -15,6 +16,7 @@ const App = () => {
       <Route path="/" element={<RequireAuth HomePage={HomePage} />} />
       <Route path="/forgot" element={<ForgotPassword />} />
       <Route path="/market" element={<Marketplace />} />
+      <Route path="/mint" element={<MintNFT />} />
       <Route path="*" element={<div>404</div>} />
     </Routes>
   );

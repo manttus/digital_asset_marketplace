@@ -6,7 +6,7 @@ import animated from "../../assets/card.gif";
 const Landing = () => {
   return (
     <>
-      <Flex w={"full"} justifyContent={"space-evenly"} mt={"20"}>
+      <Flex w={"full"} justifyContent={"space-evenly"} mt={"10"}>
         <Flex
           w={"50%"}
           direction={"column"}
