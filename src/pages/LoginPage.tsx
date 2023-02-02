@@ -82,15 +82,9 @@ const LoginPage = () => {
             justifyContent={"center"}
             flexDirection={"column"}
             backgroundPosition={"center"}
-          >
-            <Image src={logo} height="110px" />
-          </Flex>
+          ></Flex>
           <Flex
-            as={motion.div}
             height={"80%"}
-            variants={bottomVariants}
-            animate={"visible"}
-            initial={isSmallerThan900 ? "" : "hidden"}
             flexDirection={"column"}
             alignItems={"center"}
             alignContent={"center"}
@@ -137,13 +131,13 @@ const LoginPage = () => {
               justifyContent={"center"}
               height={"18%"}
             >
-              <Text fontSize={"sm"}>
+              {/* <Text fontSize={"sm"}>
                 New to Mintables ?
                 <Link as={RouterLink} to={"/register"} color={"purple.400"}>
                   {" "}
                   Register
                 </Link>
-              </Text>
+              </Text> */}
             </Flex>
           </Flex>
           <Flex

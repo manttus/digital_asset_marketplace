@@ -24,10 +24,10 @@ const Navbar = (props: any) => {
         <Box w={"60%"}>
           <Image src={logo} height="100px" />
         </Box>
-        <HStack w={"30%"} spacing={10}>
+        <HStack w={"40%"} spacing={10}>
           <Link to="/market">Market</Link>
-          <Link to="/">Categories </Link>
           <Link to="/"> Explore </Link>
+          <Link to="/inventory"> My NFT </Link>
           <Link to="/mint">Mint</Link>
         </HStack>
       </Flex>
@@ -38,17 +38,30 @@ const Navbar = (props: any) => {
         justifyContent={"space-evenly"}
       >
         <Box px={"4"}>
-          <Button
-            onClick={props.metaMaskHandler}
-            leftIcon={<BiWalletAlt />}
-            variant={"outline"}
-            fontSize={"sm"}
-            color={"purple.500"}
-            fontWeight={"500"}
-            _hover={{ bg: "purple.600", color: "white" }}
-          >
-            Connect
-          </Button>
+          {props.account ? (
+            <Button
+              onClick={props.metaMaskHandler}
+              leftIcon={<BiWalletAlt />}
+              fontSize={"sm"}
+              bg={"purple.500"}
+              fontWeight={"500"}
+              color={"white"}
+            >
+              Connected
+            </Button>
+          ) : (
+            <Button
+              onClick={props.metaMaskHandler}
+              leftIcon={<BiWalletAlt />}
+              variant={"outline"}
+              fontSize={"sm"}
+              color={"purple.500"}
+              fontWeight={"500"}
+              _hover={{ bg: "purple.600", color: "white" }}
+            >
+              Connect
+            </Button>
+          )}
         </Box>
         <Box>
           <WrapItem>
