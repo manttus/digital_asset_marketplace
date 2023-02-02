@@ -13,15 +13,39 @@ import {
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import useInput from "../../../hooks/useInput";
 
 interface Props {
-  submitHandler: (event: React.FormEvent<HTMLFormElement>) => void;
+  submitHandler: (
+    event: React.FormEvent<HTMLFormElement>,
+    email: String,
+    password: String
+  ) => void;
+  isLoading: boolean;
 }
 
 const LoginForm = (props: Props) => {
+  const {
+    inputChangeHandler: emailChangeHandler,
+    blurChangeHandler: emailBlurHandler,
+    inputValue: emailValue,
+    hasError: emailHasError,
+    resetFields: emailResetFields,
+  } = useInput((value: String) => value.includes("@"));
+
+  const {
+    inputChangeHandler: passwordChangeHandler,
+    blurChangeHandler: passwordBlurHandler,
+    inputValue: passwordValue,
+    hasError: passwordHasError,
+    resetFields: passwordResetFields,
+  } = useInput((value: String) => value.trim().length > 6);
+
   const [showPassword, setShowPassword] = useState(false);
   const submitHandler = (event: React.FormEvent<HTMLFormElement>) => {
-    props.submitHandler(event);
+    props.submitHandler(event, emailValue, passwordValue);
+    emailResetFields();
+    passwordResetFields();
   };
 
   return (
@@ -29,22 +53,37 @@ const LoginForm = (props: Props) => {
       <form onSubmit={submitHandler}>
         <Box p={5} width="350px">
           <Stack spacing={5}>
-            <FormControl id="email">
+            <FormControl id="email" isInvalid={emailHasError}>
               <FormLabel fontSize={{ sm: "sm", md: "sm", lg: "sm", xl: "sm" }}>
                 Phone / E-mail
               </FormLabel>
-              <Input type="email" variant={"flushed"} />
+              <Input
+                fontSize={{ sm: "sm", md: "sm", lg: "sm", xl: "sm" }}
+                type="email"
+                variant={"flushed"}
+                value={emailValue}
+                onChange={(e: React.FormEvent<HTMLInputElement>) => {
+                  emailChangeHandler(e.currentTarget.value);
+                }}
+                onBlur={emailBlurHandler}
+              />
             </FormControl>
-            <FormControl id="password">
+            <FormControl id="password" isInvalid={passwordHasError}>
               <FormLabel fontSize={{ sm: "sm", md: "sm", lg: "sm", xl: "sm" }}>
                 Password
               </FormLabel>
               <InputGroup>
                 <Input
+                  fontSize={{ sm: "sm", md: "sm", lg: "sm", xl: "sm" }}
                   type={showPassword ? "text" : "password"}
                   variant={"flushed"}
+                  value={passwordValue}
+                  onChange={(e: React.FormEvent<HTMLInputElement>) => {
+                    passwordChangeHandler(e.currentTarget.value);
+                  }}
+                  onBlur={passwordBlurHandler}
                 />
-                <InputRightElement h={"full"}>
+                <InputRightElement h={"75%"}>
                   <Button
                     variant={"ghost"}
                     onClick={() =>
@@ -75,9 +114,11 @@ const LoginForm = (props: Props) => {
                   Remember Me
                 </Checkbox> */}
                 <Button
+                  isLoading={props.isLoading}
+                  type="submit"
                   as={motion.button}
                   fontWeight={"300"}
-                  fontSize={{ sm: "sm", md: "sm", lg: "sm", xl: "sm" }}
+                  fontSize={"sm"}
                   bg={"purple.400"}
                   whileHover={{ scale: 1.05 }}
                   color={"white"}

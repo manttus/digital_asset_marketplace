@@ -1,13 +1,13 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 interface Result {
-  accessToken: string;
-  refreshToken: string;
+  accessToken: String;
+  refreshToken: String;
 }
 interface Body {
-  email: string;
-  pass: string;
-  username?: string;
+  email: String;
+  pass: String;
+  username?: String;
 }
 
 export const marketApi = createApi({

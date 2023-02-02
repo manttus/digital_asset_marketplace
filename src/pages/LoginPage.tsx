@@ -14,11 +14,18 @@ import logo from "../assets/logo.png";
 import illustration1 from "../assets/register.png";
 import LoginForm from "../components/Forms/LoginForm/LoginForm";
 import { Link as RouterLink } from "react-router-dom";
+import { useLoginMutation } from "../features/api/apiSlice";
 
 const LoginPage = () => {
-  const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
+  const [login, { isLoading }] = useLoginMutation();
+
+  const submitHandler = (
+    e: React.FormEvent<HTMLFormElement>,
+    email: String,
+    password: String
+  ) => {
     e.preventDefault();
-    console.log("submit");
+    login({ email: email, pass: password });
   };
 
   const [isSmallerThan900] = useMediaQuery("(max-width: 900px)");
@@ -99,6 +106,7 @@ const LoginPage = () => {
             backgroundPosition={"center"}
             display={isSmallerThan900 ? "none" : "flex"}
           >
+            <LoginForm submitHandler={submitHandler} isLoading={isLoading} />
             <Flex
               w={"full"}
               justifyContent={"center"}
@@ -120,12 +128,8 @@ const LoginPage = () => {
                   </Text>
                 </Center>
               </Button>
-              <Text fontSize={"xs"} mb={"5"} color={"grey"}>
-                or use phone / email
-              </Text>
             </Flex>
 
-            <LoginForm submitHandler={submitHandler} />
             <Flex
               alignItems={"center"}
               justifyContent={"center"}
