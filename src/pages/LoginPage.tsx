@@ -10,11 +10,9 @@ import {
   Center,
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
-import logo from "../assets/logo.png";
 import illustration1 from "../assets/register.png";
 import LoginForm from "../components/Forms/LoginForm/LoginForm";
-import { Link as RouterLink } from "react-router-dom";
-import { useLoginMutation } from "../features/api/apiSlice";
+import { useLoginMutation } from "../features/api/authApi/apiSlice";
 
 const LoginPage = () => {
   const [login, { isLoading }] = useLoginMutation();

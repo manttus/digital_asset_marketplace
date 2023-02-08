@@ -1,17 +1,11 @@
-import { Route, Routes } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "../features/auth/authSlice";
 import LoginPage from "../pages/LoginPage";
-import RegisterPage from "../pages/RegisterPage";
+import Marketplace from "../pages/Marketplace";
 
 const AuthRoute = () => {
-  return (
-    <>
-      <Routes>
-        <Route path="/" element={<LoginPage />}>
-          <Route index element={<LoginPage />} />
-        </Route>
-      </Routes>
-    </>
-  );
+  const user = useSelector(selectCurrentUser);
+  return user ? <Marketplace /> : <LoginPage />;
 };
 
 export default AuthRoute;
