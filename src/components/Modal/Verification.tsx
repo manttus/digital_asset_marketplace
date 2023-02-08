@@ -19,7 +19,7 @@ import { useNavigate } from "react-router-dom";
 import {
   useResendMutation,
   useVerifyMutation,
-} from "../../features/api/apiSlice";
+} from "../../features/api/authApi/apiSlice";
 import useInput from "../../hooks/useInput";
 
 interface Modal {

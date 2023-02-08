@@ -53,7 +53,7 @@ const LoginForm = (props: Props) => {
       <form onSubmit={submitHandler}>
         <Box p={5} width="350px">
           <Stack spacing={5}>
-            <FormControl id="email" isInvalid={emailHasError}>
+            <FormControl id="email">
               <FormLabel fontSize={{ sm: "sm", md: "sm", lg: "sm", xl: "sm" }}>
                 Phone / E-mail
               </FormLabel>
@@ -68,7 +68,7 @@ const LoginForm = (props: Props) => {
                 onBlur={emailBlurHandler}
               />
             </FormControl>
-            <FormControl id="password" isInvalid={passwordHasError}>
+            <FormControl id="password">
               <FormLabel fontSize={{ sm: "sm", md: "sm", lg: "sm", xl: "sm" }}>
                 Password
               </FormLabel>
