@@ -1,4 +1,5 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import customBaseQuery from "../../customBaseUrl";
 
 interface Result {
   accessToken: String;
@@ -12,11 +13,15 @@ interface Body {
 
 export const marketApi = createApi({
   reducerPath: "marketApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:3000" }),
+  baseQuery: customBaseQuery,
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (credentials: Body) => ({
         url: "/user/signin",
+        Headers: {
+          authorization: "Heloo",
+        },
+        token: "include",
         method: "POST",
         body: credentials,
       }),
