@@ -4,27 +4,57 @@ import {
   Hide,
   Text,
   useMediaQuery,
-  Link,
-  Image,
   Button,
   Center,
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import illustration1 from "../assets/register.png";
 import LoginForm from "../components/Forms/LoginForm/LoginForm";
-import { useLoginMutation } from "../features/api/authApi/apiSlice";
+import { useSendMutation } from "../features/api/authApi/apiSlice";
+import { useGoogleLogin } from "@react-oauth/google";
+import { useEffect, useState } from "react";
 
 const LoginPage = () => {
-  const [login, { isLoading }] = useLoginMutation();
+  const [send, { isLoading: isSending }] = useSendMutation();
 
-  const submitHandler = (
+  const [accessToken, setAccessToken] = useState<string>("");
+
+  const oauthHandler = useGoogleLogin({
+    onSuccess: (response) => {
+      const accessToken = response.access_token;
+      setAccessToken(accessToken);
+    },
+  });
+
+  const submitHandler = async (
     e: React.FormEvent<HTMLFormElement>,
-    email: String,
-    password: String
+    email: string
   ) => {
     e.preventDefault();
-    login({ email: email, pass: password });
+    const response = await send({ user: email }).unwrap();
+    console.log(response);
   };
+
+  useEffect(() => {
+    if (accessToken != "") {
+      fetch(
+        `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${accessToken}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            Accept: "application/json",
+          },
+        }
+      )
+        .then((res) => res.json())
+        .then((res) => {
+          send({ user: res.email }).then((res) => {
+            console.log(res);
+          });
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [accessToken]);
 
   const [isSmallerThan900] = useMediaQuery("(max-width: 900px)");
 
@@ -104,7 +134,7 @@ const LoginPage = () => {
             backgroundPosition={"center"}
             display={isSmallerThan900 ? "none" : "flex"}
           >
-            <LoginForm submitHandler={submitHandler} isLoading={isLoading} />
+            <LoginForm submitHandler={submitHandler} isSending={isSending} />
             <Flex
               w={"full"}
               justifyContent={"center"}
@@ -113,6 +143,7 @@ const LoginPage = () => {
               height={"20%"}
             >
               <Button
+                onClick={() => oauthHandler()}
                 as={motion.button}
                 w={"320px"}
                 variant={"outline"}

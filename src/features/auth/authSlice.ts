@@ -14,11 +14,6 @@ const initialState = {
     : null,
 };
 
-// const initialState = {
-//   token: null,
-//   user: null,
-// };
-
 const authSlice = createSlice({
   name: "auth",
   initialState: initialState,
@@ -27,7 +22,7 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.token = action.payload.token;
     },
-    logout: (state, action) => {
+    logout: (state) => {
       state.user = null;
       state.token = null;
     },

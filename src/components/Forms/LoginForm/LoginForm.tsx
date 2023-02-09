@@ -18,10 +18,9 @@ import useInput from "../../../hooks/useInput";
 interface Props {
   submitHandler: (
     event: React.FormEvent<HTMLFormElement>,
-    email: String,
-    password: String
+    email: string
   ) => void;
-  isLoading: boolean;
+  isSending: boolean;
 }
 
 const LoginForm = (props: Props) => {
@@ -43,7 +42,7 @@ const LoginForm = (props: Props) => {
 
   const [showPassword, setShowPassword] = useState(false);
   const submitHandler = (event: React.FormEvent<HTMLFormElement>) => {
-    props.submitHandler(event, emailValue, passwordValue);
+    props.submitHandler(event, emailValue);
     emailResetFields();
     passwordResetFields();
   };
@@ -59,7 +58,7 @@ const LoginForm = (props: Props) => {
               </FormLabel>
               <Input
                 fontSize={{ sm: "sm", md: "sm", lg: "sm", xl: "sm" }}
-                type="email"
+                type="text"
                 variant={"flushed"}
                 value={emailValue}
                 onChange={(e: React.FormEvent<HTMLInputElement>) => {
@@ -114,7 +113,7 @@ const LoginForm = (props: Props) => {
                   Remember Me
                 </Checkbox> */}
                 <Button
-                  isLoading={props.isLoading}
+                  isLoading={props.isSending}
                   type="submit"
                   as={motion.button}
                   fontWeight={"300"}

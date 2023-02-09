@@ -1,22 +1,25 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import customBaseQuery from "../../customBaseUrl";
 
 interface Result {
   accessToken: String;
   refreshToken: String;
 }
 interface Body {
-  email: String;
-  pass: String;
+  user: String;
+  pass?: String;
   username?: String;
+  type: String;
 }
 
 export const marketApi = createApi({
   reducerPath: "marketApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:3000" }),
+  baseQuery: customBaseQuery,
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (credentials: Body) => ({
         url: "/user/signin",
+        token: "include",
         method: "POST",
         body: credentials,
       }),
@@ -30,14 +33,14 @@ export const marketApi = createApi({
     }),
     verify: builder.mutation({
       query: (credentials: { email: string; otp: string }) => ({
-        url: "/user/verifyOTP",
+        url: "/otp/verifyOTP",
         method: "POST",
         body: credentials,
       }),
     }),
-    resend: builder.mutation({
-      query: (credentials: { email: string }) => ({
-        url: "/user/resendOTP",
+    send: builder.mutation({
+      query: (credentials: { user: string }) => ({
+        url: "/otp/sendOTP",
         method: "POST",
         body: credentials,
       }),
@@ -49,5 +52,5 @@ export const {
   useLoginMutation,
   useRegisterMutation,
   useVerifyMutation,
-  useResendMutation,
+  useSendMutation,
 } = marketApi;
