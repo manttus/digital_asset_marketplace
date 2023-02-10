@@ -1,6 +1,7 @@
 import { useRoutes } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import VerifyPage from "./pages/VerifyPage";
 import AuthRoute from "./routes/AuthRoute";
 
 const App = () => {
@@ -16,6 +17,10 @@ const App = () => {
     {
       path: "/signup",
       element: <RegisterPage />,
+    },
+    {
+      path: "/verify",
+      element: <VerifyPage />,
     },
   ]);
 
