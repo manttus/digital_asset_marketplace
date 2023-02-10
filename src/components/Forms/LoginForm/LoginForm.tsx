@@ -10,7 +10,6 @@ import {
   InputGroup,
   InputRightElement,
   Link,
-  Divider,
   Text,
   Center,
 } from "@chakra-ui/react";
@@ -20,10 +19,7 @@ import { motion } from "framer-motion";
 import useInput from "../../../hooks/useInput";
 
 interface Props {
-  submitHandler: (
-    event: React.FormEvent<HTMLFormElement>,
-    email: string
-  ) => void;
+  submitHandler: (email: string) => void;
   isSending: boolean;
   oauthHandler: () => void;
 }
@@ -45,7 +41,8 @@ const LoginForm = (props: Props) => {
 
   const [showPassword, setShowPassword] = useState(false);
   const submitHandler = (event: React.FormEvent<HTMLFormElement>) => {
-    props.submitHandler(event, emailValue);
+    event.preventDefault();
+    props.submitHandler(emailValue);
     emailResetFields();
     passwordResetFields();
   };

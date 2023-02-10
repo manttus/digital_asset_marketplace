@@ -16,7 +16,6 @@ const customBaseQuery = async (args: any, api: any, extraOptions: any) => {
     },
   };
   let result = await baseQuery(argsWithHeader, api, extraOptions);
-  console.log(result);
   return result;
 };
 
