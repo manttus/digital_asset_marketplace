@@ -1,26 +1,52 @@
-import {
-  Flex,
-  Hide,
-  Text,
-  useMediaQuery,
-  Button,
-  Center,
-  Divider,
-  Image,
-  Show,
-} from "@chakra-ui/react";
+import { Flex, Hide, useMediaQuery, Box, useToast } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import illustration1 from "../assets/register.png";
 import LoginForm from "../components/Forms/LoginForm/LoginForm";
 import { useSendMutation } from "../features/api/authApi/apiSlice";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useEffect, useState } from "react";
-import logo from "../assets/logo.png";
+import OtpForm from "../components/Forms/OtpForm/OtpForm";
 
 const LoginPage = () => {
-  const [send, { isLoading: isSending }] = useSendMutation();
-
+  const [send, { isLoading: isSending, isError: otpError }] = useSendMutation();
+  const [email, setEmail] = useState<string>("");
+  const [isSuccess, setSuccess] = useState<boolean>(false);
+  const [isError, setError] = useState<boolean>(false);
+  const [otp, setOtp] = useState<boolean>(false);
+  const [isSmallerThan900] = useMediaQuery("(max-width: 900px)");
   const [accessToken, setAccessToken] = useState<string>("");
+  const toast = useToast();
+
+  useEffect(() => {
+    if (!toast.isActive(1) && isError) {
+      toast({
+        id: 1,
+        title: "Failed to send otp.",
+        status: "error",
+        duration: 3000,
+        variant: "left-accent",
+        isClosable: true,
+        position: "bottom-left",
+        onCloseComplete: () => {
+          setSuccess(false);
+        },
+      });
+    }
+    if (!toast.isActive(2) && isSuccess) {
+      toast({
+        id: 1,
+        title: "Otp Sent.",
+        status: "success",
+        duration: 3000,
+        variant: "left-accent",
+        isClosable: true,
+        position: "bottom-left",
+        onCloseComplete: () => {
+          setSuccess(false);
+        },
+      });
+    }
+  }, [isError, isSuccess]);
 
   const oauthHandler = useGoogleLogin({
     onSuccess: (response) => {
@@ -29,17 +55,20 @@ const LoginPage = () => {
     },
   });
 
-  const submitHandler = async (
-    e: React.FormEvent<HTMLFormElement>,
-    email: string
-  ) => {
-    e.preventDefault();
-    const response = await send({ user: email }).unwrap();
-    console.log(response);
+  const otpSend = async (email: string) => {
+    setEmail(email);
+    await send({ user: email }).unwrap();
+    if (!otpError) {
+      setOtp(true);
+      setSuccess(true);
+    } else {
+      setError(false);
+    }
   };
 
   useEffect(() => {
     if (accessToken != "") {
+      console.log(accessToken);
       fetch(
         `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${accessToken}`,
         {
@@ -51,15 +80,10 @@ const LoginPage = () => {
       )
         .then((res) => res.json())
         .then((res) => {
-          send({ user: res.email }).then((res) => {
-            console.log(res);
-          });
-        })
-        .catch((err) => console.log(err));
+          otpSend(res.email);
+        });
     }
   }, [accessToken]);
-
-  const [isSmallerThan900] = useMediaQuery("(max-width: 900px)");
 
   const rightVariants = {
     hidden: {
@@ -138,11 +162,15 @@ const LoginPage = () => {
             backgroundPosition={"center"}
             display={isSmallerThan900 ? "none" : "flex"}
           >
-            <LoginForm
-              submitHandler={submitHandler}
-              isSending={isSending}
-              oauthHandler={oauthHandler}
-            />
+            {!otp ? (
+              <LoginForm
+                submitHandler={otpSend}
+                isSending={isSending}
+                oauthHandler={oauthHandler}
+              />
+            ) : (
+              <OtpForm />
+            )}
           </Flex>
 
           <Flex
@@ -165,11 +193,15 @@ const LoginPage = () => {
             display={isSmallerThan900 ? "flex" : "none"}
           >
             <Flex bg={"white"} p={"5"}>
-              <LoginForm
-                submitHandler={submitHandler}
-                isSending={isSending}
-                oauthHandler={oauthHandler}
-              />
+              {!otp ? (
+                <LoginForm
+                  submitHandler={otpSend}
+                  isSending={isSending}
+                  oauthHandler={oauthHandler}
+                />
+              ) : (
+                <OtpForm />
+              )}
             </Flex>
           </Flex>
 
