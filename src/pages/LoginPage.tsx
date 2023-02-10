@@ -1,4 +1,3 @@
-import { FcGoogle } from "react-icons/fc";
 import {
   Flex,
   Hide,
@@ -6,6 +5,9 @@ import {
   useMediaQuery,
   Button,
   Center,
+  Divider,
+  Image,
+  Show,
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import illustration1 from "../assets/register.png";
@@ -13,6 +15,7 @@ import LoginForm from "../components/Forms/LoginForm/LoginForm";
 import { useSendMutation } from "../features/api/authApi/apiSlice";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useEffect, useState } from "react";
+import logo from "../assets/logo.png";
 
 const LoginPage = () => {
   const [send, { isLoading: isSending }] = useSendMutation();
@@ -107,23 +110,24 @@ const LoginPage = () => {
           <Flex
             p={"10px"}
             mt={"5px"}
-            height={"15%"}
+            height={"10%"}
             alignItems={{
               sm: "center",
               md: "flex-start",
               lg: "center",
               xl: "center",
             }}
-            justifyContent={"center"}
-            flexDirection={"column"}
+            alignContent={"start"}
+            justifyContent={"flex-start"}
+            flexDirection={"row"}
             backgroundPosition={"center"}
           ></Flex>
           <Flex
-            height={"80%"}
+            height={"60%"}
             flexDirection={"column"}
             alignItems={"center"}
             alignContent={"center"}
-            justifyContent={"space-around"}
+            justifyContent={"space-evenly"}
             backgroundImage={{
               sm: illustration1,
               md: illustration1,
@@ -134,70 +138,42 @@ const LoginPage = () => {
             backgroundPosition={"center"}
             display={isSmallerThan900 ? "none" : "flex"}
           >
-            <LoginForm submitHandler={submitHandler} isSending={isSending} />
-            <Flex
-              w={"full"}
-              justifyContent={"center"}
-              alignItems={"center"}
-              direction={"column"}
-              height={"20%"}
-            >
-              <Button
-                onClick={() => oauthHandler()}
-                as={motion.button}
-                w={"320px"}
-                variant={"outline"}
-                leftIcon={<FcGoogle />}
-                mb={"8"}
-                whileHover={{ scale: 1.05 }}
-              >
-                <Center>
-                  <Text fontWeight={"500"} fontSize={"sm"}>
-                    Sign in with Google
-                  </Text>
-                </Center>
-              </Button>
-            </Flex>
-
-            <Flex
-              alignItems={"center"}
-              justifyContent={"center"}
-              height={"18%"}
-            >
-              {/* <Text fontSize={"sm"}>
-                New to Mintables ?
-                <Link as={RouterLink} to={"/register"} color={"purple.400"}>
-                  {" "}
-                  Register
-                </Link>
-              </Text> */}
-            </Flex>
+            <LoginForm
+              submitHandler={submitHandler}
+              isSending={isSending}
+              oauthHandler={oauthHandler}
+            />
           </Flex>
+
           <Flex
             as={motion.div}
-            height={"80%"}
+            height={{ sm: "80%", md: "90%", lg: "90%", xl: "90%" }}
+            justifyContent={"center"}
+            alignItems={"center"}
             variants={bottomVariants}
             animate={isSmallerThan900 ? "visible" : ""}
             initial={"hidden"}
             flexDirection={"column"}
-            alignItems={"center"}
             backgroundImage={{
-              sm: illustration1,
               md: illustration1,
               lg: "none",
               xl: "none",
             }}
+            padding={"5"}
             backgroundSize={"cover"}
             backgroundPosition={"center"}
             display={isSmallerThan900 ? "flex" : "none"}
-            _before={{
-              content: '""',
-              width: "100%",
-              height: "100%",
-              background: "rgba(0,0,0,0.8)",
-              opacity: 0.5,
-            }}
-          ></Flex>
+          >
+            <Flex bg={"white"} p={"5"}>
+              <LoginForm
+                submitHandler={submitHandler}
+                isSending={isSending}
+                oauthHandler={oauthHandler}
+              />
+            </Flex>
+          </Flex>
+
+          <Flex h={"10%"} boxShadow={"sm"}></Flex>
         </Flex>
         <Hide below="lg">
           <Flex
