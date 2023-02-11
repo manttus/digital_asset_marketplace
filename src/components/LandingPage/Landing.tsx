@@ -1,12 +1,14 @@
-import { Box, Button, Flex, Text, Image } from "@chakra-ui/react";
-import { AiOutlineArrowRight } from "react-icons/ai";
-import { Link } from "react-router-dom";
-import animated from "../../assets/card.gif";
+import { Flex } from "@chakra-ui/react";
+
+import Navbar from "../Navbar";
+
+const metaMaskHandler = () => {};
 
 const Landing = () => {
   return (
     <>
-      <Flex w={"full"} justifyContent={"space-evenly"} mt={"10"}>
+      <Navbar metaMaskHandler={metaMaskHandler} />
+      {/* <Flex w={"full"} justifyContent={"space-evenly"} mt={"10"}>
         <Flex
           w={"50%"}
           direction={"column"}
@@ -42,7 +44,7 @@ const Landing = () => {
         <Flex w={"40%"}>
           <Image src={animated} height={"450"} />{" "}
         </Flex>
-      </Flex>
+      </Flex> */}
       <Flex> </Flex>
     </>
   );
