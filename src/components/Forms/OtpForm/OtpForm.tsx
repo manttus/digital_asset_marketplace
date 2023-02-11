@@ -1,6 +1,5 @@
 import {
   Button,
-  Flex,
   FormControl,
   HStack,
   PinInput,
@@ -8,87 +7,71 @@ import {
   Stack,
   Box,
   Link,
-  Image,
-  Text,
+  Flex,
 } from "@chakra-ui/react";
-import useInput from "../../../hooks/useInput";
+import { useEffect, useState } from "react";
 
-const OtpForm = () => {
-  const VerificationHandler = async (event: any) => {
-    event.preventDefault();
-    try {
-      const pin = pinValue1 + pinValue2 + pinValue3 + pinValue4;
-      console.log(pin);
-    } catch (err: Error | unknown) {
-      console.log(err);
+type OtpProps = {
+  verificationHandler: (pin: string) => void;
+  isLoading: boolean;
+};
+
+const OtpForm = (props: OtpProps) => {
+  const [pin, setPin] = useState<string[]>(["", "", "", ""]);
+  const pinHandler = (index: number, value: string) => {
+    if (value.length === 1) {
+      const newPin = [...pin];
+      newPin[index] = value;
+      setPin(newPin);
     }
-    resetPin1();
-    resetPin2();
-    resetPin3();
-    resetPin4();
   };
+  useEffect(() => {
+    if (props.isLoading) {
+      const newPin = ["", "", "", ""];
+      setPin(newPin);
+    }
+  }, [props.isLoading]);
 
-  const {
-    inputChangeHandler: inputPinHandler1,
-    inputValue: pinValue1,
-    resetFields: resetPin1,
-  } = useInput((value: string) => value.length !== 0);
-
-  const {
-    inputChangeHandler: inputPinHandler2,
-    inputValue: pinValue2,
-    resetFields: resetPin2,
-  } = useInput((value: string) => value.length !== 0);
-
-  const {
-    inputChangeHandler: inputPinHandler3,
-    inputValue: pinValue3,
-    resetFields: resetPin3,
-  } = useInput((value: string) => value.length !== 0);
-
-  const {
-    inputChangeHandler: inputPinHandler4,
-    inputValue: pinValue4,
-    resetFields: resetPin4,
-  } = useInput((value: string) => value.length !== 0);
+  const verificationHandler = () => {
+    if (pin.length === 4) {
+      props.verificationHandler(pin.join(""));
+    }
+    const newPin = ["", "", "", ""];
+    setPin(newPin);
+  };
   return (
-    <Box as="form" onSubmit={VerificationHandler}>
+    <Box>
       <FormControl>
-        <HStack spacing={3} justifyContent={"space-evenly"} pt={2}>
+        <Flex
+          direction={"column"}
+          justifyContent={"space-evenly"}
+          alignItems={"center"}
+        >
           <Box>
-            <HStack>
-              <PinInput size={"lg"}>
-                <PinInputField
-                  value={pinValue1}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    inputPinHandler1(e.target.value)
-                  }
-                />
-                <PinInputField
-                  value={pinValue2}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    inputPinHandler2(e.target.value)
-                  }
-                />
-                <PinInputField
-                  value={pinValue3}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    inputPinHandler3(e.target.value)
-                  }
-                />
-                <PinInputField
-                  value={pinValue4}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    inputPinHandler4(e.target.value)
-                  }
-                />
+            <HStack spacing={4}>
+              <PinInput
+                size={"lg"}
+                variant={"flushed"}
+                focusBorderColor={"purple.400"}
+              >
+                {pin.map((value, index) => (
+                  <PinInputField
+                    value={value}
+                    key={index}
+                    onChange={(e: React.FormEvent<HTMLInputElement>) =>
+                      pinHandler(index, e.currentTarget.value)
+                    }
+                  />
+                ))}
               </PinInput>
             </HStack>
           </Box>
           <Button
-            w={"120px"}
-            size={"lg"}
-            type="submit"
+            mt={"20px"}
+            isLoading={props.isLoading}
+            w={"250px"}
+            size={"md"}
+            type={"submit"}
             fontWeight={"300"}
             fontSize={"md"}
             bg={"purple.400"}
@@ -96,10 +79,11 @@ const OtpForm = () => {
             _hover={{
               bg: "purple.500",
             }}
+            onClick={verificationHandler}
           >
             Send
           </Button>
-        </HStack>
+        </Flex>
         <Stack textAlign={"center"} mt={"25px"}></Stack>
         <Stack textAlign={"center"} mt={"25px"}>
           <Link fontSize={"sm"} color={"purple.600"}>
