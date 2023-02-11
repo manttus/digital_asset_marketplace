@@ -5,11 +5,18 @@ interface Result {
   accessToken: String;
   refreshToken: String;
 }
-interface Body {
+interface Signup {
   user: String;
   pass?: String;
   username?: String;
   type: String;
+}
+
+interface Signin {
+  user: String;
+  pass?: String;
+  type: String;
+  otp?: String;
 }
 
 export const marketApi = createApi({
@@ -17,7 +24,7 @@ export const marketApi = createApi({
   baseQuery: customBaseQuery,
   endpoints: (builder) => ({
     login: builder.mutation({
-      query: (credentials: Body) => ({
+      query: (credentials: Signin) => ({
         url: "/user/signin",
         token: "include",
         method: "POST",
@@ -25,7 +32,7 @@ export const marketApi = createApi({
       }),
     }),
     register: builder.mutation({
-      query: (credentials: Body) => ({
+      query: (credentials: Signup) => ({
         url: "/user/signup",
         method: "POST",
         body: credentials,

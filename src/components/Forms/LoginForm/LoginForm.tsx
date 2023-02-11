@@ -17,11 +17,13 @@ import { FcGoogle } from "react-icons/fc";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import useInput from "../../../hooks/useInput";
+import { Dispatch, SetStateAction } from "react";
 
 interface Props {
-  submitHandler: (email: string) => void;
+  submitHandler: (email: string, password: string | null) => void;
   isSending: boolean;
   oauthHandler: () => void;
+  setOtp: Dispatch<SetStateAction<number>>;
 }
 
 const LoginForm = (props: Props) => {
@@ -42,7 +44,7 @@ const LoginForm = (props: Props) => {
   const [showPassword, setShowPassword] = useState(false);
   const submitHandler = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    props.submitHandler(emailValue);
+    props.submitHandler(emailValue, passwordValue);
     emailResetFields();
     passwordResetFields();
   };
@@ -54,6 +56,7 @@ const LoginForm = (props: Props) => {
           <Stack spacing={5}>
             <Flex mb={"5"}>
               <Button
+                size={"md"}
                 onClick={() => props.oauthHandler()}
                 as={motion.button}
                 w={"345px"}
@@ -68,14 +71,15 @@ const LoginForm = (props: Props) => {
                 </Center>
               </Button>
             </Flex>
-            <FormControl id="email">
+            <FormControl>
               <FormLabel fontSize={{ sm: "sm", md: "sm", lg: "sm", xl: "sm" }}>
                 Phone / E-mail
               </FormLabel>
               <Input
                 fontSize={{ sm: "sm", md: "sm", lg: "sm", xl: "sm" }}
                 type="text"
-                variant={"filled"}
+                variant={"flushed"}
+                focusBorderColor={"purple.400"}
                 value={emailValue}
                 onChange={(e: React.FormEvent<HTMLInputElement>) => {
                   emailChangeHandler(e.currentTarget.value);
@@ -83,7 +87,7 @@ const LoginForm = (props: Props) => {
                 onBlur={emailBlurHandler}
               />
             </FormControl>
-            <FormControl id="password">
+            <FormControl>
               <FormLabel fontSize={{ sm: "sm", md: "sm", lg: "sm", xl: "sm" }}>
                 Password
               </FormLabel>
@@ -92,7 +96,8 @@ const LoginForm = (props: Props) => {
                   fontSize={{ sm: "sm", md: "sm", lg: "sm", xl: "sm" }}
                   type={showPassword ? "text" : "password"}
                   value={passwordValue}
-                  variant={"filled"}
+                  focusBorderColor={"purple.400"}
+                  variant={"flushed"}
                   onChange={(e: React.FormEvent<HTMLInputElement>) => {
                     passwordChangeHandler(e.currentTarget.value);
                   }}
@@ -118,10 +123,17 @@ const LoginForm = (props: Props) => {
               ></Stack>
 
               <Flex justifyContent={"space-between"} alignItems={"center"}>
-                <Link fontSize={"sm"} color={"purple.500"}>
-                  Forgot Password?
+                <Link
+                  fontSize={"sm"}
+                  color={"purple.500"}
+                  onClick={() => {
+                    props.setOtp(2);
+                  }}
+                >
+                  Forgot Password ?
                 </Link>
                 <Button
+                  size={"md"}
                   w={"40%"}
                   isLoading={props.isSending}
                   type="submit"

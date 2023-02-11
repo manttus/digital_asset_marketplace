@@ -1,32 +1,42 @@
-import { Flex, Hide, useMediaQuery, Box, useToast } from "@chakra-ui/react";
+import { Flex, Hide, useMediaQuery, useToast } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import illustration1 from "../assets/register.png";
 import LoginForm from "../components/Forms/LoginForm/LoginForm";
-import { useSendMutation } from "../features/api/authApi/apiSlice";
+import {
+  useSendMutation,
+  useLoginMutation,
+} from "../features/api/authApi/apiSlice";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useEffect, useState } from "react";
 import OtpForm from "../components/Forms/OtpForm/OtpForm";
+import { useNavigate } from "react-router-dom";
+import ForgotForm from "../components/Forms/ForgotForm/ForgotForm";
 
 const LoginPage = () => {
   const [send, { isLoading: isSending, isError: otpError }] = useSendMutation();
+  const [login, { isLoading: isLogging, isError: loginError }] =
+    useLoginMutation();
   const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string | null>(null);
   const [isSuccess, setSuccess] = useState<boolean>(false);
+  const [toastMessage, setToastMessage] = useState<string>("");
   const [isError, setError] = useState<boolean>(false);
-  const [otp, setOtp] = useState<boolean>(false);
+  const [otp, setOtp] = useState<number>(0);
   const [isSmallerThan900] = useMediaQuery("(max-width: 900px)");
   const [accessToken, setAccessToken] = useState<string>("");
   const toast = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!toast.isActive(1) && isError) {
       toast({
         id: 1,
-        title: "Failed to send otp.",
+        title: toastMessage,
         status: "error",
         duration: 3000,
         variant: "left-accent",
         isClosable: true,
-        position: "bottom-left",
+        position: "top-left",
         onCloseComplete: () => {
           setSuccess(false);
         },
@@ -35,12 +45,12 @@ const LoginPage = () => {
     if (!toast.isActive(2) && isSuccess) {
       toast({
         id: 1,
-        title: "Otp Sent.",
+        title: toastMessage,
         status: "success",
         duration: 3000,
         variant: "left-accent",
         isClosable: true,
-        position: "bottom-left",
+        position: "top-left",
         onCloseComplete: () => {
           setSuccess(false);
         },
@@ -55,20 +65,45 @@ const LoginPage = () => {
     },
   });
 
-  const otpSend = async (email: string) => {
+  const otpSend = async (email: string, password: string | null) => {
     setEmail(email);
+    setPassword(password);
     await send({ user: email }).unwrap();
     if (!otpError) {
-      setOtp(true);
+      setToastMessage("OTP Sent.");
+      setOtp(1);
       setSuccess(true);
     } else {
+      setToastMessage("Failed to send OTP.");
       setError(false);
+    }
+  };
+
+  const verificationHandler = async (otp: string) => {
+    console.log(otp);
+    try {
+      const response = password
+        ? await login({
+            user: email,
+            pass: password,
+            otp: otp,
+            type: "FORM",
+          }).unwrap()
+        : await login({ user: email, otp: otp, type: "GOOGLE" }).unwrap();
+      if (!loginError) {
+        console.log(response);
+        setToastMessage("Login Successful.");
+        setSuccess(true);
+        navigate("/Marketplace");
+      } else {
+      }
+    } catch (err: Error | unknown) {
+      console.log(err);
     }
   };
 
   useEffect(() => {
     if (accessToken != "") {
-      console.log(accessToken);
       fetch(
         `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${accessToken}`,
         {
@@ -80,7 +115,7 @@ const LoginPage = () => {
       )
         .then((res) => res.json())
         .then((res) => {
-          otpSend(res.email);
+          otpSend(res.email, null);
         });
     }
   }, [accessToken]);
@@ -162,14 +197,20 @@ const LoginPage = () => {
             backgroundPosition={"center"}
             display={isSmallerThan900 ? "none" : "flex"}
           >
-            {!otp ? (
+            {otp === 0 ? (
               <LoginForm
                 submitHandler={otpSend}
                 isSending={isSending}
                 oauthHandler={oauthHandler}
+                setOtp={setOtp}
+              />
+            ) : otp === 1 ? (
+              <OtpForm
+                verificationHandler={verificationHandler}
+                isLoading={isLogging}
               />
             ) : (
-              <OtpForm />
+              <ForgotForm />
             )}
           </Flex>
 
@@ -193,14 +234,20 @@ const LoginPage = () => {
             display={isSmallerThan900 ? "flex" : "none"}
           >
             <Flex bg={"white"} p={"5"}>
-              {!otp ? (
+              {otp === 0 ? (
                 <LoginForm
                   submitHandler={otpSend}
                   isSending={isSending}
                   oauthHandler={oauthHandler}
+                  setOtp={setOtp}
+                />
+              ) : otp === 1 ? (
+                <OtpForm
+                  verificationHandler={verificationHandler}
+                  isLoading={isLogging}
                 />
               ) : (
-                <OtpForm />
+                <ForgotForm />
               )}
             </Flex>
           </Flex>

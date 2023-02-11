@@ -1,7 +1,7 @@
 import { useRoutes } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
+import Marketplace from "./pages/Marketplace";
 import RegisterPage from "./pages/RegisterPage";
-
 import AuthRoute from "./routes/AuthRoute";
 
 const App = () => {
@@ -17,6 +17,10 @@ const App = () => {
     {
       path: "/signup",
       element: <RegisterPage />,
+    },
+    {
+      path: "/Marketplace",
+      element: <Marketplace />,
     },
   ]);
 
