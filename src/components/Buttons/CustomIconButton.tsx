@@ -8,14 +8,12 @@ type CustomIconButtonProps = {
 const CustomIconButton = (props: CustomIconButtonProps) => {
   return (
     <IconButton
-      mr={"3"}
       icon={props.icon}
       aria-label={props.aria}
-      borderRadius={"xs"}
       bg={"white"}
       shadow={"sm"}
       border={"1px"}
-      borderColor={"blackAlpha.400"}
+      borderColor={"blackAlpha.300"}
       _hover={{
         bg: "blackAlpha.800",
         color: "white",

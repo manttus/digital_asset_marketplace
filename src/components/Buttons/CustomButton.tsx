@@ -10,6 +10,7 @@ const CustomButton = (props: CustomButtonProps) => {
   const type = props.type;
   return (
     <Button
+      minW={"91px"}
       onClick={props.onClick}
       bg={type === "filled" ? "blackAlpha.800" : "white"}
       color={type === "filled" ? "white" : "blackAlpha.800"}
@@ -17,7 +18,6 @@ const CustomButton = (props: CustomButtonProps) => {
       border={type === "filled" ? "none" : "1px solid black"}
       fontWeight={"400"}
       fontSize={"sm"}
-      borderRadius={"xs"}
       leftIcon={props.icon}
       _hover={{
         bg: type === "filled" ? "blackAlpha.900" : "blackAlpha.100",

@@ -14,44 +14,35 @@ const Navbar = (props: NavbarProps) => {
   return (
     <Flex
       h={"70px"}
+      w={"100%"}
       shadow={"sm"}
       justifyContent={"space-between"}
       alignItems={"center"}
+      px={"30px"}
     >
-      <Flex
-        ml={"10"}
-        w={"56%"}
-        justifyContent={"space-between"}
-        alignItems={"center"}
-      >
-        <Box> Logo</Box>
-        <HStack spacing={6}>
-          <Link type="filled" color={"blackAlpha.600"} fontWeight={"500"}>
-            Home
-          </Link>
-          <Link type="filled" fontWeight={"500"}>
-            Gallery
-          </Link>
-          <Link type="filled" color={"blackAlpha.600"} fontWeight={"500"}>
-            Explore
-          </Link>
-          <Link type="filled" color={"blackAlpha.600"} fontWeight={"500"}>
-            Inventory
-          </Link>
-        </HStack>
+      <Flex w={"56%"} justifyContent={"space-between"} alignItems={"center"}>
+        <Box> </Box>
       </Flex>
-      <Flex mr={"10"} w={"25%"} justifyContent={"flex-end"}>
-        <CustomIconButton icon={<SiTwitter size={"20px"} />} aria={"Discord"} />
-        <CustomIconButton icon={<SiDiscord size={"20px"} />} aria={"Discord"} />
-        {wallet ? (
-          <CustomButton text={"Mint now"} type="filled" />
-        ) : (
-          <CustomButton
-            onClick={props.metaMaskHandler}
-            text={"Connect"}
-            type="filled"
+      <Flex w={"40%"} justifyContent={"end"}>
+        <HStack spacing={3}>
+          <CustomIconButton
+            icon={<SiTwitter size={"20px"} />}
+            aria={"Discord"}
           />
-        )}
+          <CustomIconButton
+            icon={<SiDiscord size={"20px"} />}
+            aria={"Discord"}
+          />
+          {wallet ? (
+            <CustomButton text={"Mint now"} type="filled" />
+          ) : (
+            <CustomButton
+              onClick={props.metaMaskHandler}
+              text={"Connect"}
+              type="filled"
+            />
+          )}
+        </HStack>
       </Flex>
     </Flex>
   );

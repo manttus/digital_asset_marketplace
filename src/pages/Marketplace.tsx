@@ -13,7 +13,7 @@ const Marketplace = () => {
   // };
 
   return (
-    <Flex h={"100vh"} direction={"column"}>
+    <Flex direction={"column"}>
       {loading ? <Landing /> : <Flex> Awaiting Wallet Connection </Flex>}
     </Flex>
   );
