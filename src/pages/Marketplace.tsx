@@ -3,6 +3,7 @@ import { ethers } from "ethers";
 import { useState } from "react";
 
 import Landing from "../components/LandingPage/Landing";
+import Navbar from "../components/Navbar";
 
 const Marketplace = () => {
   const [loading, setLoading] = useState(true);
@@ -12,10 +13,8 @@ const Marketplace = () => {
   // };
 
   return (
-    <Flex h={"100vh"} direction={"column"}>
-      <Flex h={"75%"} justifyContent={"center"} alignItems={"center"}>
-        {loading ? <Landing /> : <Flex> Awaiting Wallet Connection </Flex>}
-      </Flex>
+    <Flex direction={"column"}>
+      {loading ? <Landing /> : <Flex> Awaiting Wallet Connection </Flex>}
     </Flex>
   );
 };
