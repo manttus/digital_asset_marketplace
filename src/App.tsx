@@ -1,30 +1,39 @@
-import { useRoutes } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  useRoutes,
+} from "react-router-dom";
+import Navbar from "./components/Navbar";
 import LoginPage from "./pages/LoginPage";
 import Marketplace from "./pages/Marketplace";
 import RegisterPage from "./pages/RegisterPage";
 import AuthRoute from "./routes/AuthRoute";
 
 const App = () => {
-  const routes = useRoutes([
+  const metaMaskHandler = () => {};
+
+  const router = createBrowserRouter([
     {
       path: "/",
-      element: <AuthRoute />,
+      element: <Navbar metaMaskHandler={metaMaskHandler} />,
+      children: [
+        {
+          path: "home",
+          element: <Marketplace />,
+        },
+      ],
     },
     {
-      path: "/login",
+      path: "/signin",
       element: <LoginPage />,
     },
     {
       path: "/signup",
       element: <RegisterPage />,
     },
-    {
-      path: "/Marketplace",
-      element: <Marketplace />,
-    },
   ]);
 
-  return routes;
+  return <RouterProvider router={router} />;
 };
 
 export default App;
