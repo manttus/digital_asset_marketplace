@@ -233,7 +233,7 @@ const LoginPage = () => {
             backgroundPosition={"center"}
             display={isSmallerThan900 ? "flex" : "none"}
           >
-            <Flex bg={"white"} p={"5"}>
+            <Flex bg={"white"} p={"5"} rounded={"md"}>
               {otp === 0 ? (
                 <LoginForm
                   submitHandler={otpSend}

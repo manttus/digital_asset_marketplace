@@ -18,6 +18,7 @@ const CustomButton = (props: CustomButtonProps) => {
       border={type === "filled" ? "none" : "1px solid black"}
       fontWeight={"400"}
       fontSize={"sm"}
+      rounded={"xs"}
       leftIcon={props.icon}
       _hover={{
         bg: type === "filled" ? "blackAlpha.900" : "blackAlpha.100",
