@@ -1,8 +1,6 @@
-import { Box, Flex, Link, HStack, Text, Button } from "@chakra-ui/react";
+import { Flex, Link, Text } from "@chakra-ui/react";
 import CustomButton from "./Buttons/CustomButton";
-import { useState } from "react";
-import { SiDiscord, SiTwitter } from "react-icons/si";
-import CustomIconButton from "./Buttons/CustomIconButton";
+
 
 type NavbarProps = {
   metaMaskHandler: () => void;

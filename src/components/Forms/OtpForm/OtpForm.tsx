@@ -40,11 +40,12 @@ const OtpForm = (props: OtpProps) => {
     setPin(newPin);
   };
   return (
-    <Box>
+    <Flex h={"200px"} justifyContent={"center"} alignItems={"center"}>
       <FormControl>
         <Flex
+          height={"90%"}
           direction={"column"}
-          justifyContent={"space-evenly"}
+          justifyContent={"center"}
           alignItems={"center"}
         >
           <Box>
@@ -67,7 +68,7 @@ const OtpForm = (props: OtpProps) => {
             </HStack>
           </Box>
           <Button
-            mt={"20px"}
+            mt={"30px"}
             isLoading={props.isLoading}
             w={"250px"}
             size={"md"}
@@ -83,15 +84,14 @@ const OtpForm = (props: OtpProps) => {
           >
             Send
           </Button>
+          <Stack textAlign={"center"} mt={"30px"} width={"full"}>
+            <Link fontSize={"sm"} color={"purple.600"}>
+              Resend Code
+            </Link>
+          </Stack>
         </Flex>
-        <Stack textAlign={"center"} mt={"25px"}></Stack>
-        <Stack textAlign={"center"} mt={"25px"}>
-          <Link fontSize={"sm"} color={"purple.600"}>
-            Resend Code
-          </Link>
-        </Stack>
       </FormControl>
-    </Box>
+    </Flex>
   );
 };
 

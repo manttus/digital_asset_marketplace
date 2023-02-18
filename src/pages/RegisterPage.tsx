@@ -12,10 +12,14 @@ import {
 import { motion } from "framer-motion";
 import logo from "../assets/logo.png";
 import illustration2 from "../assets/nice.webp";
-import { Link as RouterLink } from "react-router-dom";
 import StepProgress from "../components/Forms/RegisterForm/Steps/StepProgress";
+import CustomButton from "../components/Buttons/CustomButton";
+import { useSteps } from "chakra-ui-steps";
 
 const RegisterPage = () => {
+  const { nextStep, prevStep, reset, activeStep } = useSteps({
+    initialStep: 0,
+  });
   const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("submit");
@@ -93,7 +97,8 @@ const RegisterPage = () => {
           <Flex
             p={"10px"}
             mt={"5px"}
-            height={"15%"}
+            height={"10%"}
+            shadow={"sm"}
             alignItems={{
               sm: "center",
               md: "flex-start",
@@ -103,10 +108,26 @@ const RegisterPage = () => {
             justifyContent={"center"}
             flexDirection={"column"}
             backgroundPosition={"center"}
-          ></Flex>
+          >
+            <Flex w={"full"} justifyContent={"end"} pr={"4"} gap={2}>
+              {
+                <CustomButton
+                  isDisabled={activeStep === 0}
+                  type="outline"
+                  text="Prev"
+                  onClick={prevStep}
+                />
+              }
+              <CustomButton
+                type="filled"
+                text={activeStep === 2 ? "Finish" : "Next"}
+                onClick={activeStep !== 2 ? nextStep : () => {}}
+              ></CustomButton>
+            </Flex>
+          </Flex>
           <Flex
             as={motion.div}
-            height={"80%"}
+            height={"60%"}
             variants={bottomVariants}
             animate={"visible"}
             initial={isSmallerThan900 ? "" : "hidden"}
@@ -124,13 +145,7 @@ const RegisterPage = () => {
             backgroundPosition={"center"}
             display={isSmallerThan900 ? "none" : "flex"}
           >
-            <StepProgress />
-
-            <Flex
-              alignItems={"center"}
-              justifyContent={"center"}
-              height={"18%"}
-            ></Flex>
+            <StepProgress activeStep={activeStep} />
           </Flex>
           <Flex
             as={motion.div}
@@ -157,6 +172,7 @@ const RegisterPage = () => {
               opacity: 0.5,
             }}
           ></Flex>
+          <Flex h={"15%"} w={"full"} shadow={"md"} border={"md"}></Flex>
         </Flex>
       </Flex>
     </>

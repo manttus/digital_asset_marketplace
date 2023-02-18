@@ -1,4 +1,11 @@
-import { Flex, Hide, useMediaQuery, useToast } from "@chakra-ui/react";
+import {
+  Flex,
+  Hide,
+  useMediaQuery,
+  useToast,
+  Text,
+  Link,
+} from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import illustration1 from "../assets/register.png";
 import LoginForm from "../components/Forms/LoginForm/LoginForm";
@@ -170,6 +177,7 @@ const LoginPage = () => {
             p={"10px"}
             mt={"5px"}
             height={"10%"}
+            shadow={"sm"}
             alignItems={{
               sm: "center",
               md: "flex-start",
@@ -182,6 +190,10 @@ const LoginPage = () => {
             backgroundPosition={"center"}
           ></Flex>
           <Flex
+            as={motion.div}
+            variants={bottomVariants}
+            animate={"visible"}
+            initial={isSmallerThan900 ? "" : "hidden"}
             height={"60%"}
             flexDirection={"column"}
             alignItems={"center"}
@@ -213,7 +225,26 @@ const LoginPage = () => {
               <ForgotForm />
             )}
           </Flex>
-
+          <Flex
+            h={"10%"}
+            w={"full"}
+            justifyContent={"center"}
+            alignItems={"center"}
+            shadow={"sm"}
+            border={"lg"}
+          >
+            {/* <Text fontSize={"sm"}>
+              New to Mintables ?
+              <Link
+                ml={"4px"}
+                color={"purple.500"}
+                fontWeight={"bold"}
+                onClick={() => navigate("/signup")}
+              >
+                Signup
+              </Link>
+            </Text> */}
+          </Flex>
           <Flex
             as={motion.div}
             height={{ sm: "80%", md: "90%", lg: "90%", xl: "90%" }}
@@ -251,8 +282,6 @@ const LoginPage = () => {
               )}
             </Flex>
           </Flex>
-
-          <Flex h={"10%"} boxShadow={"sm"}></Flex>
         </Flex>
         <Hide below="lg">
           <Flex

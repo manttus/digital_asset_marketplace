@@ -72,11 +72,9 @@ const LoginForm = (props: Props) => {
               </Button>
             </Flex>
             <FormControl>
-              <FormLabel fontSize={{ sm: "sm", md: "sm", lg: "sm", xl: "sm" }}>
-                Phone / E-mail
-              </FormLabel>
+              <FormLabel fontSize={"sm"}>Phone / E-mail</FormLabel>
               <Input
-                fontSize={{ sm: "sm", md: "sm", lg: "sm", xl: "sm" }}
+                fontSize={"sm"}
                 type="text"
                 variant={"flushed"}
                 focusBorderColor={"purple.400"}
@@ -88,12 +86,10 @@ const LoginForm = (props: Props) => {
               />
             </FormControl>
             <FormControl>
-              <FormLabel fontSize={{ sm: "sm", md: "sm", lg: "sm", xl: "sm" }}>
-                Password
-              </FormLabel>
+              <FormLabel fontSize={"sm"}>Password</FormLabel>
               <InputGroup>
                 <Input
-                  fontSize={{ sm: "sm", md: "sm", lg: "sm", xl: "sm" }}
+                  fontSize={"sm"}
                   type={showPassword ? "text" : "password"}
                   value={passwordValue}
                   focusBorderColor={"purple.400"}
