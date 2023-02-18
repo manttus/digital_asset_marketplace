@@ -1,12 +1,12 @@
-import { Flex, Link, Text } from "@chakra-ui/react";
+import { Flex, Link } from "@chakra-ui/react";
 import CustomButton from "./Buttons/CustomButton";
-
 
 type NavbarProps = {
   metaMaskHandler: () => void;
+  wallet: string | null;
 };
 
-const Navbar = (props: NavbarProps) => {
+const Navbar = ({ metaMaskHandler, wallet }: NavbarProps) => {
   return (
     <Flex
       h={"100px"}
@@ -18,15 +18,39 @@ const Navbar = (props: NavbarProps) => {
       px={"100px"}
     >
       <Flex w={"50%"} gap={10} alignItems={"center"}>
-        <Text fontSize={"2xl"}> EUA-01 </Text>
-        <Link> Explore </Link>
-        <Link> Marketplace </Link>
-        <Link> Inventory </Link>
-        <Link> Mint </Link>
+        <Link
+          _hover={{
+            mb: "5px",
+            color: "purple.400",
+          }}
+        >
+          Explore
+        </Link>
+        <Link
+          _hover={{
+            mb: "5px",
+            color: "purple.400",
+          }}
+        >
+          Marketplace
+        </Link>
+        <Link
+          _hover={{
+            mb: "5px",
+            color: "purple.400",
+          }}
+        >
+          Archive
+        </Link>
       </Flex>
       <Flex w={"50%"} gap={2} justifyContent={"end"}>
-        <CustomButton type="outlined" text="Sign In" />
-        <CustomButton type="filled" text="Sign Up" />
+        {wallet && <CustomButton type="outlined" text="Mint NFT" />}
+        <CustomButton
+          isDisabled={wallet ? true : false}
+          type="filled"
+          text={wallet ? "Connected" : "Connect"}
+          onClick={metaMaskHandler}
+        />
       </Flex>
     </Flex>
   );

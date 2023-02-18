@@ -13,6 +13,8 @@
     "@chakra-ui/react": "^2.4.3",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
+    "@metamask/detect-provider": "^2.0.0",
+    "@metamask/providers": "^10.2.1",
     "@react-oauth/google": "^0.7.0",
     "@reduxjs/toolkit": "^1.9.1",
     "chakra-ui-steps": "^2.0.1",

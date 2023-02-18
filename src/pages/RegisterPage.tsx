@@ -1,16 +1,5 @@
-import { FcGoogle } from "react-icons/fc";
-import {
-  Flex,
-  Hide,
-  Text,
-  useMediaQuery,
-  Link,
-  Image,
-  Button,
-  Center,
-} from "@chakra-ui/react";
+import { Flex, Hide, Text, useMediaQuery } from "@chakra-ui/react";
 import { motion } from "framer-motion";
-import logo from "../assets/logo.png";
 import illustration2 from "../assets/nice.webp";
 import StepProgress from "../components/Forms/RegisterForm/Steps/StepProgress";
 import CustomButton from "../components/Buttons/CustomButton";

@@ -1,11 +1,4 @@
-import {
-  Flex,
-  Hide,
-  useMediaQuery,
-  useToast,
-  Text,
-  Link,
-} from "@chakra-ui/react";
+import { Flex, Hide, useMediaQuery, useToast } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import illustration1 from "../assets/register.png";
 import LoginForm from "../components/Forms/LoginForm/LoginForm";
@@ -13,13 +6,18 @@ import {
   useSendMutation,
   useLoginMutation,
 } from "../features/api/authApi/apiSlice";
-import { useGoogleLogin } from "@react-oauth/google";
+
 import { useEffect, useState } from "react";
 import OtpForm from "../components/Forms/OtpForm/OtpForm";
 import { useNavigate } from "react-router-dom";
 import ForgotForm from "../components/Forms/ForgotForm/ForgotForm";
 
-const LoginPage = () => {
+type LoginProps = {
+  oauthHandler: () => void;
+  googleData: { email: string; username: string };
+};
+
+const LoginPage = ({ oauthHandler, googleData }: LoginProps) => {
   const [send, { isLoading: isSending, isError: otpError }] = useSendMutation();
   const [login, { isLoading: isLogging, isError: loginError }] =
     useLoginMutation();
@@ -30,7 +28,6 @@ const LoginPage = () => {
   const [isError, setError] = useState<boolean>(false);
   const [otp, setOtp] = useState<number>(0);
   const [isSmallerThan900] = useMediaQuery("(max-width: 900px)");
-  const [accessToken, setAccessToken] = useState<string>("");
   const toast = useToast();
   const navigate = useNavigate();
 
@@ -65,12 +62,12 @@ const LoginPage = () => {
     }
   }, [isError, isSuccess]);
 
-  const oauthHandler = useGoogleLogin({
-    onSuccess: (response) => {
-      const accessToken = response.access_token;
-      setAccessToken(accessToken);
-    },
-  });
+  // const oauthHandler = useGoogleLogin({
+  //   onSuccess: (response) => {
+  //     const accessToken = response.access_token;
+  //     setAccessToken(accessToken);
+  //   },
+  // });
 
   const otpSend = async (email: string, password: string | null) => {
     setEmail(email);
@@ -108,24 +105,6 @@ const LoginPage = () => {
       console.log(err);
     }
   };
-
-  useEffect(() => {
-    if (accessToken != "") {
-      fetch(
-        `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${accessToken}`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            Accept: "application/json",
-          },
-        }
-      )
-        .then((res) => res.json())
-        .then((res) => {
-          otpSend(res.email, null);
-        });
-    }
-  }, [accessToken]);
 
   const rightVariants = {
     hidden: {

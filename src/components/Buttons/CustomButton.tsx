@@ -23,8 +23,8 @@ const CustomButton = (props: CustomButtonProps) => {
       fontSize={"sm"}
       leftIcon={props.icon}
       _hover={{
-        bg: type === "filled" ? "purple.600" : "cream",
-        color: type === "filled" ? "white" : "blackAlpha.800",
+        bg: type === "filled" ? "purple.600" : "white",
+        color: type === "filled" ? "white" : "purple.400",
       }}
     >
       {props.text && props.text}
