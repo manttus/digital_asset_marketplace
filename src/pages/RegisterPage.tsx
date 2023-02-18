@@ -103,9 +103,7 @@ const RegisterPage = () => {
             justifyContent={"center"}
             flexDirection={"column"}
             backgroundPosition={"center"}
-          >
-            <Image src={logo} height="110px" />
-          </Flex>
+          ></Flex>
           <Flex
             as={motion.div}
             height={"80%"}
@@ -132,15 +130,7 @@ const RegisterPage = () => {
               alignItems={"center"}
               justifyContent={"center"}
               height={"18%"}
-            >
-              <Text fontSize={"sm"}>
-                Already have an Account ?
-                <Link as={RouterLink} to={"/login"} color={"purple.400"}>
-                  {" "}
-                  Sign In
-                </Link>
-              </Text>
-            </Flex>
+            ></Flex>
           </Flex>
           <Flex
             as={motion.div}

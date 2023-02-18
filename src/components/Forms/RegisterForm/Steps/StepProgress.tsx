@@ -1,7 +1,9 @@
 import { Box, Button, Flex, Heading, Progress } from "@chakra-ui/react";
-import { Step, Steps, useSteps } from "chakra-ui-steps";
+import { useSteps } from "chakra-ui-steps";
 import { FiClipboard, FiDollarSign, FiUser } from "react-icons/fi";
-import { FormStep1, FormStep2, FormStep3 } from "../RegisterForm";
+import CustomButton from "../../../Buttons/CustomButton";
+import OtpForm from "../../OtpForm/OtpForm";
+import { FormStep1, FormStep3 } from "../RegisterForm";
 
 const steps = [
   { label: "Signup", icon: FiUser },
@@ -15,7 +17,7 @@ const StepProgress = () => {
   });
   return (
     <Box width="550px" height={"400px"} px={"10"}>
-      <Progress value={20} size="xs" colorScheme="pink" />
+      <Progress value={50} size="xs" colorScheme="purple" />
       {activeStep === steps.length ? (
         <Flex px={4} py={5} width="100%" flexDirection="column">
           <Heading fontSize="xl" textAlign="center">
@@ -26,19 +28,44 @@ const StepProgress = () => {
           </Button>
         </Flex>
       ) : (
-        <Flex width="100%" justify="flex-end" mt={"40px"}>
-          <Button
-            isDisabled={activeStep === 0}
-            mr={4}
-            onClick={prevStep}
-            size="sm"
-            variant="ghost"
-          >
-            Prev
-          </Button>
-          <Button size="sm" onClick={nextStep}>
-            {activeStep === steps.length - 1 ? "Finish" : "Next"}
-          </Button>
+        <Flex
+          width="100%"
+          direction={"column"}
+          justify="center"
+          alignItems={"center"}
+          mt={"40px"}
+          gap={14}
+        >
+          {activeStep === 0 && <FormStep1 />}
+          {activeStep === 1 && (
+            <OtpForm
+              isLoading={false}
+              verificationHandler={(pin: string) => {}}
+            />
+          )}
+          {activeStep === 2 && <FormStep3 />}
+          <Flex w={"full"} justifyContent={"end"} pr={"4"} gap={5}>
+            {/* <Button
+              isDisabled={activeStep === 0}
+              mr={4}
+              onClick={prevStep}
+              size="sm"
+              variant="ghost"
+            >
+              Prev
+            </Button> */}
+            <CustomButton
+              isDisabled={activeStep === 0}
+              type="outline"
+              text="Prev"
+              onClick={prevStep}
+            />
+            <CustomButton
+              type="filled"
+              text={activeStep === steps.length - 1 ? "Finish" : "Next"}
+              onClick={nextStep}
+            ></CustomButton>
+          </Flex>
         </Flex>
       )}
     </Box>

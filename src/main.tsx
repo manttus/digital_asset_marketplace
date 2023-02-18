@@ -12,9 +12,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <GoogleOAuthProvider clientId="147545828185-69s0ljdrkdsea5vomojdabm79sen24sj.apps.googleusercontent.com">
     <Provider store={store}>
       <ChakraProvider theme={theme}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
+        <App />
       </ChakraProvider>
     </Provider>
   </GoogleOAuthProvider>

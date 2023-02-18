@@ -4,24 +4,26 @@ type CustomButtonProps = {
   onClick?: () => void;
   type: string;
   icon?: any;
+  isDisabled?: boolean;
 };
 
 const CustomButton = (props: CustomButtonProps) => {
   const type = props.type;
   return (
     <Button
+      isDisabled={props.isDisabled}
       minW={"91px"}
       onClick={props.onClick}
-      bg={type === "filled" ? "blackAlpha.800" : "white"}
-      color={type === "filled" ? "white" : "blackAlpha.800"}
+      bg={type === "filled" ? "purple.500" : "white"}
+      color={type === "filled" ? "white" : "purple.500"}
       shadow={"sm"}
-      border={type === "filled" ? "none" : "1px solid black"}
+      border={type === "filled" ? "none" : "1px solid"}
+      borderColor={type === "filled" ? "none" : "purple.500"}
       fontWeight={"400"}
       fontSize={"sm"}
-      rounded={"xs"}
       leftIcon={props.icon}
       _hover={{
-        bg: type === "filled" ? "blackAlpha.900" : "blackAlpha.100",
+        bg: type === "filled" ? "purple.600" : "cream",
         color: type === "filled" ? "white" : "blackAlpha.800",
       }}
     >

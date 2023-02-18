@@ -9,7 +9,7 @@ import {
 
 export const FormStep1 = () => {
   return (
-    <Flex justifyContent={"center"} mt={"55"}>
+    <Flex justifyContent={"center"} mt={"10"}>
       <form>
         <HStack spacing={10}>
           <FormControl id="email">
