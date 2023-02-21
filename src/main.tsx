@@ -3,7 +3,6 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./index.css";
 import { Provider } from "react-redux/es/exports";
-import { BrowserRouter } from "react-router-dom";
 import store from "./features/store";
 import theme from "./theme/index";
 import { GoogleOAuthProvider } from "@react-oauth/google";

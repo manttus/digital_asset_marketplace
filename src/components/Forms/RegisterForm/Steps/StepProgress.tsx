@@ -1,7 +1,5 @@
 import { Box, Flex } from "@chakra-ui/react";
-import { useSteps } from "chakra-ui-steps";
-import { FiClipboard, FiDollarSign, FiUser } from "react-icons/fi";
-import CustomButton from "../../../Buttons/CustomButton";
+
 import OtpForm from "../../OtpForm/OtpForm";
 import { FormStep1, FormStep3 } from "../RegisterForm";
 

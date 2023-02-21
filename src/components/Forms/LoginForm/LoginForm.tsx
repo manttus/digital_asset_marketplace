@@ -22,8 +22,8 @@ import { Dispatch, SetStateAction } from "react";
 interface Props {
   submitHandler: (email: string, password: string | null) => void;
   isSending: boolean;
-  oauthHandler: () => void;
   setOtp: Dispatch<SetStateAction<number>>;
+  oauth: () => void;
 }
 
 const LoginForm = (props: Props) => {
@@ -57,7 +57,9 @@ const LoginForm = (props: Props) => {
             <Flex mb={"5"}>
               <Button
                 size={"md"}
-                onClick={() => props.oauthHandler()}
+                onClick={() => {
+                  props.oauth();
+                }}
                 as={motion.button}
                 w={"345px"}
                 variant={"outline"}

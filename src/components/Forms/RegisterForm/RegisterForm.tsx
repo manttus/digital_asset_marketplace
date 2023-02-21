@@ -15,6 +15,8 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 
+type Form1Props = {};
+
 export const FormStep1 = () => {
   const [showPassword, setShowPassword] = useState(false);
   return (

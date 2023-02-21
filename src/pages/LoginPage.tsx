@@ -1,4 +1,4 @@
-import { Flex, Hide, useMediaQuery, useToast } from "@chakra-ui/react";
+import { Button, Flex, Hide, useMediaQuery, useToast } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import illustration1 from "../assets/register.png";
 import LoginForm from "../components/Forms/LoginForm/LoginForm";
@@ -6,18 +6,13 @@ import {
   useSendMutation,
   useLoginMutation,
 } from "../features/api/authApi/apiSlice";
-
 import { useEffect, useState } from "react";
 import OtpForm from "../components/Forms/OtpForm/OtpForm";
 import { useNavigate } from "react-router-dom";
 import ForgotForm from "../components/Forms/ForgotForm/ForgotForm";
+import useGoogleAuth from "../hooks/useGoogleAuth";
 
-type LoginProps = {
-  oauthHandler: () => void;
-  googleData: { email: string; username: string };
-};
-
-const LoginPage = ({ oauthHandler, googleData }: LoginProps) => {
+const LoginPage = () => {
   const [send, { isLoading: isSending, isError: otpError }] = useSendMutation();
   const [login, { isLoading: isLogging, isError: loginError }] =
     useLoginMutation();
@@ -62,12 +57,18 @@ const LoginPage = ({ oauthHandler, googleData }: LoginProps) => {
     }
   }, [isError, isSuccess]);
 
-  // const oauthHandler = useGoogleLogin({
-  //   onSuccess: (response) => {
-  //     const accessToken = response.access_token;
-  //     setAccessToken(accessToken);
-  //   },
-  // });
+  const {
+    oauth,
+    email: authEmail,
+    username: authUsername,
+    resetState,
+  } = useGoogleAuth();
+
+  useEffect(() => {
+    if (authEmail) {
+      otpSend(authEmail, null);
+    }
+  }, [authEmail, authUsername]);
 
   const otpSend = async (email: string, password: string | null) => {
     setEmail(email);
@@ -84,7 +85,6 @@ const LoginPage = ({ oauthHandler, googleData }: LoginProps) => {
   };
 
   const verificationHandler = async (otp: string) => {
-    console.log(otp);
     try {
       const response = password
         ? await login({
@@ -95,7 +95,6 @@ const LoginPage = ({ oauthHandler, googleData }: LoginProps) => {
           }).unwrap()
         : await login({ user: email, otp: otp, type: "GOOGLE" }).unwrap();
       if (!loginError) {
-        console.log(response);
         setToastMessage("Login Successful.");
         setSuccess(true);
         navigate("/Marketplace");
@@ -167,7 +166,9 @@ const LoginPage = ({ oauthHandler, googleData }: LoginProps) => {
             justifyContent={"flex-start"}
             flexDirection={"row"}
             backgroundPosition={"center"}
-          ></Flex>
+          >
+            {" "}
+          </Flex>
           <Flex
             as={motion.div}
             variants={bottomVariants}
@@ -192,13 +193,16 @@ const LoginPage = ({ oauthHandler, googleData }: LoginProps) => {
               <LoginForm
                 submitHandler={otpSend}
                 isSending={isSending}
-                oauthHandler={oauthHandler}
                 setOtp={setOtp}
+                oauth={oauth}
               />
             ) : otp === 1 ? (
               <OtpForm
                 verificationHandler={verificationHandler}
                 isLoading={isLogging}
+                email={email}
+                password={password}
+                otpSend={otpSend}
               />
             ) : (
               <ForgotForm />
@@ -248,13 +252,16 @@ const LoginPage = ({ oauthHandler, googleData }: LoginProps) => {
                 <LoginForm
                   submitHandler={otpSend}
                   isSending={isSending}
-                  oauthHandler={oauthHandler}
                   setOtp={setOtp}
+                  oauth={oauth}
                 />
               ) : otp === 1 ? (
                 <OtpForm
                   verificationHandler={verificationHandler}
                   isLoading={isLogging}
+                  email={email}
+                  password={password}
+                  otpSend={otpSend}
                 />
               ) : (
                 <ForgotForm />

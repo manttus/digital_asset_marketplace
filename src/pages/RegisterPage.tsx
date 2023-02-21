@@ -6,9 +6,10 @@ import CustomButton from "../components/Buttons/CustomButton";
 import { useSteps } from "chakra-ui-steps";
 
 const RegisterPage = () => {
-  const { nextStep, prevStep, reset, activeStep } = useSteps({
+  const { nextStep, prevStep, activeStep } = useSteps({
     initialStep: 0,
   });
+
   const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("submit");

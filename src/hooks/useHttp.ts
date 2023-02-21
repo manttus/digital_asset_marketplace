@@ -5,9 +5,10 @@ type RequestConfig = {
   body?: any;
 };
 
-type Handler = (data: any) => void;
-
-const useHttp = (requestConfig: RequestConfig, handler: Handler) => {
+const useHttp = <T>(
+  requestConfig: RequestConfig,
+  handler: (data: T) => void
+) => {
   const sendRequest = async () => {
     try {
       const response = await fetch(requestConfig.url, {

@@ -8,16 +8,21 @@ import {
   Box,
   Link,
   Flex,
+  Text,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 
 type OtpProps = {
   verificationHandler: (pin: string) => void;
   isLoading: boolean;
+  email: string;
+  password: string | null;
+  otpSend: (email: string, password: string | null) => void;
 };
 
 const OtpForm = (props: OtpProps) => {
   const [pin, setPin] = useState<string[]>(["", "", "", ""]);
+  const [seconds, setSeconds] = useState<number>(1);
   const pinHandler = (index: number, value: string) => {
     if (value.length === 1) {
       const newPin = [...pin];
@@ -25,6 +30,17 @@ const OtpForm = (props: OtpProps) => {
       setPin(newPin);
     }
   };
+
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setSeconds((prevSeconds) => prevSeconds + 1);
+    }, 1000);
+    return () => clearInterval(intervalId);
+  }, []);
+
   useEffect(() => {
     if (props.isLoading) {
       const newPin = ["", "", "", ""];
@@ -85,9 +101,16 @@ const OtpForm = (props: OtpProps) => {
             Send
           </Button>
           <Stack textAlign={"center"} mt={"30px"} width={"full"}>
-            <Link fontSize={"sm"} color={"purple.600"}>
-              Resend Code
-            </Link>
+            {seconds === 0 ? (
+              <Link fontSize={"sm"} color={"purple.600"}>
+                Resend Code
+              </Link>
+            ) : (
+              <Text fontSize={"sm"} cursor={"pointer"}>
+                Resend (
+                {`${minutes}:${remainingSeconds.toString().padStart(2, "0")}`})
+              </Text>
+            )}
           </Stack>
         </Flex>
       </FormControl>
