@@ -8,7 +8,7 @@ import theme from "./theme/index";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <GoogleOAuthProvider clientId="147545828185-69s0ljdrkdsea5vomojdabm79sen24sj.apps.googleusercontent.com">
+  <GoogleOAuthProvider clientId={import.meta.env.VITE_CLIENT_ID}>
     <Provider store={store}>
       <ChakraProvider theme={theme}>
         <App />

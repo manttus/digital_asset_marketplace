@@ -1,8 +1,6 @@
-import { Children } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import LandingPage from "./pages/LandingPage";
-
 import LoginPage from "./pages/LoginPage";
 import MintPage from "./pages/MintPage";
 import RegisterPage from "./pages/RegisterPage";

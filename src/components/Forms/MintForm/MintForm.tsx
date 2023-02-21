@@ -22,9 +22,8 @@ enum NFTType {
 }
 
 const MintForm = (props: any) => {
-  const pinataApiKey = "4432c7211a70461b2e29";
-  const pinataSecretApiKey =
-    "d969af09221316194b5f70b89c52aed14f56e851e293d3a36b8f32e17ae460d5";
+  const pinataApiKey = import.meta.env.VITE_PINATA_KEY;
+  const pinataSecretApiKey = import.meta.env.VITE_PINATA_SECRET;
   const headers = {
     pinata_api_key: pinataApiKey,
     pinata_secret_api_key: pinataSecretApiKey,
