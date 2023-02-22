@@ -5,4 +5,5 @@ export const colorScheme = {
   successDark: "#ECF8F1",
   fontPrimary: "#272343",
   fontGhost: "#C7C5D4",
+  background: "#F9FAFC",
 };
