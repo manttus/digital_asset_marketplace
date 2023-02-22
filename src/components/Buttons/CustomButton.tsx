@@ -1,37 +1,39 @@
-import { Button } from "@chakra-ui/button";
-type CustomButtonProps = {
-  text?: string;
-  onClick?: () => void;
+import { Button, Flex } from "@chakra-ui/react";
+import { fontSize } from "../../theme/fontsSize";
+
+type ButtonType = {
+  text: string;
+  onClick: () => void;
   type: string;
-  icon?: any;
-  isDisabled?: boolean;
+  icon?: JSX.Element;
+  fontSize?: string;
 };
 
-const CustomButton = (props: CustomButtonProps) => {
-  const type = props.type;
+const CustomButton = ({ text, onClick, type, icon, fontSize }: ButtonType) => {
   return (
-    <Button
-      type="submit"
-      isDisabled={props.isDisabled}
-      minW={"76px"}
-      onClick={props.onClick}
-      bg={type === "filled" ? "purple.500" : "white"}
-      color={type === "filled" ? "white" : "black"}
-      shadow={"sm"}
-      border={type === "filled" ? "none" : "1px solid"}
-      borderColor={type === "filled" ? "none" : "gray.400"}
-      fontWeight={"bold"}
-      fontSize={"sm"}
-      dropShadow={"md"}
-      rounded={"50px"}
-      leftIcon={props.icon}
+    <Flex
+      rounded={"32px"}
+      onClick={onClick}
+      bg={type === "filled" ? "buttonPrimary" : "background"}
+      color={type === "filled" ? "white" : "buttonPrimary"}
+      fontWeight={"600"}
+      height={"50px"}
+      fontSize={fontSize ? fontSize : "18px"}
+      w={"auto"}
+      pl={"20px"}
+      pr={icon ? "10px" : "20px"}
       _hover={{
-        bg: type === "filled" ? "purple.600" : "white",
-        color: type === "filled" ? "white" : "black",
+        bg: type === "filled" ? "buttonHover" : "buttonPrimary",
+        color: type === "filled" ? "white" : "white",
+        transition: "0.3s ease-in-out",
       }}
+      cursor={"pointer"}
+      justifyContent={"space-between"}
+      alignItems={"center"}
     >
-      {props.text && props.text}
-    </Button>
+      <Flex mr={icon ? "15px" : "0"}>{text}</Flex>
+      {icon && <Flex>{icon}</Flex>}
+    </Flex>
   );
 };
 
