@@ -9,7 +9,7 @@ const Footer = () => {
       <Flex
         px={"64px"}
         pt={"40px"}
-        pb={"20px"}
+        pb={"25px"}
         gap={40}
         borderY={"1px"}
         borderColor={"gray.200"}
@@ -18,8 +18,14 @@ const Footer = () => {
           direction={"column"}
           w={"30%"}
           gap={12}
+          transition={"all 0.5s ease-in-out"}
           textAlign={"justify"}
           lineHeight={"30px"}
+          _hover={{
+            transform: "scale(1.05)",
+            transition: "all 0.5s ease-in-out",
+          }}
+          cursor={"pointer"}
         >
           <Text fontSize={"23px"} fontWeight={"600"}>
             Mintables
@@ -29,7 +35,18 @@ const Footer = () => {
             contained here is fictional and preview to create your own website.
           </Text>
         </Flex>
-        <Flex direction={"column"} w={"10%"} gap={12} textAlign={"justify"}>
+        <Flex
+          direction={"column"}
+          w={"10%"}
+          gap={12}
+          textAlign={"justify"}
+          transition={"all 0.5s ease-in-out"}
+          _hover={{
+            transform: "scale(1.05)",
+            transition: "all 0.5s ease-in-out",
+          }}
+          cursor={"pointer"}
+        >
           <Text fontSize={"23px"} fontWeight={"600"}>
             Navigation
           </Text>
@@ -41,7 +58,17 @@ const Footer = () => {
             <NormalLink text={"Add new asset"} to={"mum"} color={"fontGhost"} />
           </Stack>
         </Flex>
-        <Flex direction={"column"} gap={12} w={"15%"}>
+        <Flex
+          direction={"column"}
+          gap={12}
+          w={"15%"}
+          transition={"all 0.5s ease-in-out"}
+          _hover={{
+            transform: "scale(1.05)",
+            transition: "all 0.5s ease-in-out",
+          }}
+          cursor={"pointer"}
+        >
           <Text fontSize={"23px"} fontWeight={"600"}>
             Categories
           </Text>
@@ -65,6 +92,12 @@ const Footer = () => {
           w={"35%"}
           textAlign={"justify"}
           lineHeight={"30px"}
+          transition={"all 0.5s ease-in-out"}
+          _hover={{
+            transform: "scale(1.05)",
+            transition: "all 0.5s ease-in-out",
+          }}
+          cursor={"pointer"}
         >
           <Text fontSize={"23px"} fontWeight={"600"}>
             Send Message
