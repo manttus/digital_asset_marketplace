@@ -1,45 +1,84 @@
-import { Flex, Box, Text, HStack } from "@chakra-ui/react";
-import Illustration from "../../assets/illustration6.png";
-import { FaEthereum } from "react-icons/fa";
+import {
+  Flex,
+  Box,
+  Text,
+  HStack,
+  Image,
+  Avatar,
+  Divider,
+  Link,
+} from "@chakra-ui/react";
+import Illustration from "../../assets/eth1.gif";
+
+import CustomLink from "../CustomLink";
+import { FaArrowCircleRight } from "react-icons/fa";
 
 const MarketCard = () => {
   return (
     <Flex
-      height={"250px"}
-      width={"210px"}
-      shadow={"xs"}
-      border={"1px"}
-      borderColor={"blackAlpha.400"}
-      borderRadius={"xs"}
-      _hover={{
-        borderColor: "blackAlpha.600",
-        marginTop: "-10px",
-      }}
+      width={"330px"}
       direction={"column"}
+      rounded={"5px"}
+      shadow={"sm"}
+      bg={"white"}
     >
-      <Flex
-        height={"90%"}
-        w={"full"}
-        bg={"gray"}
-        backgroundImage={Illustration}
-        backgroundSize={"cover"}
-        backgroundPosition={"center"}
-      ></Flex>
-      <Flex
-        height={"20%"}
-        w={"full"}
-        alignItems={"center"}
-        justifyContent={"space-between"}
-        px={"10px"}
-      >
-        <Box>
-          <b>21005</b>
-        </Box>
-        <HStack display={"flex"} alignItems={"center"}>
-          <FaEthereum size={"15px"} />
-          <Text>0.154</Text>
-        </HStack>
-      </Flex>
+      <Image
+        src={Illustration}
+        w={"100%"}
+        roundedTop={"5px"}
+        transition={"all 0.5s ease-in-out"}
+        _hover={{
+          transform: "scale(1.05)",
+          transition: "all 0.5s ease-in-out",
+        }}
+      />
+      <Box>
+        <Flex
+          direction={"column"}
+          px={"20px"}
+          py={"25px"}
+          letterSpacing={"0.4px"}
+        >
+          <Box>
+            <CustomLink
+              text="Secret Artistic"
+              to="mum"
+              size="18px"
+              weight="700"
+            />
+          </Box>
+          <Text fontSize={"15px"} color={"fontGhost"} fontWeight={"500"}>
+            Amazing viewing
+          </Text>
+        </Flex>
+        <Flex alignItems={"center"} px={"18px"} py={"10px"} gap={4}>
+          <Avatar size={"md"} />
+          <Text fontWeight={"600"} fontSize={"15px"} letterSpacing={"0.4px"}>
+            Michael Noris
+          </Text>
+        </Flex>
+        <Divider w={"full"} py={"10px"} />
+        <Flex
+          direction={"column"}
+          px={"20px"}
+          py={"15px"}
+          letterSpacing={"0.2px"}
+        >
+          <Text fontSize={"18px"} fontWeight={"700"}>
+            2.95 ETH
+          </Text>
+          <Flex
+            justifyContent={"space-between"}
+            alignItems={"center"}
+            color={"successLight"}
+          >
+            <Link color={"successLight"} fontSize={"15px"} fontWeight={"500"}>
+              Check the details
+            </Link>
+            <FaArrowCircleRight />
+          </Flex>
+        </Flex>
+      </Box>
     </Flex>
   );
 };

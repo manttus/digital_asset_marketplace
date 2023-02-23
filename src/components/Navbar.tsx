@@ -11,6 +11,7 @@ import { AiOutlineClose } from "react-icons/ai";
 import { useState } from "react";
 import Overlay from "./Overlay";
 import { motion } from "framer-motion";
+import Footer from "./Footer";
 declare global {
   interface Window {
     ethereum?: ExternalProvider;
@@ -41,6 +42,7 @@ const Navbar = () => {
     <>
       <Flex height={"115px"} justifyContent={"center"} alignItems={"center"}>
         <Flex
+          position={"fixed"}
           w={"98%"}
           rounded={"200px"}
           bg={"white"}
@@ -217,6 +219,7 @@ const Navbar = () => {
         </>
       </Overlay>
       <Outlet />
+      <Footer />
     </>
   );
 };
