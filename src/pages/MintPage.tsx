@@ -1,6 +1,5 @@
 import { Flex } from "@chakra-ui/react";
 import MintForm from "../components/Forms/MintForm/MintForm";
-import { FormStep1 } from "../components/Forms/RegisterForm/RegisterForm";
 
 const MintPage = () => {
   return (

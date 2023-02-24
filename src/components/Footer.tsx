@@ -1,18 +1,19 @@
-import { Button, Flex, Stack, Text } from "@chakra-ui/react";
+import { Flex, Hide, Stack, Text } from "@chakra-ui/react";
 import { IoIosArrowForward } from "react-icons/io";
-import NormalButton from "./NormalButton";
+import NormalButton from "./Buttons/NormalButton";
 import NormalLink from "./NormalLink";
 
 const Footer = () => {
   return (
-    <Flex direction={"column"} mt={"30px"}>
+    <Flex direction={"column"}>
       <Flex
-        px={"64px"}
+        px={"68px"}
         pt={"40px"}
         pb={"25px"}
         gap={40}
         borderY={"1px"}
         borderColor={"gray.200"}
+        marginTop={"20px"}
       >
         <Flex
           direction={"column"}
@@ -22,7 +23,7 @@ const Footer = () => {
           textAlign={"justify"}
           lineHeight={"30px"}
           _hover={{
-            transform: "scale(1.05)",
+            transform: "scale(1.02)",
             transition: "all 0.5s ease-in-out",
           }}
           cursor={"pointer"}
@@ -31,61 +32,68 @@ const Footer = () => {
             Mintables
           </Text>
           <Text color={"fontGhost"} fontWeight={"500"}>
-            Noplomi is a template created with the STUDIO tool. All information
-            contained here is fictional and preview to create your own website.
+            <b> Noplomi</b> is a template created with the STUDIO tool. All
+            information contained here is <b>fictional</b> and preview to create
+            your own website.
           </Text>
         </Flex>
-        <Flex
-          direction={"column"}
-          w={"10%"}
-          gap={12}
-          textAlign={"justify"}
-          transition={"all 0.5s ease-in-out"}
-          _hover={{
-            transform: "scale(1.05)",
-            transition: "all 0.5s ease-in-out",
-          }}
-          cursor={"pointer"}
-        >
-          <Text fontSize={"23px"} fontWeight={"600"}>
-            Navigation
-          </Text>
-          <Stack lineHeight={"20px"} letterSpacing={"0.3px"}>
-            <NormalLink text={"Home page"} to={"mum"} color={"fontGhost"} />
-            <NormalLink text={"About us"} to={"mum"} color={"fontGhost"} />
-            <NormalLink text={"Collections"} to={"mum"} color={"fontGhost"} />
-            <NormalLink text={"Archives"} to={"mum"} color={"fontGhost"} />
-            <NormalLink text={"Add new asset"} to={"mum"} color={"fontGhost"} />
-          </Stack>
-        </Flex>
-        <Flex
-          direction={"column"}
-          gap={12}
-          w={"15%"}
-          transition={"all 0.5s ease-in-out"}
-          _hover={{
-            transform: "scale(1.05)",
-            transition: "all 0.5s ease-in-out",
-          }}
-          cursor={"pointer"}
-        >
-          <Text fontSize={"23px"} fontWeight={"600"}>
-            Categories
-          </Text>
-          <Stack lineHeight={"20px"} letterSpacing={"0.4px"}>
-            <NormalLink
-              text={"Privacy Policy"}
-              to={"mum"}
-              color={"fontGhost"}
-            />
-            <NormalLink
-              text={"Our publishers"}
-              to={"mum"}
-              color={"fontGhost"}
-            />
-            <NormalLink text={"Contact"} to={"mum"} color={"fontGhost"} />
-          </Stack>
-        </Flex>
+        <Hide below="lg">
+          <Flex
+            direction={"column"}
+            w={"15%"}
+            gap={12}
+            textAlign={"justify"}
+            transition={"all 0.5s ease-in-out"}
+            _hover={{
+              transform: "scale(1.02)",
+              transition: "all 0.5s ease-in-out",
+            }}
+            cursor={"pointer"}
+          >
+            <Text fontSize={"23px"} fontWeight={"600"}>
+              Navigation
+            </Text>
+            <Stack lineHeight={"20px"} letterSpacing={"0.3px"}>
+              <NormalLink text={"Home page"} to={"mum"} color={"fontGhost"} />
+              <NormalLink text={"About us"} to={"mum"} color={"fontGhost"} />
+              <NormalLink text={"Collections"} to={"mum"} color={"fontGhost"} />
+              <NormalLink text={"Archives"} to={"mum"} color={"fontGhost"} />
+              <NormalLink
+                text={"Add new asset"}
+                to={"mum"}
+                color={"fontGhost"}
+              />
+            </Stack>
+          </Flex>
+          <Flex
+            direction={"column"}
+            gap={12}
+            w={"15%"}
+            transition={"all 0.5s ease-in-out"}
+            _hover={{
+              transform: "scale(1.02)",
+              transition: "all 0.5s ease-in-out",
+            }}
+            cursor={"pointer"}
+          >
+            <Text fontSize={"23px"} fontWeight={"600"}>
+              Categories
+            </Text>
+            <Stack lineHeight={"20px"} letterSpacing={"0.4px"}>
+              <NormalLink
+                text={"Privacy Policy"}
+                to={"mum"}
+                color={"fontGhost"}
+              />
+              <NormalLink text={"Contact"} to={"mum"} color={"fontGhost"} />
+              <NormalLink
+                text={"Our publishers"}
+                to={"mum"}
+                color={"fontGhost"}
+              />
+            </Stack>
+          </Flex>
+        </Hide>
         <Flex
           direction={"column"}
           gap={12}
@@ -94,7 +102,7 @@ const Footer = () => {
           lineHeight={"30px"}
           transition={"all 0.5s ease-in-out"}
           _hover={{
-            transform: "scale(1.05)",
+            transform: "scale(1.02)",
             transition: "all 0.5s ease-in-out",
           }}
           cursor={"pointer"}

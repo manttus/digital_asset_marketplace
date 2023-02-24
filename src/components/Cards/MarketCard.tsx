@@ -11,21 +11,22 @@ import {
 import Illustration from "../../assets/eth1.gif";
 
 import CustomLink from "../CustomLink";
-import { FaArrowCircleRight } from "react-icons/fa";
+import { FaArrowRight } from "react-icons/fa";
 
 const MarketCard = () => {
   return (
     <Flex
-      width={"330px"}
+      width={"340px"}
       direction={"column"}
       rounded={"5px"}
       shadow={"sm"}
       bg={"white"}
+      p={"15px"}
     >
       <Image
         src={Illustration}
         w={"100%"}
-        roundedTop={"5px"}
+        rounded={"5px"}
         transition={"all 0.5s ease-in-out"}
         _hover={{
           transform: "scale(1.05)",
@@ -61,21 +62,14 @@ const MarketCard = () => {
         <Flex
           direction={"column"}
           px={"20px"}
-          py={"15px"}
+          py={"20px"}
           letterSpacing={"0.2px"}
         >
-          <Text fontSize={"18px"} fontWeight={"700"}>
-            2.95 ETH
-          </Text>
-          <Flex
-            justifyContent={"space-between"}
-            alignItems={"center"}
-            color={"successLight"}
-          >
-            <Link color={"successLight"} fontSize={"15px"} fontWeight={"500"}>
-              Check the details
-            </Link>
-            <FaArrowCircleRight />
+          <Flex alignItems={"center"} justifyContent={"space-between"}>
+            <Text fontSize={"18px"} fontWeight={"700"}>
+              2.95 ETH
+            </Text>
+            <FaArrowRight color="#3361FF" />
           </Flex>
         </Flex>
       </Box>

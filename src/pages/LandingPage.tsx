@@ -4,6 +4,11 @@ import illustration1 from "../assets/eth3.webp";
 import illustration2 from "../assets/abstract2.webp";
 import illustration3 from "../assets/blob.webp";
 import MarketCard from "../components/Cards/MarketCard";
+import NormalButton from "../components/Buttons/NormalButton";
+import { IoIosArrowForward } from "react-icons/io";
+import Partners from "../components/Partners";
+import Featured from "../components/Featured";
+import CustomBadge from "../components/Badge/CustomBadge";
 const LandingPage = () => {
   return (
     <Flex direction={"column"}>
@@ -67,9 +72,19 @@ const LandingPage = () => {
         direction={"column"}
         gap={5}
       >
-        <Flex justifyContent={"space-between"} alignItems={"center"}>
-          <Text fontSize={"28px"} fontWeight={"600"}>
+        <Featured />
+        <Partners />
+
+        <Flex justifyContent={"space-between"}>
+          <Text
+            as={Flex}
+            fontSize={"28px"}
+            fontWeight={"600"}
+            alignItems={"center"}
+            gap={5}
+          >
             Collections Products
+            <CustomBadge text="40+" color="orange" bg="orangeLight" />
           </Text>
 
           <Text
@@ -83,14 +98,28 @@ const LandingPage = () => {
             LATEST 4 PRODUCTS
           </Text>
         </Flex>
-        <Flex gap={10} mt={"20px"}>
+        <Flex
+          gap={8}
+          mt={"20px"}
+          w={"full"}
+          alignItems={"center"}
+          justifyContent={"center"}
+        >
           <MarketCard />
           <MarketCard />
           <MarketCard />
           <MarketCard />
         </Flex>
+        <Flex w={"100%"} justifyContent={"center"} pt={"30px"}>
+          <NormalButton
+            width={"380px"}
+            text="Check More"
+            rightIcon={<IoIosArrowForward />}
+            onClick={() => {}}
+            type={"solid"}
+          />
+        </Flex>
       </Flex>
-      <Flex></Flex>
     </Flex>
   );
 };

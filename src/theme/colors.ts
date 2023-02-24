@@ -7,4 +7,7 @@ export const colorScheme = {
   fontPrimary: "#272343",
   fontGhost: "#6d688e",
   background: "#F9FAFC",
+  orangeLight: "#F8F0E9",
+  orangeDark: "#EB9444",
+  greenLight: "#ECF8F1",
 };
