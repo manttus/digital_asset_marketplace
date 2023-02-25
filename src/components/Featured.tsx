@@ -10,13 +10,7 @@ import NormalButton from "./Buttons/NormalButton";
 
 const Featured = () => {
   return (
-    <Flex
-      px={"70px"}
-      py={"20px"}
-      bg={"background"}
-      direction={"column"}
-      gap={5}
-    >
+    <Flex py={"20px"} bg={"background"} direction={"column"} gap={5}>
       <Flex w={"full"} justifyContent={"space-between"}>
         <Text
           as={Flex}

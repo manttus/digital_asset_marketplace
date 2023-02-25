@@ -7,6 +7,7 @@ type NormalButtonProps = {
   rightIcon?: JSX.Element;
   width?: string;
   bg?: string;
+  fontSize?: string;
 };
 
 const NormalButton = ({
@@ -16,6 +17,7 @@ const NormalButton = ({
   rightIcon,
   width,
   bg,
+  fontSize,
 }: NormalButtonProps) => {
   return (
     <Button
@@ -24,6 +26,7 @@ const NormalButton = ({
       bg={type === "outline" ? "white" : bg ? bg : "buttonPrimary"}
       borderColor={bg ? bg : "buttonPrimary"}
       transition={"all 0.5s ease-in-out"}
+      type={"submit"}
       border={"2px"}
       w={width}
       _hover={{

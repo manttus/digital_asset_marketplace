@@ -18,6 +18,9 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import useInput from "../../../hooks/useInput";
 import { Dispatch, SetStateAction } from "react";
+import NormalButton from "../../Buttons/NormalButton";
+import CustomLink from "../../CustomLink";
+import CustomButton from "../../Buttons/CustomButton";
 
 interface Props {
   submitHandler: (email: string, password: string | null) => void;
@@ -67,19 +70,29 @@ const LoginForm = (props: Props) => {
                 whileHover={{ scale: 1.05 }}
               >
                 <Center>
-                  <Text fontWeight={"500"} fontSize={"sm"}>
+                  <Text
+                    fontWeight={"500"}
+                    fontSize={"14px"}
+                    color={"buttonHover"}
+                  >
                     Sign in with Google
                   </Text>
                 </Center>
               </Button>
             </Flex>
             <FormControl>
-              <FormLabel fontSize={"sm"}>Phone / E-mail</FormLabel>
+              <FormLabel
+                fontWeight={"500"}
+                fontSize={"14px"}
+                color={"buttonHover"}
+              >
+                Phone / E-mail
+              </FormLabel>
               <Input
                 fontSize={"sm"}
                 type="text"
                 variant={"flushed"}
-                focusBorderColor={"purple.400"}
+                focusBorderColor={"buttonPrimary"}
                 value={emailValue}
                 onChange={(e: React.FormEvent<HTMLInputElement>) => {
                   emailChangeHandler(e.currentTarget.value);
@@ -88,13 +101,19 @@ const LoginForm = (props: Props) => {
               />
             </FormControl>
             <FormControl>
-              <FormLabel fontSize={"sm"}>Password</FormLabel>
+              <FormLabel
+                fontWeight={"500"}
+                fontSize={"14px"}
+                color={"buttonHover"}
+              >
+                Password
+              </FormLabel>
               <InputGroup>
                 <Input
                   fontSize={"sm"}
                   type={showPassword ? "text" : "password"}
                   value={passwordValue}
-                  focusBorderColor={"purple.400"}
+                  focusBorderColor={"buttonPrimary"}
                   variant={"flushed"}
                   onChange={(e: React.FormEvent<HTMLInputElement>) => {
                     passwordChangeHandler(e.currentTarget.value);
@@ -121,16 +140,15 @@ const LoginForm = (props: Props) => {
               ></Stack>
 
               <Flex justifyContent={"space-between"} alignItems={"center"}>
-                <Link
-                  fontSize={"sm"}
-                  color={"purple.500"}
-                  onClick={() => {
-                    props.setOtp(2);
-                  }}
-                >
-                  Forgot Password ?
-                </Link>
-                <Button
+                <CustomLink
+                  text="Forgot Password "
+                  size="14px"
+                  color="buttonHover"
+                  weight="500"
+                />
+                {/* <NormalButton text="Login" /> */}
+                <CustomButton text="Login" type="filled" fontSize="14px" />
+                {/* <Button
                   size={"md"}
                   w={"40%"}
                   isLoading={props.isSending}
@@ -146,7 +164,7 @@ const LoginForm = (props: Props) => {
                   }}
                 >
                   Login
-                </Button>
+                </Button> */}
               </Flex>
             </Stack>
           </Stack>

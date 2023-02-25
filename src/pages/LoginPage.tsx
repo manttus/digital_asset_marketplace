@@ -1,4 +1,4 @@
-import { Button, Flex, Hide, useMediaQuery, useToast } from "@chakra-ui/react";
+import { Text, Flex, Hide, useMediaQuery, useToast } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import illustration1 from "../assets/register.png";
 import LoginForm from "../components/Forms/LoginForm/LoginForm";
@@ -11,6 +11,7 @@ import OtpForm from "../components/Forms/OtpForm/OtpForm";
 import { useNavigate } from "react-router-dom";
 import ForgotForm from "../components/Forms/ForgotForm/ForgotForm";
 import useGoogleAuth from "../hooks/useGoogleAuth";
+import CustomLink from "../components/CustomLink";
 
 const LoginPage = () => {
   const [send, { isLoading: isSending, isError: otpError }] = useSendMutation();
@@ -216,17 +217,15 @@ const LoginPage = () => {
             shadow={"sm"}
             border={"lg"}
           >
-            {/* <Text fontSize={"sm"}>
-              New to Mintables ?
-              <Link
-                ml={"4px"}
-                color={"purple.500"}
-                fontWeight={"bold"}
-                onClick={() => navigate("/signup")}
-              >
-                Signup
-              </Link>
-            </Text> */}
+            <CustomLink
+              text="New to Mintables"
+              size="14px"
+              color="buttonHover"
+              weight="600"
+              onClick={() => {
+                navigate("/signup");
+              }}
+            />
           </Flex>
           <Flex
             as={motion.div}

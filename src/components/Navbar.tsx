@@ -1,8 +1,6 @@
-import { Avatar, Box, Flex, Hide, HStack, Show, Text } from "@chakra-ui/react";
+import { Avatar, Box, Flex, Hide, Show, Text } from "@chakra-ui/react";
 import { Outlet, useNavigate } from "react-router";
-import { BsDot, BsInstagram, BsTwitter } from "react-icons/bs";
-
-import { ExternalProvider } from "@ethersproject/providers";
+import { BsDot } from "react-icons/bs";
 import CustomButton from "./Buttons/CustomButton";
 import CustomLink from "./CustomLink";
 import CustomIconButton from "./Buttons/CustomIconButton";
@@ -12,9 +10,11 @@ import { useState } from "react";
 import Overlay from "./Overlay";
 import { motion } from "framer-motion";
 import Footer from "./Footer";
+import useLocalStorage from "../hooks/useLocalStorage";
+
 declare global {
   interface Window {
-    ethereum?: ExternalProvider;
+    ethereum?: any;
   }
 }
 
@@ -35,8 +35,27 @@ const bottomVariants = {
 };
 
 const Navbar = () => {
-  const [overlay, setOverlay] = useState<boolean>(false);
   const navigate = useNavigate();
+  const [overlay, setOverlay] = useState<boolean>(false);
+  const { value, setItem, removeItem } = useLocalStorage("wallet");
+  const [wallet, setWallet] = useState<string | null | undefined>(value);
+
+  const metaMaskHandler = async () => {
+    if (window.ethereum) {
+      try {
+        const account = await window.ethereum.request({
+          method: "eth_requestAccounts",
+        });
+        const address = account[0];
+        setItem(address);
+        setWallet(address);
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      alert("Please install MetaMask");
+    }
+  };
 
   return (
     <>
@@ -94,19 +113,18 @@ const Navbar = () => {
             gap={3}
           >
             <Hide below="xl">
-              {/* <CustomIconButton
-                icon={<BsInstagram size={"20px"} />}
-                aria={"Instagram"}
-                type={"filled"}
-                onClick={() => {}}
+              <CustomButton
+                text={wallet ? "Connected" : "Connect"}
+                type="filled"
+                onClick={
+                  !wallet
+                    ? metaMaskHandler
+                    : () => {
+                        removeItem();
+                        setWallet(null);
+                      }
+                }
               />
-              <CustomIconButton
-                icon={<BsTwitter size={"20px"} />}
-                aria={"Twitter"}
-                type={"filled"}
-                onClick={() => {}}
-              /> */}
-              <CustomButton text="Connect" type="filled" onClick={() => {}} />
               <Avatar size={"md"} />
             </Hide>
             <Show below="xl">
@@ -193,27 +211,13 @@ const Navbar = () => {
                 <CustomButton
                   text="Connect"
                   type="filled"
-                  onClick={() => {}}
+                  onClick={metaMaskHandler}
                   fontSize={"18px"}
                 />
               </Box>
               <Text color={"fontGhost"} mt={"20px"} letterSpacing={"1px"}>
                 Copyright © 2022. All right reserved.
               </Text>
-              {/* <HStack>
-                <CustomIconButton
-                  icon={<BsInstagram size={"20px"} />}
-                  aria={"Instagram"}
-                  type={"filled"}
-                  onClick={() => {}}
-                />
-                <CustomIconButton
-                  icon={<BsTwitter size={"20px"} />}
-                  aria={"Twitter"}
-                  type={"filled"}
-                  onClick={() => {}}
-                />
-              </HStack> */}
             </Flex>
           </Flex>
         </>

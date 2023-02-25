@@ -9,6 +9,7 @@ import { IoIosArrowForward } from "react-icons/io";
 import Partners from "../components/Partners";
 import Featured from "../components/Featured";
 import CustomBadge from "../components/Badge/CustomBadge";
+import Banner from "../components/Banner";
 const LandingPage = () => {
   return (
     <Flex direction={"column"}>
@@ -72,9 +73,6 @@ const LandingPage = () => {
         direction={"column"}
         gap={5}
       >
-        <Featured />
-        <Partners />
-
         <Flex justifyContent={"space-between"}>
           <Text
             as={Flex}
@@ -119,6 +117,8 @@ const LandingPage = () => {
             type={"solid"}
           />
         </Flex>
+        <Partners />
+        <Featured />
       </Flex>
     </Flex>
   );

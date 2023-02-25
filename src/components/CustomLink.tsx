@@ -3,13 +3,21 @@ import { motion } from "framer-motion";
 
 type CustomLinkProps = {
   text: string;
-  to: string;
-  size: string;
+  to?: string;
+  size?: string;
   color?: string;
   weight?: string;
+  onClick?: () => void;
 };
 
-const CustomLink = ({ to, text, size, color, weight }: CustomLinkProps) => {
+const CustomLink = ({
+  to,
+  text,
+  size,
+  color,
+  weight,
+  onClick,
+}: CustomLinkProps) => {
   return (
     <Link
       href={to}
@@ -18,6 +26,7 @@ const CustomLink = ({ to, text, size, color, weight }: CustomLinkProps) => {
       fontWeight={weight ? weight : 600}
       fontSize={size}
       color={color ? color : "black"}
+      onClick={onClick}
       _before={{
         width: "0%",
         position: "absolute",

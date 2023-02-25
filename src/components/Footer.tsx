@@ -22,10 +22,6 @@ const Footer = () => {
           transition={"all 0.5s ease-in-out"}
           textAlign={"justify"}
           lineHeight={"30px"}
-          _hover={{
-            transform: "scale(1.02)",
-            transition: "all 0.5s ease-in-out",
-          }}
           cursor={"pointer"}
         >
           <Text fontSize={"23px"} fontWeight={"600"}>
@@ -44,10 +40,6 @@ const Footer = () => {
             gap={12}
             textAlign={"justify"}
             transition={"all 0.5s ease-in-out"}
-            _hover={{
-              transform: "scale(1.02)",
-              transition: "all 0.5s ease-in-out",
-            }}
             cursor={"pointer"}
           >
             <Text fontSize={"23px"} fontWeight={"600"}>
@@ -70,10 +62,6 @@ const Footer = () => {
             gap={12}
             w={"15%"}
             transition={"all 0.5s ease-in-out"}
-            _hover={{
-              transform: "scale(1.02)",
-              transition: "all 0.5s ease-in-out",
-            }}
             cursor={"pointer"}
           >
             <Text fontSize={"23px"} fontWeight={"600"}>
@@ -101,10 +89,6 @@ const Footer = () => {
           textAlign={"justify"}
           lineHeight={"30px"}
           transition={"all 0.5s ease-in-out"}
-          _hover={{
-            transform: "scale(1.02)",
-            transition: "all 0.5s ease-in-out",
-          }}
           cursor={"pointer"}
         >
           <Text fontSize={"23px"} fontWeight={"600"}>

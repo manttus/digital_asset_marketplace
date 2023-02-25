@@ -3,7 +3,7 @@ import { fontSize } from "../../theme/fontsSize";
 
 type ButtonType = {
   text: string;
-  onClick: () => void;
+  onClick?: () => void;
   type: string;
   icon?: JSX.Element;
   fontSize?: string;
@@ -12,8 +12,10 @@ type ButtonType = {
 const CustomButton = ({ text, onClick, type, icon, fontSize }: ButtonType) => {
   return (
     <Flex
+      as={Button}
+      type={"submit"}
       rounded={"32px"}
-      onClick={onClick}
+      onClick={onClick ? onClick : () => {}}
       bg={type === "filled" ? "buttonPrimary" : "background"}
       color={type === "filled" ? "white" : "buttonPrimary"}
       fontWeight={"600"}
