@@ -11,6 +11,8 @@ import Overlay from "./Overlay";
 import { motion } from "framer-motion";
 import Footer from "./Footer";
 import useLocalStorage from "../hooks/useLocalStorage";
+import { useSelector } from "react-redux";
+import { selectCurrentToken } from "../features/auth/authSlice";
 
 declare global {
   interface Window {
@@ -34,8 +36,16 @@ const bottomVariants = {
   },
 };
 
+const navlinks = [
+  { name: "About us", path: "/about" },
+  { name: "Collection", path: "/collection" },
+  { name: "Archives", path: "/archive" },
+  { name: "Be a Creator", path: "/create" },
+];
+
 const Navbar = () => {
   const navigate = useNavigate();
+  const state = useSelector(selectCurrentToken);
   const [overlay, setOverlay] = useState<boolean>(false);
   const { value, setItem, removeItem } = useLocalStorage("wallet");
   const [wallet, setWallet] = useState<string | null | undefined>(value);
@@ -90,14 +100,18 @@ const Navbar = () => {
                 <CustomButton
                   text="Explore NFT"
                   type="outlined"
-                  onClick={() => {}}
+                  onClick={() => navigate("/")}
                   icon={<BsDot size={"40px"} />}
                 />
                 <Flex gap={8} wrap={"nowrap"}>
-                  <CustomLink to={"mum"} text={"About us"} size={"18px"} />
-                  <CustomLink to={"mum"} text={"Collections"} size={"18px"} />
-                  <CustomLink to={"mum"} text={"Archives"} size={"18px"} />
-                  <CustomLink to={"mum"} text={"Be a Creator"} size={"18px"} />
+                  {navlinks.map((link) => (
+                    <CustomLink
+                      key={link.name}
+                      text={link.name}
+                      to={link.path}
+                      size={"18px"}
+                    />
+                  ))}
                 </Flex>
               </Flex>
             </Hide>
@@ -112,21 +126,36 @@ const Navbar = () => {
             justifyContent={"end"}
             gap={3}
           >
-            <Hide below="xl">
-              <CustomButton
-                text={wallet ? "Connected" : "Connect"}
-                type="filled"
-                onClick={
-                  !wallet
-                    ? metaMaskHandler
-                    : () => {
-                        removeItem();
-                        setWallet(null);
-                      }
-                }
-              />
-              <Avatar size={"md"} />
-            </Hide>
+            {state ? (
+              <Hide below="xl">
+                <CustomButton
+                  text={wallet ? "Connected" : "Connect"}
+                  type="filled"
+                  onClick={
+                    !wallet
+                      ? metaMaskHandler
+                      : () => {
+                          removeItem();
+                          setWallet(null);
+                        }
+                  }
+                />
+                <Avatar size={"md"} />
+              </Hide>
+            ) : (
+              <Hide below="xl">
+                <CustomButton
+                  text="Register"
+                  onClick={() => navigate("/register")}
+                  type={"outline"}
+                />
+                <CustomButton
+                  text="Login"
+                  onClick={() => navigate("/login")}
+                  type={"filled"}
+                />
+              </Hide>
+            )}
             <Show below="xl">
               <CustomIconButton
                 icon={<RxHamburgerMenu size={"20px"} />}
@@ -152,13 +181,14 @@ const Navbar = () => {
               }}
             />
           </Flex>
+
           <Flex
             as={motion.div}
             variants={bottomVariants}
             initial={"hidden"}
             animate={overlay ? "visible" : "hidden"}
             direction={"column"}
-            justifyContent={"center"}
+            justifyContent={"flex-end"}
             alignItems={"center"}
           >
             <Text
@@ -177,45 +207,39 @@ const Navbar = () => {
               alignItems={"center"}
               mt={"30px"}
             >
-              <CustomLink
-                to={"mum"}
-                text={"Explore NFT"}
-                size={"38px"}
-                color={"white"}
-              />
-              <CustomLink
-                to={"mum"}
-                text={"About us"}
-                size={"38px"}
-                color={"white"}
-              />
-              <CustomLink
-                to={"mum"}
-                text={"Collections"}
-                size={"38px"}
-                color={"white"}
-              />
-              <CustomLink
-                to={"mum"}
-                text={"Archives"}
-                size={"38px"}
-                color={"white"}
-              />
-              <CustomLink
-                to={"mum"}
-                text={"Be a Creator"}
-                size={"38px"}
-                color={"white"}
-              />
-              <Box mt={"40px"}>
-                <CustomButton
-                  text="Connect"
-                  type="filled"
-                  onClick={metaMaskHandler}
-                  fontSize={"18px"}
+              {navlinks.map((link) => (
+                <CustomLink
+                  key={link.name}
+                  text={link.name}
+                  to={link.path}
+                  size={"38px"}
+                  color={"white"}
                 />
-              </Box>
-              <Text color={"fontGhost"} mt={"20px"} letterSpacing={"1px"}>
+              ))}
+              {state ? (
+                <Box mt={"40px"}>
+                  <CustomButton
+                    text="Connect"
+                    type="filled"
+                    onClick={metaMaskHandler}
+                    fontSize={"18px"}
+                  />
+                </Box>
+              ) : (
+                <Flex gap={5} mt={"40px"}>
+                  <CustomButton
+                    text="Register"
+                    onClick={() => navigate("/register")}
+                    type={"filled"}
+                  />
+                  <CustomButton
+                    text="Login"
+                    onClick={() => navigate("/login")}
+                    type={"filled"}
+                  />
+                </Flex>
+              )}
+              <Text color={"fontGhost"} mt={"50px"} letterSpacing={"1px"}>
                 Copyright © 2022. All right reserved.
               </Text>
             </Flex>
