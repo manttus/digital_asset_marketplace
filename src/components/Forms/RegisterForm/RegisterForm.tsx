@@ -6,87 +6,94 @@ import {
   FormLabel,
   HStack,
   Button,
-  Center,
-  Text,
   InputGroup,
   InputRightElement,
 } from "@chakra-ui/react";
-import { motion } from "framer-motion";
+
 import { useState } from "react";
-import { FcGoogle } from "react-icons/fc";
+import useInput from "../../../hooks/useInput";
 
-type Form1Props = {};
+type Form1Props = {
+  setFormData: (e: any) => void;
+  formErrors: (e: boolean) => void;
+};
 
-export const FormStep1 = () => {
+export const FormStep1 = ({ formErrors, setFormData }: Form1Props) => {
   const [showPassword, setShowPassword] = useState(false);
+
+  const dataHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((formData: any) => ({
+      ...formData,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const {
+    hasError: firstNameError,
+    inputChangeHandler: firstNameHandler,
+    blurChangeHandler: firstNameBlurHandler,
+    resetFields: firstNameResetFields,
+  } = useInput((value: string) => value.length !== 0);
+
   return (
     <Flex justifyContent={"center"} mt={"8"}>
       <form>
         <HStack spacing={8}>
-          <FormControl id="email">
+          <FormControl isInvalid={firstNameError}>
             <FormLabel fontSize={{ sm: "sm", md: "sm", lg: "sm", xl: "sm" }}>
               First Name
             </FormLabel>
             <Input
-              type="email"
-              variant={"flushed"}
-              focusBorderColor={"purple.500"}
+              type="text"
+              name="firstName"
+              variant={"outline"}
+              focusBorderColor={"buttonPrimary"}
               fontSize={"sm"}
+              onChange={dataHandler}
             />
           </FormControl>
-          <FormControl id="email">
+          <FormControl>
             <FormLabel fontSize={{ sm: "sm", md: "sm", lg: "sm", xl: "sm" }}>
-              Surname
+              Last Name
             </FormLabel>
             <Input
-              type="email"
-              variant={"flushed"}
-              focusBorderColor={"purple.500"}
+              type="text"
+              name="lastName"
+              variant={"outline"}
+              focusBorderColor={"buttonPrimary"}
               fontSize={"sm"}
+              onChange={dataHandler}
             />
           </FormControl>
         </HStack>
         <HStack spacing={20} mt={"40px"}>
-          <FormControl id="email">
+          <FormControl>
             <FormLabel fontSize={{ sm: "sm", md: "sm", lg: "sm", xl: "sm" }}>
               E-mail / Phone
             </FormLabel>
             <Input
-              type="email"
-              variant={"flushed"}
-              focusBorderColor={"purple.500"}
+              type="text"
+              name="type"
+              variant={"outline"}
+              focusBorderColor={"buttonPrimary"}
               fontSize={"sm"}
+              onChange={dataHandler}
             />
           </FormControl>
         </HStack>
-        <HStack mt={"40px"}>
-          <Button
-            size={"md"}
-            onClick={() => {}}
-            as={motion.button}
-            w={"full"}
-            variant={"outline"}
-            leftIcon={<FcGoogle />}
-            whileHover={{ scale: 1.05 }}
-          >
-            <Center>
-              <Text fontWeight={"500"} fontSize={"sm"}>
-                Sign up with Google
-              </Text>
-            </Center>
-          </Button>
-        </HStack>
         <HStack spacing={10} mt={"40px"}>
-          <FormControl id="email">
+          <FormControl>
             <FormLabel fontSize={{ sm: "sm", md: "sm", lg: "sm", xl: "sm" }}>
               Password
             </FormLabel>
             <InputGroup>
               <Input
                 fontSize={"sm"}
+                name="password"
                 type={showPassword ? "text" : "password"}
-                focusBorderColor={"purple.400"}
-                variant={"flushed"}
+                focusBorderColor={"buttonPrimary"}
+                variant={"outline"}
+                onChange={dataHandler}
               />
               <InputRightElement>
                 <Button
