@@ -3,18 +3,9 @@ import Navbar from "./components/Navbar";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import MintPage from "./pages/MintPage";
-import RegisterPage from "./pages/RegisterPage";
 
 const App = () => {
   const router = createBrowserRouter([
-    {
-      path: "/signin",
-      element: <LoginPage />,
-    },
-    {
-      path: "/signup",
-      element: <RegisterPage />,
-    },
     {
       path: "/",
       element: <Navbar />,
@@ -26,6 +17,10 @@ const App = () => {
         {
           path: "mint",
           element: <MintPage />,
+        },
+        {
+          path: "login",
+          element: <LoginPage />,
         },
       ],
     },
