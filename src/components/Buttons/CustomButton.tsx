@@ -7,12 +7,21 @@ type ButtonType = {
   type: string;
   icon?: JSX.Element;
   fontSize?: string;
+  isDisabled?: boolean;
 };
 
-const CustomButton = ({ text, onClick, type, icon, fontSize }: ButtonType) => {
+const CustomButton = ({
+  text,
+  onClick,
+  type,
+  icon,
+  fontSize,
+  isDisabled,
+}: ButtonType) => {
   return (
     <Flex
       as={Button}
+      disabled={isDisabled}
       type={"submit"}
       rounded={"32px"}
       onClick={onClick ? onClick : () => {}}
