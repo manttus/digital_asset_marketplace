@@ -2,11 +2,11 @@ import { Flex, Text, Avatar, HStack } from "@chakra-ui/react";
 import { BsInstagram, BsTwitter } from "react-icons/bs";
 import { IoIosArrowForward } from "react-icons/io";
 
-import Illustration from "../assets/abstract1.webp";
-import CustomBadge from "./Badge/CustomBadge";
-import CustomIconButton from "./Buttons/CustomIconButton";
-import CustomLink from "./CustomLink";
-import NormalButton from "./Buttons/NormalButton";
+import Illustration from "../../assets/abstract1.webp";
+import CustomBadge from "../Badge/CustomBadge";
+import CustomIconButton from "../Button/CustomIconButton";
+import CustomLink from "../Links/CustomLink";
+import NormalButton from "../Button/NormalButton";
 
 const Featured = () => {
   return (

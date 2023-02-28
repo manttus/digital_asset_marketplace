@@ -1,5 +1,4 @@
 import { Button, Flex } from "@chakra-ui/react";
-import { fontSize } from "../../theme/fontsSize";
 
 type ButtonType = {
   text: string;

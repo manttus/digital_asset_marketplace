@@ -1,6 +1,6 @@
 import { Flex, Text } from "@chakra-ui/react";
-import CustomBadge from "./Badge/CustomBadge";
-import MarketCard from "./Cards/MarketCard";
+import CustomBadge from "../Badge/CustomBadge";
+import MarketCard from "../Card/MarketCard";
 
 const Collection = () => {
   return (

@@ -1,7 +1,6 @@
 import { Flex, Text } from "@chakra-ui/react";
 import { IoIosArrowForward } from "react-icons/io";
-import NormalButton from "./Buttons/NormalButton";
-import banner from "";
+import NormalButton from "../Button/NormalButton";
 
 const Banner = () => {
   return (

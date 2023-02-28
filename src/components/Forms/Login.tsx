@@ -1,58 +1,103 @@
 import {
   FormControl,
-  FormLabel,
-  Input,
   Stack,
   Box,
   FormErrorMessage,
+  Input,
+  Flex,
+  Button,
+  Center,
+  Text,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
-import CustomButton from "../Buttons/CustomButton";
+import { FcGoogle } from "react-icons/fc";
+import useGoogleAuth from "../../hooks/useGoogleAuth";
+import NormalButton from "../Button/NormalButton";
+import CustomLink from "../Links/CustomLink";
 
 type LoginType = {
   type: string;
-  password: string;
+  pass: string;
 };
 
-const Login = () => {
+type LoginProps = {
+  sendOtp: (data: LoginType) => void;
+  isLoading: boolean;
+  oauth: () => void;
+};
+
+const Login = ({ sendOtp, isLoading, oauth }: LoginProps) => {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: {
+      errors: { type, pass },
+    },
+    reset,
   } = useForm<LoginType>();
 
-  const submitHandler = (data: LoginType) => {
-    console.log(data);
-  };
-
   return (
-    <form onSubmit={handleSubmit(submitHandler)}>
-      <Stack spacing={10}>
-        <FormControl isInvalid={errors.type ? true : false}>
-          <FormLabel> Email/Phone </FormLabel>
+    <Box
+      as="form"
+      onSubmit={handleSubmit((data) => {
+        sendOtp(data);
+        reset();
+      })}
+      w={"400px"}
+      mb={20}
+    >
+      <Stack spacing={6}>
+        <FormControl isInvalid={type ? true : false}>
           <Input
             {...register("type", {
               required: true,
-              minLength: { value: 4, message: "" },
+              minLength: { value: 4, message: "Minimum Value 4" },
             })}
+            placeholder={"Email or Phone"}
             type={"text"}
+            py={5}
+            px={5}
           />
-          <FormErrorMessage>
-            {errors.type && errors.type.message}
-          </FormErrorMessage>
         </FormControl>
-        <FormControl isInvalid={errors.password ? true : false}>
-          <FormLabel> Password </FormLabel>
+        <FormControl isInvalid={pass ? true : false}>
           <Input
-            {...register("type", { required: true, minLength: 8 })}
+            {...register("pass", {
+              required: true,
+              minLength: { value: 8, message: "Minimum Value 8" },
+            })}
+            placeholder={"Password"}
             type={"password"}
+            py={5}
+            px={5}
           />
         </FormControl>
-        <Box>
-          <CustomButton text="Login" onClick={() => {}} type={"filled"} />
-        </Box>
+        <Flex justifyContent={"end"}>
+          <CustomLink text={"Forgot Password"} size={"15px"} />
+        </Flex>
+        <NormalButton
+          text="Login"
+          type={"filled"}
+          bg={"buttonPrimary"}
+          fontSize={"15px"}
+        />
+        <Button
+          w={"full"}
+          variant={"outline"}
+          leftIcon={<FcGoogle size={"20px"} />}
+          py={"25px"}
+          fontSize={"15px"}
+          onClick={oauth}
+          transition={"all 0.5s ease-in-out"}
+          _hover={{
+            bg: "white",
+            transform: "scale(1.02)",
+            transition: "all 0.5s ease-in-out",
+          }}
+        >
+          <Text>Sign in with Google</Text>
+        </Button>
       </Stack>
-    </form>
+    </Box>
   );
 };
 

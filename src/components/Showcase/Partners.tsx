@@ -1,7 +1,7 @@
 import { Flex, Image, Box } from "@chakra-ui/react";
-import metamask from "../assets/metamask.png";
-import opensea from "../assets/opensea.png";
-import dribbble from "../assets/dribbble.png";
+import metamask from "../../assets/metamask.png";
+import opensea from "../../assets/opensea.png";
+import dribbble from "../../assets/dribbble.png";
 
 const Partners = () => {
   return (

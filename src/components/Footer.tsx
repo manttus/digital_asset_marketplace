@@ -1,7 +1,7 @@
 import { Flex, Hide, Stack, Text } from "@chakra-ui/react";
 import { IoIosArrowForward } from "react-icons/io";
-import NormalButton from "./Buttons/NormalButton";
-import NormalLink from "./NormalLink";
+import NormalButton from "./Button/NormalButton";
+import NormalLink from "./Links/NormalLink";
 
 const Footer = () => {
   return (

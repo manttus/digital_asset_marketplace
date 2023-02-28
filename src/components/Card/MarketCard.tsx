@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import Illustration from "../../assets/eth1.gif";
 
-import CustomLink from "../CustomLink";
+import CustomLink from "../Links/CustomLink";
 import { FaArrowRight } from "react-icons/fa";
 
 const MarketCard = () => {

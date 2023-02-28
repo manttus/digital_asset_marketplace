@@ -9,6 +9,8 @@ lerna-debug.log*
 contract_data
 .env
 node_modules
+web3
+server
 dist
 dist-ssr
 *.local
@@ -23,3 +25,4 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+

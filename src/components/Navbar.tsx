@@ -1,9 +1,9 @@
 import { Avatar, Box, Flex, Hide, Show, Text } from "@chakra-ui/react";
 import { Outlet, useNavigate } from "react-router";
 import { BsDot } from "react-icons/bs";
-import CustomButton from "./Buttons/CustomButton";
-import CustomLink from "./CustomLink";
-import CustomIconButton from "./Buttons/CustomIconButton";
+import CustomButton from "./Button/CustomButton";
+import CustomLink from "./Links/CustomLink";
+import CustomIconButton from "./Button/CustomIconButton";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { AiOutlineClose } from "react-icons/ai";
 import { useState } from "react";
