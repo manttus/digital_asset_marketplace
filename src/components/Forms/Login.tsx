@@ -11,7 +11,6 @@ import {
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { FcGoogle } from "react-icons/fc";
-import useGoogleAuth from "../../hooks/useGoogleAuth";
 import NormalButton from "../Button/NormalButton";
 import CustomLink from "../Links/CustomLink";
 
@@ -53,9 +52,10 @@ const Login = ({ sendOtp, isLoading, oauth }: LoginProps) => {
               required: true,
               minLength: { value: 4, message: "Minimum Value 4" },
             })}
+            focusBorderColor={"buttonPrimary"}
             placeholder={"Email or Phone"}
             type={"text"}
-            py={5}
+            py={6}
             px={5}
           />
         </FormControl>
@@ -66,8 +66,9 @@ const Login = ({ sendOtp, isLoading, oauth }: LoginProps) => {
               minLength: { value: 8, message: "Minimum Value 8" },
             })}
             placeholder={"Password"}
+            focusBorderColor={"buttonPrimary"}
             type={"password"}
-            py={5}
+            py={6}
             px={5}
           />
         </FormControl>
@@ -79,6 +80,7 @@ const Login = ({ sendOtp, isLoading, oauth }: LoginProps) => {
           type={"filled"}
           bg={"buttonPrimary"}
           fontSize={"15px"}
+          isLoading={isLoading}
         />
         <Button
           w={"full"}
@@ -93,6 +95,7 @@ const Login = ({ sendOtp, isLoading, oauth }: LoginProps) => {
             transform: "scale(1.02)",
             transition: "all 0.5s ease-in-out",
           }}
+          iconSpacing={4}
         >
           <Text>Sign in with Google</Text>
         </Button>

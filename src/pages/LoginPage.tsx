@@ -1,7 +1,7 @@
-import { Text, Flex } from "@chakra-ui/react";
+import { Text, Flex, useToast } from "@chakra-ui/react";
 import Login from "../components/Forms/Login";
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
+import jwt_decode from "jwt-decode";
 import {
   useLoginMutation,
   useSendMutation,
@@ -11,6 +11,9 @@ import illustration from "../assets/abstract5.jpg";
 import { setCredintials } from "../features/auth/authSlice";
 import useGoogleAuth from "../hooks/useGoogleAuth";
 import { useDispatch } from "react-redux";
+import useAlert from "../hooks/useAlert";
+import { useNavigate } from "react-router-dom";
+import useLocalStorage from "../hooks/useLocalStorage";
 
 type LoginType = {
   type: string;
@@ -25,37 +28,79 @@ type SignInType = {
 };
 
 const LoginPage = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { setItem } = useLocalStorage("Tokens");
+  const { oauth, email, username, resetState } = useGoogleAuth();
   const [otp, setOtp] = useState<boolean | null>(null);
   const [send, { isLoading: sendLoading }] = useSendMutation();
   const [login, { isLoading: loginLoading }] = useLoginMutation();
+  const { setOpen, setErrorState } = useAlert();
   const [user, setUser] = useState<{
     user: string;
     pass: string | null;
     type: string;
   } | null>(null);
-  const { oauth, email, username, resetState } = useGoogleAuth();
 
   const sendOtp = async (data: LoginType) => {
     const { type, pass } = data;
-    const response = await send({ user: type }).unwrap();
-    if (response.message === "SUCCESS") {
-      setUser({
-        user: type,
-        pass: pass ? pass : null,
-        type: pass ? "FORM" : "GOOGLE",
+    try {
+      const response = await send({ user: type }).unwrap();
+      if (response.message === "SUCCESS") {
+        setUser({
+          user: type,
+          pass: pass ? pass : null,
+          type: pass ? "FORM" : "GOOGLE",
+        });
+        setOtp(true);
+        setErrorState({
+          type: "success",
+          message: "Otp Sent",
+          action: "SET_MESSAGE",
+        });
+        setOpen(true);
+      }
+    } catch (err: Error | unknown) {
+      console.log(err);
+      setErrorState({
+        type: "error",
+        message: "Something went wrong",
+        action: "SET_MESSAGE",
       });
-      setOtp(true);
+      setOpen(true);
     }
   };
 
   const submitHandler = async ({ user, otp, type, pass }: SignInType) => {
-    const response =
-      type === "FORM"
-        ? await login({ user, otp, type, pass }).unwrap()
-        : await login({ user, otp, type }).unwrap();
-    console.log(response);
-    if (response.message === "SUCCESS") {
-      // useDispatch(setCredintials(response.data));
+    setOpen(false);
+    try {
+      const response =
+        type === "FORM"
+          ? await login({ user, otp, type, pass }).unwrap()
+          : await login({ user, otp, type }).unwrap();
+      if (response.message === "SUCCESS") {
+        setErrorState({
+          type: "success",
+          message: "Login Successful",
+          action: "SET_MESSAGE",
+        });
+        setOpen(true);
+        const user = jwt_decode(response.accessToken) as string;
+        dispatch(setCredintials({ user, token: response.accessToken }));
+        setItem(
+          JSON.stringify({
+            refreshToken: response.accessToken,
+            accessToken: response.accessToken,
+          })
+        );
+      }
+    } catch (err: Error | unknown) {
+      setErrorState({
+        type: "error",
+        message: "Invalid Otp",
+        action: "SET_MESSAGE",
+      });
+      setOpen(true);
     }
   };
 
@@ -71,12 +116,12 @@ const LoginPage = () => {
       ></Flex>
       <Flex mt={20} mb={10} justifyContent={"end"}>
         <Text fontSize={"38px"} fontWeight={"700"}>
-          {otp ? "Otp Sent" : "Login"}
+          {otp ? "Otp Sent" : "Log In"}
         </Text>
       </Flex>
       <Flex w={"full"} justifyContent={"center"}>
         {otp ? (
-          <Otp submitHandler={submitHandler} user={user} />
+          <Otp submitHandler={submitHandler} user={user} type={"LOGIN"} />
         ) : (
           <Login sendOtp={sendOtp} isLoading={sendLoading} oauth={oauth} />
         )}

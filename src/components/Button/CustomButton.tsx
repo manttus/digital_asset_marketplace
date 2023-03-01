@@ -7,6 +7,7 @@ type ButtonType = {
   icon?: JSX.Element;
   fontSize?: string;
   isDisabled?: boolean;
+  isLoading?: boolean;
 };
 
 const CustomButton = ({
@@ -16,11 +17,13 @@ const CustomButton = ({
   icon,
   fontSize,
   isDisabled,
+  isLoading,
 }: ButtonType) => {
   return (
     <Flex
       as={Button}
       disabled={isDisabled}
+      isLoading={isLoading}
       type={"submit"}
       rounded={"32px"}
       onClick={onClick ? onClick : () => {}}

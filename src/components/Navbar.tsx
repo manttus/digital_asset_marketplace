@@ -13,6 +13,7 @@ import Footer from "./Footer";
 import useLocalStorage from "../hooks/useLocalStorage";
 import { useSelector } from "react-redux";
 import { selectCurrentToken } from "../features/auth/authSlice";
+import ScrollToTop from "../utils/ScrollToTop";
 
 declare global {
   interface Window {
@@ -69,6 +70,7 @@ const Navbar = () => {
 
   return (
     <>
+      <ScrollToTop />
       <Flex height={"115px"} justifyContent={"center"} alignItems={"center"}>
         <Flex
           position={"fixed"}

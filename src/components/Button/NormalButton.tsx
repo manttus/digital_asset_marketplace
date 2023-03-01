@@ -8,6 +8,8 @@ type NormalButtonProps = {
   width?: string;
   bg?: string;
   fontSize?: string;
+  isLoading?: boolean;
+  isDisabled?: boolean;
 };
 
 const NormalButton = ({
@@ -18,10 +20,14 @@ const NormalButton = ({
   width,
   bg,
   fontSize,
+  isLoading,
+  isDisabled,
 }: NormalButtonProps) => {
   return (
     <Button
       variant={type}
+      isLoading={isLoading}
+      isDisabled={isDisabled}
       color={type === "outline" ? (bg ? bg : "buttonPrimary") : "white"}
       bg={type === "outline" ? "white" : bg ? bg : "buttonPrimary"}
       borderColor={bg ? bg : "buttonPrimary"}

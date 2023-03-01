@@ -5,11 +5,13 @@ type CustomInputType = {
   placeholder?: string;
   onChange?: (e: React.FormEvent<HTMLInputElement>) => void;
   onBlur?: (e: React.FormEvent<HTMLInputElement>) => void;
+  register?: any;
 };
 
 const CustomInput = ({ type, ...rest }: CustomInputType) => {
   return (
     <Input
+      {...rest.register}
       padding={"20px"}
       w={"100%"}
       type={type}

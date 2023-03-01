@@ -6,10 +6,13 @@ interface Result {
   refreshToken: String;
 }
 interface Signup {
-  user: String;
-  pass?: String;
+  user?: String;
   username?: String;
-  type: String;
+  pass?: String;
+  postal?: String;
+  address?: String;
+  contact?: String;
+  state?: String;
 }
 
 interface Signin {
@@ -39,7 +42,7 @@ export const marketApi = createApi({
       }),
     }),
     verify: builder.mutation({
-      query: (credentials: { email: string; otp: string }) => ({
+      query: (credentials: { user: string; otp: string }) => ({
         url: "/otp/verifyOTP",
         method: "POST",
         body: credentials,

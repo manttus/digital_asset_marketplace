@@ -22,19 +22,20 @@ type OtpProps = {
     pass: string | null;
     type: string;
   } | null;
+  type: string;
 };
 
-const Otp = ({ submitHandler, user }: OtpProps) => {
+const Otp = ({ submitHandler, user, type }: OtpProps) => {
   const { register, handleSubmit } = useForm<OtpType>();
-
   const onSubmit = (data: OtpType) => {
-    if (user) {
-      submitHandler({
+    if (type === "LOGIN" && user) {
+      submitHandler!({
         user: user.user,
         pass: user.pass ? user.pass : undefined,
         type: user?.type,
         otp: data.otp,
       });
+    } else {
     }
   };
 
@@ -48,6 +49,8 @@ const Otp = ({ submitHandler, user }: OtpProps) => {
         })}
         placeholder={"Enter OTP"}
         type={"text"}
+        py={6}
+        px={5}
       />
       <Flex justifyContent={"end"} mt={5}>
         <CustomLink text={"Resend Otp"} size="15px" />
