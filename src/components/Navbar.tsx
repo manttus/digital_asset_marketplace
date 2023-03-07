@@ -13,7 +13,7 @@ import Footer from "./Footer";
 import useLocalStorage from "../hooks/useLocalStorage";
 import { useSelector } from "react-redux";
 import { selectCurrentToken } from "../features/auth/authSlice";
-import ScrollToTop from "../utils/ScrollToTop";
+import ScrollToTop from "./ScrollToTop";
 
 declare global {
   interface Window {
