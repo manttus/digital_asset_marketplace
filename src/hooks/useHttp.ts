@@ -11,11 +11,14 @@ const useHttp = <T>(
 ) => {
   const sendRequest = async () => {
     try {
-      const response = await fetch(requestConfig.url, {
-        method: requestConfig.method,
-        headers: requestConfig.headers,
-        body: requestConfig.body,
-      });
+      const response =
+        requestConfig.method === "GET"
+          ? await fetch(requestConfig.url)
+          : await fetch(requestConfig.url, {
+              method: requestConfig.method,
+              headers: requestConfig.headers,
+              body: JSON.stringify(requestConfig.body),
+            });
       const data = await response.json();
       handler(data);
     } catch (err) {
