@@ -6,12 +6,16 @@ import {
   Input,
   PinInput,
   PinInputField,
+  Select,
   Stack,
   Text,
+  Image,
+  Avatar,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import CustomLink from "../Links/CustomLink";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import useHttp from "../../hooks/useHttp";
 
 type Step1 = {
   first: string;
@@ -23,9 +27,9 @@ type Step1 = {
 
 type Step2 = {
   contact: string;
-  state: string;
   address: string;
   zipcode: string;
+  country?: string;
 };
 
 type Otp = {
@@ -37,7 +41,7 @@ type UserData = {
   login?: string;
   password?: string;
   phone?: string;
-  state?: string;
+  country?: string;
   address?: string;
   zipcode?: string;
 };
@@ -168,9 +172,24 @@ export const Step2 = ({ userData, verifyOtp }: StepProps) => {
 
 export const Step3 = ({ submitHandler, userData }: StepProps) => {
   const { register, watch } = useForm<Step2>();
+  const [countries, setContries] = useState([]);
+
   useEffect(() => {
+    const requestConfig = {
+      url: "https://restcountries.com/v3.1/all",
+      method: "GET",
+      body: {},
+    };
+    const { sendRequest } = useHttp<any>(requestConfig, (data) => {
+      setContries(data);
+    });
+    sendRequest();
+  }, []);
+
+  useEffect(() => {
+    console.log(watch());
     submitHandler!(watch());
-  }, [watch("contact"), watch("state"), watch("address"), watch("zipcode")]);
+  }, [watch("contact"), watch("address"), watch("zipcode"), watch("country")]);
 
   return (
     <Box as={"form"} w={"450px"}>
@@ -191,12 +210,40 @@ export const Step3 = ({ submitHandler, userData }: StepProps) => {
           ) : (
             <Input
               {...register("contact")}
-              placeholder={"Email "}
+              placeholder={"Email Address"}
               type={"email"}
               py={6}
               px={5}
             />
           )}
+        </FormControl>
+        <FormControl>
+          {/* <Input
+            {...register("country", {
+              required: true,
+              minLength: { value: 4, message: "Minimum Value 4" },
+              maxLength: { value: 4, message: "Maximum Value 4" },
+            })}
+            placeholder={"State"}
+            type={"text"}
+            py={6}
+            px={5}
+          /> */}
+          <Select
+            placeholder="Country"
+            size={"lg"}
+            fontSize={"16px"}
+            color={"gray.500"}
+            {...register("country", { required: true })}
+          >
+            {countries.map((country: any) => {
+              return (
+                <option value={country.name.common} key={country.cca2}>
+                  {country.name.common}
+                </option>
+              );
+            })}
+          </Select>
         </FormControl>
         <FormControl>
           <Input
@@ -212,19 +259,6 @@ export const Step3 = ({ submitHandler, userData }: StepProps) => {
           />
         </FormControl>
 
-        <FormControl>
-          <Input
-            {...register("state", {
-              required: true,
-              minLength: { value: 4, message: "Minimum Value 4" },
-              maxLength: { value: 4, message: "Maximum Value 4" },
-            })}
-            placeholder={"State"}
-            type={"text"}
-            py={6}
-            px={5}
-          />
-        </FormControl>
         <FormControl>
           <Input
             {...register("zipcode", {
