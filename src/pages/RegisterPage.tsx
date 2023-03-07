@@ -15,7 +15,7 @@ type UserData = {
   login?: string;
   password?: string;
   contact?: string;
-  state?: string;
+  country?: string;
   address?: string;
   zipcode?: string;
 };
@@ -25,7 +25,7 @@ const initialState: UserData = {
   login: "",
   password: "",
   contact: "",
-  state: "",
+  country: "",
   address: "",
   zipcode: "",
 };
@@ -50,7 +50,7 @@ const RegisterPage = () => {
     password?: string;
     confirm?: string;
     contact?: string;
-    state?: string;
+    country?: string;
     address?: string;
     zipcode?: string;
   };
@@ -68,11 +68,11 @@ const RegisterPage = () => {
       : setUserData((prev) => {
           const cleaned: UserData = {
             contact: data.contact,
-            state: data.state,
+            country: data.country,
             address: data.address,
             zipcode: data.zipcode,
           };
-
+          console.log(cleaned);
           return { ...prev, ...cleaned };
         });
   };
@@ -98,20 +98,20 @@ const RegisterPage = () => {
   };
 
   const registerUser = async () => {
-    console.log(userData);
     const cleared = {
       user: userData.login,
       username: userData.name,
       pass: userData.password,
       postal: userData.zipcode,
       address: userData.address,
-      state: userData.state,
+      country: userData.country,
       contact: userData.contact,
     };
     console.log(cleared);
     try {
       const res = await register(cleared).unwrap();
       console.log(res);
+      removeItem();
     } catch (err) {
       console.log(err);
     }
