@@ -1,8 +1,12 @@
 import { Flex, Text } from "@chakra-ui/react";
 import CustomBadge from "../Badge/CustomBadge";
 import MarketCard from "../Card/MarketCard";
+import { selectMarketItems } from "../../features/market/marketSlice";
+import { useSelector } from "react-redux";
 
 const Collection = () => {
+  const marketData = useSelector(selectMarketItems);
+
   return (
     <>
       <Flex justifyContent={"space-between"}>
@@ -35,10 +39,16 @@ const Collection = () => {
         alignItems={"center"}
         justifyContent={"center"}
       >
+        {marketData.length === 0 ? (
+          <Text>There are no products in the market</Text>
+        ) : null}
+        {marketData.map((item: any) => (
+          <MarketCard />
+        ))}
+        {/* <MarketCard />
         <MarketCard />
         <MarketCard />
-        <MarketCard />
-        <MarketCard />
+        <MarketCard /> */}
       </Flex>
     </>
   );

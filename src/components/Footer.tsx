@@ -1,7 +1,8 @@
-import { Flex, Hide, Stack, Text } from "@chakra-ui/react";
+import { Flex, Hide, Stack, Text, Box, Image } from "@chakra-ui/react";
 import { IoIosArrowForward } from "react-icons/io";
 import NormalButton from "./Button/NormalButton";
 import NormalLink from "./Links/NormalLink";
+import logo from "../assets/logo2.png";
 
 const Footer = () => {
   return (
@@ -24,11 +25,14 @@ const Footer = () => {
           lineHeight={"30px"}
           cursor={"pointer"}
         >
-          <Text fontSize={"23px"} fontWeight={"600"}>
-            Mintables
-          </Text>
+          <Box as={Flex} w={"75px"} alignItems={"center"} gap={2}>
+            <Image src={logo} alt="logo" />
+            <Text fontSize={"23px"} fontWeight={"600"}>
+              Mintables
+            </Text>
+          </Box>
           <Text color={"fontGhost"} fontWeight={"500"}>
-            <b> Noplomi</b> is a template created with the STUDIO tool. All
+            <b> Mintables </b> is a template created with the STUDIO tool. All
             information contained here is <b>fictional</b> and preview to create
             your own website.
           </Text>
@@ -41,6 +45,8 @@ const Footer = () => {
             textAlign={"justify"}
             transition={"all 0.5s ease-in-out"}
             cursor={"pointer"}
+            mt={1}
+            alignItems={"center"}
           >
             <Text fontSize={"23px"} fontWeight={"600"}>
               Navigation
@@ -63,6 +69,8 @@ const Footer = () => {
             w={"15%"}
             transition={"all 0.5s ease-in-out"}
             cursor={"pointer"}
+            mt={1}
+            alignItems={"center"}
           >
             <Text fontSize={"23px"} fontWeight={"600"}>
               Categories
@@ -90,6 +98,7 @@ const Footer = () => {
           lineHeight={"30px"}
           transition={"all 0.5s ease-in-out"}
           cursor={"pointer"}
+          mt={1}
         >
           <Text fontSize={"23px"} fontWeight={"600"}>
             Send Message
@@ -105,13 +114,7 @@ const Footer = () => {
           />
         </Flex>
       </Flex>
-      <Flex
-        px={"60px"}
-        pt={"30px"}
-        pb={"60px"}
-        color={"fontGhost"}
-        fontWeight={"500"}
-      >
+      <Flex px={"60px"} py={"30px"} color={"fontGhost"} fontWeight={"500"}>
         Copyright © 2022. All right reserved.
       </Flex>
     </Flex>

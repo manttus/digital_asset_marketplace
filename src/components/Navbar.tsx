@@ -1,4 +1,4 @@
-import { Avatar, Box, Flex, Hide, Show, Text } from "@chakra-ui/react";
+import { Avatar, Box, Flex, Hide, Show, Text, Image } from "@chakra-ui/react";
 import { Outlet, useNavigate } from "react-router";
 import { BsDot } from "react-icons/bs";
 import CustomButton from "./Button/CustomButton";
@@ -6,7 +6,7 @@ import CustomLink from "./Links/CustomLink";
 import CustomIconButton from "./Button/CustomIconButton";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { AiOutlineClose } from "react-icons/ai";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Overlay from "./Overlay";
 import { motion } from "framer-motion";
 import Footer from "./Footer";
@@ -14,6 +14,14 @@ import useLocalStorage from "../hooks/useLocalStorage";
 import { useSelector } from "react-redux";
 import { selectCurrentToken } from "../features/auth/authSlice";
 import ScrollToTop from "./ScrollToTop";
+import NFT from "../../contract_data/NFT.json";
+import NFTaddress from "../../contract_data/NFT-Address.json";
+import Market from "../../contract_data/Market.json";
+import MarketAddress from "../../contract_data/Market-Address.json";
+import { ethers } from "ethers";
+import { useDispatch } from "react-redux";
+import { setMarketList } from "../features/market/marketSlice";
+import logo from "../assets/logo2.png";
 
 declare global {
   interface Window {
@@ -41,11 +49,12 @@ const navlinks = [
   { name: "About us", path: "/about" },
   { name: "Collection", path: "/collection" },
   { name: "Archives", path: "/archive" },
-  { name: "Be a Creator", path: "/create" },
+  { name: "Be a Creator", path: "/mint" },
 ];
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const state = useSelector(selectCurrentToken);
   const [overlay, setOverlay] = useState<boolean>(false);
   const { value, setItem, removeItem } = useLocalStorage("wallet");
@@ -67,6 +76,31 @@ const Navbar = () => {
       alert("Please install MetaMask");
     }
   };
+
+  const loadContracts = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const nftContract = new ethers.Contract(
+      NFTaddress.address,
+      NFT.abi,
+      signer
+    );
+    const marketContract = new ethers.Contract(
+      MarketAddress.address,
+      Market.abi,
+      signer
+    );
+    console.log(nftContract, marketContract);
+    const data = await marketContract._getListings();
+    console.log(data);
+    dispatch(setMarketList({ marketItems: data }));
+  };
+
+  useEffect(() => {
+    if (wallet) {
+      loadContracts();
+    }
+  }, [wallet]);
 
   return (
     <>
@@ -91,7 +125,11 @@ const Navbar = () => {
             rounded={"200px"}
             justifyContent={"space-between"}
           >
-            <Flex w={"20%"}></Flex>
+            <Flex w={"20%"} justifyContent={"start"}>
+              <Box w={"80px"}>
+                <Image src={logo} alt="logo" />
+              </Box>
+            </Flex>
             <Hide below="xl">
               <Flex
                 w={"80%"}
