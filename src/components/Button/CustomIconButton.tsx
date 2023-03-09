@@ -5,6 +5,9 @@ type CustomIconButtonProps = {
   aria: string;
   onClick: () => void;
   type: string;
+  border?: boolean;
+  borderColor?: string;
+  color?: string;
 };
 
 const CustomIconButton = ({
@@ -12,15 +15,17 @@ const CustomIconButton = ({
   aria,
   onClick,
   type,
+  ...rest
 }: CustomIconButtonProps) => {
   return (
     <IconButton
       onClick={onClick}
       w={"50px"}
       h={"50px"}
-      color={type === "outlined" ? "white" : ""}
+      color={type === "outlined" ? "white" : "buttonPrimary"}
       bg={type === "outlined" ? "transparent" : "background"}
-      border={type === "filled" ? "none" : "1px solid white"}
+      border={type === "filled" ? "none" : "1px solid black"}
+      borderColor={type === "filled" ? "buttonPrimary" : "none"}
       icon={icon}
       aria-label={aria}
       rounded={"32px"}

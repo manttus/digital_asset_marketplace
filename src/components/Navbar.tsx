@@ -125,7 +125,7 @@ const Navbar = () => {
             rounded={"200px"}
             justifyContent={"space-between"}
           >
-            <Flex w={"20%"} justifyContent={"start"}>
+            <Flex w={"20%"} justifyContent={"center"}>
               <Box w={"80px"}>
                 <Image src={logo} alt="logo" />
               </Box>

@@ -27,6 +27,10 @@ const App = () => {
           path: "register",
           element: <RegisterPage />,
         },
+        {
+          path: "mint",
+          element: <MintPage />,
+        },
       ],
     },
   ]);

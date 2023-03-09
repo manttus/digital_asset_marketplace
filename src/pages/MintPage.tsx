@@ -1,4 +1,5 @@
-import { Flex } from "@chakra-ui/react";
+import { Flex, Box } from "@chakra-ui/react";
+import NormalButton from "../components/Button/NormalButton";
 
 const MintPage = () => {
   return (
@@ -10,7 +11,13 @@ const MintPage = () => {
         justifyContent={"center"}
         alignItems={"center"}
       >
-        <MintForm />
+        <Box as={"form"}>
+          <input type="text" placeholder="Name" />
+          <input type="text" placeholder="Category" />
+          <input type="text" placeholder="Type" />
+          <input type="text" placeholder="Asset" />
+          <NormalButton text="Mint" />
+        </Box>
       </Flex>
     </Flex>
   );
