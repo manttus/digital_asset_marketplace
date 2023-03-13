@@ -2,11 +2,9 @@ import {
   FormControl,
   Stack,
   Box,
-  FormErrorMessage,
   Input,
   Flex,
   Button,
-  Center,
   Text,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
@@ -39,6 +37,7 @@ const Login = ({ sendOtp, isLoading, oauth }: LoginProps) => {
     <Box
       as="form"
       onSubmit={handleSubmit((data) => {
+        console.log(data);
         sendOtp(data);
         reset();
       })}
@@ -81,7 +80,9 @@ const Login = ({ sendOtp, isLoading, oauth }: LoginProps) => {
           bg={"buttonPrimary"}
           fontSize={"15px"}
           isLoading={isLoading}
+          onClick={() => {}}
         />
+
         <Button
           w={"full"}
           variant={"outline"}
@@ -89,11 +90,11 @@ const Login = ({ sendOtp, isLoading, oauth }: LoginProps) => {
           py={"25px"}
           fontSize={"15px"}
           onClick={oauth}
-          transition={"all 0.5s ease-in-out"}
+          transition={"all 0.3s ease-in-out"}
           _hover={{
             bg: "white",
             transform: "scale(1.02)",
-            transition: "all 0.5s ease-in-out",
+            transition: "all 0.3s ease-in-out",
           }}
           iconSpacing={4}
         >

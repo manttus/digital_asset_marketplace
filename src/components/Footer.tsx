@@ -14,7 +14,7 @@ const Footer = () => {
         gap={40}
         borderY={"1px"}
         borderColor={"gray.200"}
-        marginTop={"20px"}
+        marginTop={"40px"}
       >
         <Flex
           direction={"column"}

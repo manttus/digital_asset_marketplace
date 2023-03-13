@@ -67,12 +67,7 @@ const MintPage = () => {
           <Mint />
         </Flex>
         <Flex w={"40%"} px={"10"}>
-          <Flex
-            boxShadow={"sm"}
-            rounded={"md"}
-            w={"full"}
-            position={"relative"}
-          >
+          <Flex rounded={"md"} w={"full"} position={"relative"}>
             <Flex
               direction={"column"}
               justifyContent={"center"}
@@ -80,36 +75,41 @@ const MintPage = () => {
               h={"full"}
               w={"full"}
               gap={5}
+              border={"1px solid"}
+              borderColor={"gray.200"}
               rounded={"md"}
             >
               <Flex
                 p={"80px"}
                 direction={"column"}
                 alignItems={"center"}
+                w={"full"}
                 gap={10}
               >
-                <Flex gap={2} direction={"column"} alignItems={"center"}>
+                {/* <Flex gap={2} direction={"column"} alignItems={"center"}>
                   <Text fontSize={"28px"} fontWeight={"600"}>
-                    Upload your assets.
+                    Upload your asset.
                   </Text>
-                </Flex>
+                </Flex> */}
                 <Flex
                   direction={"column"}
                   alignItems={"center"}
                   gap={2}
+                  w={"450px"}
                   bg={"white"}
-                  p={10}
+                  px={10}
+                  py={20}
                   border={"2px dashed"}
                   borderColor={"fontGhost"}
                   rounded={"md"}
                 >
-                  <BsCloudUpload size={60} color={"fontGhost"} />
+                  <BsCloudUpload size={50} color={"fontGhost"} />
                   <Text
                     fontSize={"20px"}
                     fontWeight={"600"}
                     color={"fontGhost"}
                   >
-                    Drag and drop your files here
+                    Drag and drop your files
                   </Text>
                 </Flex>
                 {/* <NormalButton text="Upload" type="filled" width="200px" /> */}

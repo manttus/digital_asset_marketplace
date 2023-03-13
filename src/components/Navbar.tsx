@@ -1,6 +1,18 @@
-import { Avatar, Box, Flex, Hide, Show, Text, Image } from "@chakra-ui/react";
+import {
+  Avatar,
+  Box,
+  Flex,
+  Hide,
+  Show,
+  Text,
+  Image,
+  Input,
+  InputGroup,
+  InputLeftAddon,
+  Button,
+} from "@chakra-ui/react";
 import { Outlet, useNavigate } from "react-router";
-import { BsDot } from "react-icons/bs";
+import { BsDot, BsWallet } from "react-icons/bs";
 import CustomButton from "./Button/CustomButton";
 import CustomLink from "./Links/CustomLink";
 import CustomIconButton from "./Button/CustomIconButton";
@@ -20,8 +32,14 @@ import Market from "../../contract_data/Market.json";
 import MarketAddress from "../../contract_data/Market-Address.json";
 import { ethers } from "ethers";
 import { useDispatch } from "react-redux";
-import { setMarketList } from "../features/market/marketSlice";
 import logo from "../assets/logo2.png";
+import {
+  setMarketInstance,
+  setMarketList,
+  setNftInstance,
+} from "../features/market/marketSlice";
+import { FaEthereum, FaWallet } from "react-icons/fa";
+import { IoIosWallet } from "react-icons/io";
 
 declare global {
   interface Window {
@@ -80,20 +98,6 @@ const Navbar = () => {
   const loadContracts = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
-    const nftContract = new ethers.Contract(
-      NFTaddress.address,
-      NFT.abi,
-      signer
-    );
-    const marketContract = new ethers.Contract(
-      MarketAddress.address,
-      Market.abi,
-      signer
-    );
-    console.log(nftContract, marketContract);
-    const data = await marketContract._getListings();
-    console.log(data);
-    dispatch(setMarketList({ marketItems: data }));
   };
 
   useEffect(() => {
@@ -114,8 +118,8 @@ const Navbar = () => {
           height={"85px"}
           shadow={"sm"}
           justifyContent={"space-between"}
-          px={"18px"}
-          zIndex={2}
+          px={"20px"}
+          zIndex={3}
         >
           <Flex
             w={"70%"}
@@ -168,19 +172,58 @@ const Navbar = () => {
           >
             {state ? (
               <Hide below="xl">
-                <CustomButton
-                  text={wallet ? "Connected" : "Connect"}
-                  type="filled"
-                  onClick={
-                    !wallet
-                      ? metaMaskHandler
-                      : () => {
-                          removeItem();
-                          setWallet(null);
-                        }
-                  }
-                />
-                <Avatar size={"md"} />
+                {!wallet ? (
+                  <CustomButton
+                    text={"Connect"}
+                    type="filled"
+                    onClick={
+                      !wallet
+                        ? metaMaskHandler
+                        : () => {
+                            removeItem();
+                            setWallet(null);
+                          }
+                    }
+                  />
+                ) : (
+                  <Flex
+                    position={"relative"}
+                    cursor={"pointer"}
+                    gap={5}
+                    alignItems={"center"}
+                  >
+                    <Box
+                      display={"flex"}
+                      justifyContent={"center"}
+                      alignItems={"center"}
+                      position={"absolute"}
+                      top={2}
+                      left={3}
+                      bg={"buttonPrimary"}
+                      p={1}
+                      rounded={"full"}
+                      h={"35px"}
+                      w={"35px"}
+                    >
+                      {/* <IoIosWallet color="white" size={"20px"} /> */}
+                      <FaEthereum color="white" size={"20px"} />
+                    </Box>
+                    <Flex
+                      rounded={"3xl"}
+                      pl={"60px"}
+                      h={"50px"}
+                      bg={"background"}
+                      fontWeight={"700"}
+                      borderColor={"buttonHover"}
+                      alignItems={"center"}
+                      justifyContent={"end"}
+                      pr={"5"}
+                    >
+                      <Text> 169.6660</Text>
+                    </Flex>
+                    <Avatar h={"45px"} w={"45px"} />
+                  </Flex>
+                )}
               </Hide>
             ) : (
               <Hide below="xl">
@@ -200,7 +243,8 @@ const Navbar = () => {
               <CustomIconButton
                 icon={<RxHamburgerMenu size={"20px"} />}
                 aria={"Plus"}
-                type={"filled"}
+                type={"outline"}
+                color={"buttonPrimary"}
                 onClick={() => {
                   setOverlay(true);
                 }}
@@ -219,6 +263,7 @@ const Navbar = () => {
               onClick={() => {
                 setOverlay(false);
               }}
+              color={"white"}
             />
           </Flex>
 
@@ -228,7 +273,8 @@ const Navbar = () => {
             initial={"hidden"}
             animate={overlay ? "visible" : "hidden"}
             direction={"column"}
-            justifyContent={"flex-end"}
+            justifyContent={"center"}
+            height={"80%"}
             alignItems={"center"}
           >
             <Text
@@ -258,12 +304,52 @@ const Navbar = () => {
               ))}
               {state ? (
                 <Box mt={"40px"}>
-                  <CustomButton
-                    text="Connect"
-                    type="filled"
-                    onClick={metaMaskHandler}
-                    fontSize={"18px"}
-                  />
+                  {!wallet ? (
+                    <CustomButton
+                      text="Connect"
+                      type="filled"
+                      onClick={metaMaskHandler}
+                      fontSize={"18px"}
+                    />
+                  ) : (
+                    <Flex
+                      position={"relative"}
+                      cursor={"pointer"}
+                      gap={5}
+                      alignItems={"center"}
+                    >
+                      <Box
+                        display={"flex"}
+                        justifyContent={"center"}
+                        alignItems={"center"}
+                        position={"absolute"}
+                        top={2}
+                        left={3}
+                        bg={"buttonPrimary"}
+                        p={1}
+                        rounded={"full"}
+                        h={"35px"}
+                        w={"35px"}
+                      >
+                        {/* <IoIosWallet color="white" size={"20px"} /> */}
+                        <FaEthereum color="white" size={"20px"} />
+                      </Box>
+                      <Flex
+                        rounded={"3xl"}
+                        pl={"60px"}
+                        h={"50px"}
+                        bg={"background"}
+                        fontWeight={"700"}
+                        borderColor={"buttonHover"}
+                        alignItems={"center"}
+                        justifyContent={"end"}
+                        pr={"5"}
+                      >
+                        <Text> 169.6660</Text>
+                      </Flex>
+                      <Avatar h={"45px"} w={"45px"} />
+                    </Flex>
+                  )}
                 </Box>
               ) : (
                 <Flex gap={5} mt={"40px"}>

@@ -123,11 +123,11 @@ const RegisterPage = () => {
         bgImage={illustration}
         bgPos={"center"}
         w={"full"}
-        height={"130px"}
+        height={"140px"}
         top={0}
         position={"absolute"}
       ></Flex>
-      <Flex mt={20} mb={5} justifyContent={"center"}>
+      <Flex mt={28} mb={5} justifyContent={"center"}>
         <Text fontSize={"38px"} fontWeight={"bold"}>
           {steps === 1 && "Create Account"}
           {steps === 2 && "Verify Account"}

@@ -1,6 +1,6 @@
-import { Text, Flex, useToast } from "@chakra-ui/react";
+import { Text, Flex } from "@chakra-ui/react";
 import Login from "../components/Forms/Login";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import jwt_decode from "jwt-decode";
 import {
   useLoginMutation,
@@ -31,7 +31,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { setItem } = useLocalStorage("Tokens");
-  const { oauth, email, username, resetState } = useGoogleAuth();
+  const { oauth } = useGoogleAuth();
   const [otp, setOtp] = useState<boolean | null>(null);
   const [send, { isLoading: sendLoading }] = useSendMutation();
   const [login, { isLoading: loginLoading }] = useLoginMutation();
@@ -108,13 +108,13 @@ const LoginPage = () => {
     <Flex alignItems={"center"} direction={"column"}>
       <Flex
         bgImage={illustration}
-        bgPos={"center"}
+        bgPos={"bottom"}
         w={"full"}
-        height={"130px"}
+        height={"140px"}
         top={0}
         position={"absolute"}
       ></Flex>
-      <Flex mt={20} mb={10} justifyContent={"end"}>
+      <Flex mt={28} mb={10} justifyContent={"end"}>
         <Text fontSize={"38px"} fontWeight={"700"}>
           {otp ? "Otp Sent" : "Log In"}
         </Text>

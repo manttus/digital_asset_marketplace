@@ -3,6 +3,7 @@ import CustomBadge from "../Badge/CustomBadge";
 import MarketCard from "../Card/MarketCard";
 import { selectMarketItems } from "../../features/market/marketSlice";
 import { useSelector } from "react-redux";
+import NoResult from "../NoResult";
 
 const Collection = () => {
   const marketData = useSelector(selectMarketItems);
@@ -39,9 +40,7 @@ const Collection = () => {
         alignItems={"center"}
         justifyContent={"center"}
       >
-        {marketData.length === 0 ? (
-          <Text>There are no products in the market</Text>
-        ) : null}
+        {marketData.length === 0 ? <NoResult /> : null}
         {marketData.map((item: any) => (
           <MarketCard />
         ))}

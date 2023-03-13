@@ -1,19 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { Contract } from "ethers";
 
 type initialStateType = {
+  marketInstance: Contract | null;
+  nftInstance: Contract | null;
   marketItems: any[];
   feeds: any[];
-  wallet: string;
-  market: any;
-  nft: any;
+  walletAddress: string | null;
 };
 
 const initialState: initialStateType = {
   marketItems: [],
   feeds: [],
-  wallet: "",
-  market: null,
-  nft: null,
+  nftInstance: null,
+  marketInstance: null,
+  walletAddress: null,
 };
 const marketSlice = createSlice({
   name: "market",
@@ -23,14 +24,18 @@ const marketSlice = createSlice({
       state.marketItems = action.payload.marketItems;
       console.log("marketItems", state.marketItems);
     },
-    setFeedList: (state, action) => {},
-    setWallet: (state, action) => {
-      state.wallet = action.payload.wallet;
+    setMarketInstance: (state, action) => {
+      state.marketInstance = action.payload.marketInstance;
     },
-    setContracts: (state, action) => {},
+    setNftInstance: (state, action) => {
+      state.nftInstance = action.payload.nftInstance;
+    },
   },
 });
 
-export const { setMarketList, setFeedList, setWallet } = marketSlice.actions;
+export const { setMarketList, setMarketInstance, setNftInstance } =
+  marketSlice.actions;
 export default marketSlice.reducer;
 export const selectMarketItems = (state: any) => state.market.marketItems;
+export const selectMarketInstance = (state: any) => state.market.marketInstance;
+export const selectNftInstance = (state: any) => state.market.nftInstance;

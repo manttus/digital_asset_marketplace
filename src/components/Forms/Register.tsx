@@ -73,6 +73,7 @@ export const Step1 = ({ submitHandler, userData }: StepProps) => {
               py={6}
               px={5}
               value={userData.name && userData.name?.split(" ")[0]}
+              borderColor={"buttonPrimary"}
             />
           </FormControl>
           <FormControl>
@@ -87,6 +88,7 @@ export const Step1 = ({ submitHandler, userData }: StepProps) => {
               py={6}
               px={5}
               value={userData.name && userData.name?.split(" ")[1]}
+              borderColor={"buttonPrimary"}
             />
           </FormControl>
         </HStack>
@@ -102,6 +104,7 @@ export const Step1 = ({ submitHandler, userData }: StepProps) => {
             py={6}
             px={5}
             value={userData?.login}
+            borderColor={"buttonPrimary"}
           />
         </FormControl>
         <FormControl>
@@ -115,6 +118,7 @@ export const Step1 = ({ submitHandler, userData }: StepProps) => {
             type={"password"}
             py={6}
             px={5}
+            borderColor={"buttonPrimary"}
           />
         </FormControl>
         <FormControl>
@@ -131,6 +135,7 @@ export const Step1 = ({ submitHandler, userData }: StepProps) => {
             type={"password"}
             py={6}
             px={5}
+            borderColor={"buttonPrimary"}
           />
         </FormControl>
       </Stack>

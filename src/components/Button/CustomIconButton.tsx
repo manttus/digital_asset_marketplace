@@ -24,8 +24,8 @@ const CustomIconButton = ({
       h={"50px"}
       color={type === "outlined" ? "white" : "buttonPrimary"}
       bg={type === "outlined" ? "transparent" : "background"}
-      border={type === "filled" ? "none" : "1px solid black"}
-      borderColor={type === "filled" ? "buttonPrimary" : "none"}
+      border={type === "filled" ? "none" : "1px solid"}
+      borderColor={type === "filled" ? "buttonPrimary" : rest.color}
       icon={icon}
       aria-label={aria}
       rounded={"32px"}

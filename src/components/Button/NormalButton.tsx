@@ -1,4 +1,4 @@
-import { Button } from "@chakra-ui/react";
+import { Button, Flex } from "@chakra-ui/react";
 
 type NormalButtonProps = {
   text: string;
@@ -10,6 +10,7 @@ type NormalButtonProps = {
   fontSize?: string;
   isLoading?: boolean;
   isDisabled?: boolean;
+  zindex?: number;
 };
 
 const NormalButton = ({
@@ -22,30 +23,33 @@ const NormalButton = ({
   fontSize,
   isLoading,
   isDisabled,
+  zindex,
 }: NormalButtonProps) => {
   return (
     <Button
+      type={"submit"}
       variant={type}
       isLoading={isLoading}
       isDisabled={isDisabled}
+      zIndex={zindex}
       color={type === "outline" ? (bg ? bg : "buttonPrimary") : "white"}
       bg={type === "outline" ? "white" : bg ? bg : "buttonPrimary"}
       borderColor={bg ? bg : "buttonPrimary"}
-      transition={"all 0.5s ease-in-out"}
-      type={"submit"}
+      transition={"all 0.3s ease-in-out"}
       border={"2px"}
       w={width}
       _hover={{
         bg: bg ? bg : "buttonPrimary",
         color: "white",
         transform: "scale(1.02)",
-        transition: "all 0.5s ease-in-out",
+        transition: "all 0.3s ease-in-out",
       }}
       py={"25px"}
       fontSize={"18px"}
       onClick={onClick}
-      ringOffset={10}
       rightIcon={rightIcon}
+      justifyContent={"center"}
+      gap={1}
     >
       {text}
     </Button>
