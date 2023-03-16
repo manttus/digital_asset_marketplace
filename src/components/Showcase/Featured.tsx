@@ -38,7 +38,7 @@ const Featured = () => {
           SORTED BY LATEST
         </Text>
       </Flex>
-      {marketData.length !== 0 ? (
+      {marketData.length === 0 ? (
         <Flex w={"full"} shadow={"sm"}>
           <Flex w={"50%"} direction={"column"} bg={"white"} rounded={"10px"}>
             <Flex

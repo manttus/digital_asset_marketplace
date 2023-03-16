@@ -1,13 +1,4 @@
-import {
-  Flex,
-  Box,
-  Text,
-  HStack,
-  Image,
-  Avatar,
-  Divider,
-  Link,
-} from "@chakra-ui/react";
+import { Flex, Box, Text, Image, Avatar, Divider } from "@chakra-ui/react";
 import Illustration from "../../assets/eth1.gif";
 
 import CustomLink from "../Links/CustomLink";

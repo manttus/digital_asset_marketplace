@@ -9,58 +9,22 @@ import {
   Select,
   Stack,
   Text,
-  Image,
-  Avatar,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import CustomLink from "../Links/CustomLink";
 import { useEffect, useState } from "react";
 import useHttp from "../../hooks/useHttp";
-
-type Step1 = {
-  first: string;
-  last: string;
-  user: string;
-  password: string;
-  confirm: string;
-};
-
-type Step2 = {
-  contact: string;
-  address: string;
-  zipcode: string;
-  country?: string;
-};
-
-type Otp = {
-  otp: string;
-};
-
-type UserData = {
-  name?: string;
-  login?: string;
-  password?: string;
-  phone?: string;
-  country?: string;
-  address?: string;
-  zipcode?: string;
-};
-
-type StepProps = {
-  submitHandler?: (data: any) => void;
-  userData: UserData;
-  verifyOtp?: (email: string, otp: string) => Promise<void>;
-};
+import { StepProps, StepType1, StepType2 } from "../../types/RegisterPageType";
 
 export const Step1 = ({ submitHandler, userData }: StepProps) => {
-  const { register, watch } = useForm<Step1>();
+  const { register, watch } = useForm<StepType1>();
   useEffect(() => {
     submitHandler!(watch());
   }, [watch("first"), watch("last"), watch("user"), watch("password")]);
   return (
     <Box as={"form"} w={"450px"}>
       <Stack spacing={5}>
-        <HStack spacing={5}>
+        <HStack spacing={3}>
           <FormControl>
             <Input
               {...register("first", {
@@ -73,7 +37,6 @@ export const Step1 = ({ submitHandler, userData }: StepProps) => {
               py={6}
               px={5}
               value={userData.name && userData.name?.split(" ")[0]}
-              borderColor={"buttonPrimary"}
             />
           </FormControl>
           <FormControl>
@@ -88,7 +51,6 @@ export const Step1 = ({ submitHandler, userData }: StepProps) => {
               py={6}
               px={5}
               value={userData.name && userData.name?.split(" ")[1]}
-              borderColor={"buttonPrimary"}
             />
           </FormControl>
         </HStack>
@@ -104,7 +66,6 @@ export const Step1 = ({ submitHandler, userData }: StepProps) => {
             py={6}
             px={5}
             value={userData?.login}
-            borderColor={"buttonPrimary"}
           />
         </FormControl>
         <FormControl>
@@ -118,7 +79,6 @@ export const Step1 = ({ submitHandler, userData }: StepProps) => {
             type={"password"}
             py={6}
             px={5}
-            borderColor={"buttonPrimary"}
           />
         </FormControl>
         <FormControl>
@@ -135,7 +95,6 @@ export const Step1 = ({ submitHandler, userData }: StepProps) => {
             type={"password"}
             py={6}
             px={5}
-            borderColor={"buttonPrimary"}
           />
         </FormControl>
       </Stack>
@@ -150,7 +109,7 @@ export const Step2 = ({ userData, verifyOtp }: StepProps) => {
         <Flex direction={"column"} alignItems={"center"} gap={2}>
           <Text fontSize={"18px"}>We have sent code to your email</Text>
           <Text fontSize={"15px"} fontWeight={"600"}>
-            basnetraymonn@gmail.com
+            {userData.login}
           </Text>
         </Flex>
         <HStack spacing={3}>
@@ -176,7 +135,7 @@ export const Step2 = ({ userData, verifyOtp }: StepProps) => {
 };
 
 export const Step3 = ({ submitHandler, userData }: StepProps) => {
-  const { register, watch } = useForm<Step2>();
+  const { register, watch } = useForm<StepType2>();
   const [countries, setContries] = useState([]);
 
   useEffect(() => {
@@ -223,17 +182,6 @@ export const Step3 = ({ submitHandler, userData }: StepProps) => {
           )}
         </FormControl>
         <FormControl>
-          {/* <Input
-            {...register("country", {
-              required: true,
-              minLength: { value: 4, message: "Minimum Value 4" },
-              maxLength: { value: 4, message: "Maximum Value 4" },
-            })}
-            placeholder={"State"}
-            type={"text"}
-            py={6}
-            px={5}
-          /> */}
           <Select
             placeholder="Country"
             size={"lg"}

@@ -11,17 +11,8 @@ import { useForm } from "react-hook-form";
 import { FcGoogle } from "react-icons/fc";
 import NormalButton from "../Button/NormalButton";
 import CustomLink from "../Links/CustomLink";
-
-type LoginType = {
-  type: string;
-  pass: string;
-};
-
-type LoginProps = {
-  sendOtp: (data: LoginType) => void;
-  isLoading: boolean;
-  oauth: () => void;
-};
+import { useNavigate } from "react-router-dom";
+import { LoginFormType, LoginProps } from "../../types/LoginPageType";
 
 const Login = ({ sendOtp, isLoading, oauth }: LoginProps) => {
   const {
@@ -31,7 +22,9 @@ const Login = ({ sendOtp, isLoading, oauth }: LoginProps) => {
       errors: { type, pass },
     },
     reset,
-  } = useForm<LoginType>();
+  } = useForm<LoginFormType>();
+
+  const navigate = useNavigate();
 
   return (
     <Box
@@ -42,7 +35,6 @@ const Login = ({ sendOtp, isLoading, oauth }: LoginProps) => {
         reset();
       })}
       w={"400px"}
-      mb={20}
     >
       <Stack spacing={6}>
         <FormControl isInvalid={type ? true : false}>
@@ -72,7 +64,13 @@ const Login = ({ sendOtp, isLoading, oauth }: LoginProps) => {
           />
         </FormControl>
         <Flex justifyContent={"end"}>
-          <CustomLink text={"Forgot Password"} size={"15px"} />
+          <CustomLink
+            text={"Forgot Password"}
+            size={"15px"}
+            onClick={() => {
+              navigate("/forgot");
+            }}
+          />
         </Flex>
         <NormalButton
           text="Login"

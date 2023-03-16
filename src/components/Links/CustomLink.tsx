@@ -1,5 +1,6 @@
 import { Box, Link } from "@chakra-ui/react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 type CustomLinkProps = {
   text: string;
@@ -18,15 +19,17 @@ const CustomLink = ({
   weight,
   onClick,
 }: CustomLinkProps) => {
+  const navigate = useNavigate();
   return (
     <Link
-      href={to}
       position={"relative"}
       as={motion.a}
       fontWeight={weight ? weight : 600}
       fontSize={size}
       color={color ? color : "black"}
-      onClick={onClick}
+      onClick={() => {
+        navigate(to ? to : "/");
+      }}
       _before={{
         width: "0%",
         position: "absolute",

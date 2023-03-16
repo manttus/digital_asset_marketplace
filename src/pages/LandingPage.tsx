@@ -7,6 +7,7 @@ import { IoIosArrowForward } from "react-icons/io";
 import Partners from "../components/Showcase/Partners";
 import Featured from "../components/Showcase/Featured";
 import Collection from "../components/Showcase/Collection";
+import Circular from "../components/Abstracts/Circular";
 
 const LandingPage = () => {
   return (
@@ -19,8 +20,11 @@ const LandingPage = () => {
         textAlign={"center"}
         lineHeight={"1.2"}
         letterSpacing={"-0.2em"}
+        position={"relative"}
       >
-        <Flex alignItems={"center"} gap={6}>
+        <Circular top="-350" left="950" />
+        <Circular top="200" left="-50" />
+        <Flex alignItems={"center"} gap={6} zIndex={2}>
           <Text fontSize={"95px"} fontWeight={"600"}>
             Start selling
           </Text>
@@ -33,7 +37,7 @@ const LandingPage = () => {
             bgPos={"center"}
           ></Box>
         </Flex>
-        <Flex alignItems={"center"} gap={10}>
+        <Flex alignItems={"center"} gap={10} zIndex={2}>
           <Text fontSize={"95px"} fontWeight={"600"}>
             creative
           </Text>
@@ -49,7 +53,7 @@ const LandingPage = () => {
             assets
           </Text>
         </Flex>
-        <Flex alignItems={"center"} gap={6}>
+        <Flex alignItems={"center"} gap={6} zIndex={2}>
           <Box
             rounded={"50px"}
             height={"90px"}
@@ -70,17 +74,10 @@ const LandingPage = () => {
         bg={"background"}
         direction={"column"}
         gap={5}
+        zIndex={2}
       >
         <Collection />
-        <Flex w={"100%"} justifyContent={"center"} pt={"30px"}>
-          <NormalButton
-            width={"380px"}
-            text="Check More"
-            rightIcon={<IoIosArrowForward />}
-            onClick={() => {}}
-            type={"solid"}
-          />
-        </Flex>
+
         <Partners />
         <Featured />
       </Flex>

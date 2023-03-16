@@ -1,41 +1,38 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { Contract } from "ethers";
+
+type market = {};
+type token = {};
 
 type initialStateType = {
-  marketInstance: Contract | null;
-  nftInstance: Contract | null;
-  marketItems: any[];
-  feeds: any[];
-  walletAddress: string | null;
+  token: token;
+  market: market;
+  marketItems: [];
+  feeds: [];
+  wallet: string;
 };
 
 const initialState: initialStateType = {
   marketItems: [],
   feeds: [],
-  nftInstance: null,
-  marketInstance: null,
-  walletAddress: null,
+  wallet: "",
+  token: {},
+  market: {},
 };
 const marketSlice = createSlice({
   name: "market",
   initialState: initialState,
   reducers: {
-    setMarketList: (state, action) => {
+    setContractData: (state, action) => {
+      state.market = action.payload.market;
+      state.token = action.payload.token;
+    },
+    setMarketItems: (state, action) => {
       state.marketItems = action.payload.marketItems;
-      console.log("marketItems", state.marketItems);
-    },
-    setMarketInstance: (state, action) => {
-      state.marketInstance = action.payload.marketInstance;
-    },
-    setNftInstance: (state, action) => {
-      state.nftInstance = action.payload.nftInstance;
     },
   },
 });
 
-export const { setMarketList, setMarketInstance, setNftInstance } =
-  marketSlice.actions;
+export const { setContractData, setMarketItems } = marketSlice.actions;
 export default marketSlice.reducer;
 export const selectMarketItems = (state: any) => state.market.marketItems;
-export const selectMarketInstance = (state: any) => state.market.marketInstance;
-export const selectNftInstance = (state: any) => state.market.nftInstance;
+export const selectMarketSlice = (state: any) => state.market;

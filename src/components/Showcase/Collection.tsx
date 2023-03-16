@@ -4,6 +4,7 @@ import MarketCard from "../Card/MarketCard";
 import { selectMarketItems } from "../../features/market/marketSlice";
 import { useSelector } from "react-redux";
 import NoResult from "../NoResult";
+import NormalButton from "../Button/NormalButton";
 
 const Collection = () => {
   const marketData = useSelector(selectMarketItems);
@@ -48,6 +49,14 @@ const Collection = () => {
         <MarketCard />
         <MarketCard />
         <MarketCard /> */}
+      </Flex>
+      <Flex w={"100%"} justifyContent={"center"} pt={"30px"}>
+        <NormalButton
+          width={"380px"}
+          text="Check More"
+          onClick={() => {}}
+          type={"solid"}
+        />
       </Flex>
     </>
   );

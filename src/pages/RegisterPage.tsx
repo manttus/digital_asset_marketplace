@@ -9,16 +9,7 @@ import {
   useSendMutation,
 } from "../features/api/authApi/apiSlice";
 import useLocalStorage from "../hooks/useLocalStorage";
-
-type UserData = {
-  name?: string;
-  login?: string;
-  password?: string;
-  contact?: string;
-  country?: string;
-  address?: string;
-  zipcode?: string;
-};
+import { Data, UserData } from "../types/RegisterPageType";
 
 const initialState: UserData = {
   name: "",
@@ -36,24 +27,10 @@ const RegisterPage = () => {
   const [userData, setUserData] = useState<UserData>(
     value ? JSON.parse(value) : initialState
   );
-  const error =
-    userData.login === "" || userData.password === "" || userData.name === "";
-  const [register, { isLoading }] = useRegisterMutation();
-  const [send, { isLoading: isSending }] = useSendMutation();
-  const [verify, { isLoading: isVerifying, isSuccess: otpVerified }] =
-    useVerifyMutation();
 
-  type Data = {
-    first?: string;
-    last?: string;
-    user?: string;
-    password?: string;
-    confirm?: string;
-    contact?: string;
-    country?: string;
-    address?: string;
-    zipcode?: string;
-  };
+  const [register] = useRegisterMutation();
+  const [send] = useSendMutation();
+  const [verify] = useVerifyMutation();
 
   const stepsHandler = (data: Data) => {
     steps === 1
@@ -72,19 +49,16 @@ const RegisterPage = () => {
             address: data.address,
             zipcode: data.zipcode,
           };
-          console.log(cleaned);
+
           return { ...prev, ...cleaned };
         });
   };
 
   const sendOtp = async () => {
     try {
-      const res = await send({ user: userData.login! }).unwrap();
-      console.log(res);
+      await send({ user: userData.login! }).unwrap();
       removeItem();
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   };
 
   const verifyOtp = async (user: string, otp: string) => {
@@ -107,10 +81,8 @@ const RegisterPage = () => {
       country: userData.country,
       contact: userData.contact,
     };
-    console.log(cleared);
     try {
       const res = await register(cleared).unwrap();
-      console.log(res);
       removeItem();
     } catch (err) {
       console.log(err);
@@ -130,11 +102,11 @@ const RegisterPage = () => {
       <Flex mt={28} mb={5} justifyContent={"center"}>
         <Text fontSize={"38px"} fontWeight={"bold"}>
           {steps === 1 && "Create Account"}
-          {steps === 2 && "Verify Account"}
+          {steps === 2 && "Otp Sent"}
           {steps === 3 && "Complete Account"}
         </Text>
       </Flex>
-      <Flex direction={"column"} mb={20}>
+      <Flex direction={"column"}>
         <Flex
           height={"280px"}
           w={"400px"}
@@ -171,7 +143,6 @@ const RegisterPage = () => {
             }
             type="filled"
             width="50%"
-            isDisabled={(steps === 2 && !otpVerified) || error}
           />
         </HStack>
       </Flex>

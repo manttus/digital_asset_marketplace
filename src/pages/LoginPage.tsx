@@ -14,18 +14,7 @@ import { useDispatch } from "react-redux";
 import useAlert from "../hooks/useAlert";
 import { useNavigate } from "react-router-dom";
 import useLocalStorage from "../hooks/useLocalStorage";
-
-type LoginType = {
-  type: string;
-  pass: string;
-};
-
-type SignInType = {
-  type: string;
-  pass?: string;
-  otp: string;
-  user: string;
-};
+import { LoginType, SignInType } from "../types/LoginPageType";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -34,7 +23,7 @@ const LoginPage = () => {
   const { oauth } = useGoogleAuth();
   const [otp, setOtp] = useState<boolean | null>(null);
   const [send, { isLoading: sendLoading }] = useSendMutation();
-  const [login, { isLoading: loginLoading }] = useLoginMutation();
+  const [login] = useLoginMutation();
   const { setOpen, setErrorState } = useAlert();
   const [user, setUser] = useState<{
     user: string;
@@ -93,6 +82,7 @@ const LoginPage = () => {
             accessToken: response.accessToken,
           })
         );
+        navigate("/");
       }
     } catch (err: Error | unknown) {
       setErrorState({
@@ -121,7 +111,12 @@ const LoginPage = () => {
       </Flex>
       <Flex w={"full"} justifyContent={"center"}>
         {otp ? (
-          <Otp submitHandler={submitHandler} user={user} type={"LOGIN"} />
+          <Otp
+            submitHandler={submitHandler}
+            user={user}
+            sendOtp={sendOtp}
+            type={"LOGIN"}
+          />
         ) : (
           <Login sendOtp={sendOtp} isLoading={sendLoading} oauth={oauth} />
         )}

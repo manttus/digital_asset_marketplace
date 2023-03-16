@@ -12,6 +12,12 @@ const initialState = {
         ) as any
       )._id
     : null,
+  wallet: localStorage.getItem("wallet")
+    ? JSON.parse(localStorage.getItem("wallet")!).wallet
+    : null,
+  balance: localStorage.getItem("wallet")
+    ? JSON.parse(localStorage.getItem("wallet")!).balance
+    : null,
 };
 
 const authSlice = createSlice({
@@ -22,14 +28,22 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.token = action.payload.token;
     },
+    setWallet: (state, action) => {
+      state.wallet = action.payload.address;
+      state.balance = action.payload.balance;
+    },
     logout: (state) => {
       state.user = null;
       state.token = null;
+      state.wallet = null;
+      state.balance = null;
     },
   },
 });
 
-export const { setCredintials, logout } = authSlice.actions;
+export const { setCredintials, logout, setWallet } = authSlice.actions;
 export default authSlice.reducer;
 export const selectCurrentUser = (state: any) => state.auth.user;
+export const selectCurrentWallet = (state: any) => state.auth.wallet;
 export const selectCurrentToken = (state: any) => state.auth.token;
+export const selectCurrentBalance = (state: any) => state.auth.balance;

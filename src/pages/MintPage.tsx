@@ -1,12 +1,46 @@
-import { Flex, Box, Text, Input } from "@chakra-ui/react";
+import { Flex, Text } from "@chakra-ui/react";
 import illustration1 from "../assets/register.png";
 import Mint from "../components/Forms/Mint";
-import { BsCloudUpload } from "react-icons/bs";
-import CustomButton from "../components/Button/CustomButton";
-import CustomBadge from "../components/Badge/CustomBadge";
-import NormalButton from "../components/Button/NormalButton";
+import { useSelector } from "react-redux";
+import { useState, useEffect } from "react";
+import { ethers } from "ethers";
+import { selectMarketSlice } from "../features/market/marketSlice";
+import Circular from "../components/Abstracts/Circular";
 
 const MintPage = () => {
+  const state = useSelector(selectMarketSlice);
+  const Wallet = useSelector(selectMarketSlice).walletAddress;
+  const [nftInstance, setNftInstance] = useState<any>(null);
+  const loadContract = async () => {
+    await window.ethereum.request({ method: "eth_requestAccounts" });
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const nftInstance = new ethers.Contract(
+      state.nftAddress,
+      state.nftAbi,
+      signer
+    );
+
+    setNftInstance(nftInstance);
+  };
+
+  useEffect(() => {
+    loadContract();
+  }, [Wallet]);
+
+  const mintAsset = async (
+    name: string,
+    description: string,
+    image: string,
+    price: string,
+    category: string,
+    type: string
+  ) => {
+    console.log(image);
+    const tx = await nftInstance._getTokens(state.walletAddress);
+    console.log(tx);
+  };
+
   return (
     <Flex direction={"column"} justifyContent={"center"} alignItems={"center"}>
       <Flex
@@ -30,103 +64,34 @@ const MintPage = () => {
         justifyContent={"center"}
         alignItems={"center"}
         direction={"column"}
+        zIndex={2}
         gap={10}
-      >
-        {/* <Text
-          fontSize={"95px"}
-          fontWeight={"600"}
-          zIndex={2}
-          color={"white"}
-          mt={20}
-        >
-          Create your asset.
-        </Text> */}
-        {/* <NormalButton
-          type="filled"
-          bg="transparent"
-          text="Check Form"
-          zindex={2}
-          width={"400px"}
-          rightIcon={<IoIosArrowForward fontWeight={"700"} />}
-        /> */}
-      </Flex>
+      ></Flex>
+
       <Flex
         h={"full"}
         width={"full"}
-        justifyContent={"space-between"}
-        alignItems={"center"}
         mt={"450px"}
+        direction={"column"}
+        gap={20}
+        position={"relative"}
       >
-        <Flex
-          as={"form"}
-          direction={"column"}
-          w={"60%"}
-          p={"16"}
-          alignItems={"end"}
-        >
-          <Mint />
+        <Circular top="-400" left="-50" />
+        <Flex direction={"column"} alignItems={"center"} zIndex={2}>
+          <Text fontSize={"4xl"} fontWeight={"bold"}>
+            Your asset awaits .
+          </Text>
+
+          <Text fontSize={"4xl"} fontWeight={"bold"}></Text>
         </Flex>
-        <Flex w={"40%"} px={"10"}>
-          <Flex rounded={"md"} w={"full"} position={"relative"}>
-            <Flex
-              direction={"column"}
-              justifyContent={"center"}
-              alignItems={"center"}
-              h={"full"}
-              w={"full"}
-              gap={5}
-              border={"1px solid"}
-              borderColor={"gray.200"}
-              rounded={"md"}
-            >
-              <Flex
-                p={"80px"}
-                direction={"column"}
-                alignItems={"center"}
-                w={"full"}
-                gap={10}
-              >
-                {/* <Flex gap={2} direction={"column"} alignItems={"center"}>
-                  <Text fontSize={"28px"} fontWeight={"600"}>
-                    Upload your asset.
-                  </Text>
-                </Flex> */}
-                <Flex
-                  direction={"column"}
-                  alignItems={"center"}
-                  gap={2}
-                  w={"450px"}
-                  bg={"white"}
-                  px={10}
-                  py={20}
-                  border={"2px dashed"}
-                  borderColor={"fontGhost"}
-                  rounded={"md"}
-                >
-                  <BsCloudUpload size={50} color={"fontGhost"} />
-                  <Text
-                    fontSize={"20px"}
-                    fontWeight={"600"}
-                    color={"fontGhost"}
-                  >
-                    Drag and drop your files
-                  </Text>
-                </Flex>
-                {/* <NormalButton text="Upload" type="filled" width="200px" /> */}
-              </Flex>
-            </Flex>
-            <Input
-              type="file"
-              position="absolute"
-              height={"100%"}
-              width={"100%"}
-              top="0"
-              left="0"
-              opacity="0"
-              aria-hidden="true"
-              accept="image/*"
-            />
-          </Flex>
+        <Flex
+          direction={"column"}
+          w={"full"}
+          alignItems={"center"}
+          position={"relative"}
+        >
+          <Mint mintAsset={mintAsset} />
+          {/* <Circular top="400" left="740" /> */}
         </Flex>
       </Flex>
     </Flex>

@@ -6,40 +6,36 @@ import {
   Show,
   Text,
   Image,
-  Input,
-  InputGroup,
-  InputLeftAddon,
-  Button,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  MenuDivider,
 } from "@chakra-ui/react";
 import { Outlet, useNavigate } from "react-router";
-import { BsDot, BsWallet } from "react-icons/bs";
+import { BsDot } from "react-icons/bs";
 import CustomButton from "./Button/CustomButton";
 import CustomLink from "./Links/CustomLink";
 import CustomIconButton from "./Button/CustomIconButton";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { AiOutlineClose } from "react-icons/ai";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Overlay from "./Overlay";
 import { motion } from "framer-motion";
 import Footer from "./Footer";
-import useLocalStorage from "../hooks/useLocalStorage";
 import { useSelector } from "react-redux";
-import { selectCurrentToken } from "../features/auth/authSlice";
+import {
+  logout,
+  selectCurrentBalance,
+  selectCurrentToken,
+  selectCurrentWallet,
+} from "../features/auth/authSlice";
 import ScrollToTop from "./ScrollToTop";
-import NFT from "../../contract_data/NFT.json";
-import NFTaddress from "../../contract_data/NFT-Address.json";
-import Market from "../../contract_data/Market.json";
-import MarketAddress from "../../contract_data/Market-Address.json";
-import { ethers } from "ethers";
 import { useDispatch } from "react-redux";
 import logo from "../assets/logo2.png";
-import {
-  setMarketInstance,
-  setMarketList,
-  setNftInstance,
-} from "../features/market/marketSlice";
-import { FaEthereum, FaWallet } from "react-icons/fa";
-import { IoIosWallet } from "react-icons/io";
+import { FaEthereum } from "react-icons/fa";
+import { MdOutlineFavoriteBorder, MdLogout } from "react-icons/md";
+import { CgProfile } from "react-icons/cg";
 
 declare global {
   interface Window {
@@ -63,6 +59,10 @@ const bottomVariants = {
   },
 };
 
+type NavbarProps = {
+  metaMaskHandler: () => Promise<void>;
+};
+
 const navlinks = [
   { name: "About us", path: "/about" },
   { name: "Collection", path: "/collection" },
@@ -70,41 +70,13 @@ const navlinks = [
   { name: "Be a Creator", path: "/mint" },
 ];
 
-const Navbar = () => {
+const Navbar = ({ metaMaskHandler }: NavbarProps) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const state = useSelector(selectCurrentToken);
+  const wallet = useSelector(selectCurrentWallet);
+  const balance = useSelector(selectCurrentBalance);
   const [overlay, setOverlay] = useState<boolean>(false);
-  const { value, setItem, removeItem } = useLocalStorage("wallet");
-  const [wallet, setWallet] = useState<string | null | undefined>(value);
-
-  const metaMaskHandler = async () => {
-    if (window.ethereum) {
-      try {
-        const account = await window.ethereum.request({
-          method: "eth_requestAccounts",
-        });
-        const address = account[0];
-        setItem(address);
-        setWallet(address);
-      } catch (error) {
-        console.log(error);
-      }
-    } else {
-      alert("Please install MetaMask");
-    }
-  };
-
-  const loadContracts = async () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-  };
-
-  useEffect(() => {
-    if (wallet) {
-      loadContracts();
-    }
-  }, [wallet]);
 
   return (
     <>
@@ -176,14 +148,7 @@ const Navbar = () => {
                   <CustomButton
                     text={"Connect"}
                     type="filled"
-                    onClick={
-                      !wallet
-                        ? metaMaskHandler
-                        : () => {
-                            removeItem();
-                            setWallet(null);
-                          }
-                    }
+                    onClick={!wallet ? metaMaskHandler : () => {}}
                   />
                 ) : (
                   <Flex
@@ -219,11 +184,43 @@ const Navbar = () => {
                       justifyContent={"end"}
                       pr={"5"}
                     >
-                      <Text> 169.6660</Text>
+                      <Text> {balance} </Text>
                     </Flex>
-                    <Avatar h={"45px"} w={"45px"} />
                   </Flex>
                 )}
+                <Menu autoSelect={false}>
+                  <Avatar as={MenuButton} h={"45px"} w={"45px"} />
+                  <MenuList as={Flex} flexDirection={"column"}>
+                    <MenuItem as={Flex} gap={3}>
+                      <CgProfile size={"22px"} />
+                      <Text fontSize={"16px"} fontWeight={"600"}>
+                        Profile
+                      </Text>
+                    </MenuItem>
+                    <MenuDivider />
+                    <MenuItem as={Flex} gap={3}>
+                      <MdOutlineFavoriteBorder size={"22px"} />
+                      <Text fontSize={"16px"} fontWeight={"600"}>
+                        Favourites
+                      </Text>
+                    </MenuItem>
+                    <MenuDivider />
+                    <MenuItem
+                      as={Flex}
+                      gap={3}
+                      onClick={() => {
+                        localStorage.clear();
+                        navigate("/");
+                        dispatch(logout());
+                      }}
+                    >
+                      <MdLogout size={"22px"} />
+                      <Text fontSize={"16px"} fontWeight={"600"}>
+                        Logout
+                      </Text>
+                    </MenuItem>
+                  </MenuList>
+                </Menu>
               </Hide>
             ) : (
               <Hide below="xl">
@@ -297,9 +294,10 @@ const Navbar = () => {
                 <CustomLink
                   key={link.name}
                   text={link.name}
-                  to={link.path}
+                  to={""}
                   size={"38px"}
                   color={"white"}
+                  onClick={() => {}}
                 />
               ))}
               {state ? (

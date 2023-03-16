@@ -12,7 +12,10 @@ const Partners = () => {
       alignItems={"center"}
       h={"100px"}
       marginY={"40px"}
-      gap={28}
+      gap={40}
+      py={"20"}
+      borderY={"1px solid "}
+      borderColor={"gray.200"}
     >
       <Box
         width={"200px"}
