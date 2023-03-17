@@ -35,7 +35,7 @@ type MintFormType = {
 };
 
 const Mint = ({ mintAsset }: MintProps) => {
-  const { register, handleSubmit } = useForm<MintFormType>();
+  const { register, handleSubmit, reset } = useForm<MintFormType>();
   return (
     <Box
       as="form"
@@ -52,6 +52,7 @@ const Mint = ({ mintAsset }: MintProps) => {
           data.category,
           data.type
         );
+        reset();
       })}
     >
       <HStack spacing={5}>
@@ -148,7 +149,6 @@ const Mint = ({ mintAsset }: MintProps) => {
               left="0"
               opacity="0"
               aria-hidden="true"
-              accept="image/*"
               {...register("image", {
                 required: true,
               })}
