@@ -1,12 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import ArchivesPage from "./pages/ArchivesPage";
-import ForgotPassword from "./pages/ForgotPassword";
-import LandingPage from "./pages/LandingPage";
-import LoginPage from "./pages/LoginPage";
-import MintPage from "./pages/MintPage";
-import RegisterPage from "./pages/RegisterPage";
 import { setWallet } from "./features/auth/authSlice";
 import useLocalStorage from "./hooks/useLocalStorage";
 import { setContractData } from "./features/market/marketSlice";
@@ -16,6 +10,7 @@ import Market from "../contract_data/Market.json";
 import MarketAddress from "../contract_data/Market-address.json";
 import { useEffect } from "react";
 import { ethers } from "ethers";
+import { NavRoutes } from "./routes/NavRoutes";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -64,36 +59,7 @@ const App = () => {
     {
       path: "/",
       element: <Navbar metaMaskHandler={metaMaskHandler} />,
-      children: [
-        {
-          path: "",
-          element: <LandingPage />,
-        },
-        {
-          path: "mint",
-          element: <MintPage />,
-        },
-        {
-          path: "login",
-          element: <LoginPage />,
-        },
-        {
-          path: "forgot",
-          element: <ForgotPassword />,
-        },
-        {
-          path: "register",
-          element: <RegisterPage />,
-        },
-        {
-          path: "mint",
-          element: <MintPage />,
-        },
-        {
-          path: "archive",
-          element: <ArchivesPage />,
-        },
-      ],
+      children: NavRoutes,
     },
   ]);
 
