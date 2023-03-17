@@ -17,7 +17,7 @@ const useHttp = <T>(
           : await fetch(requestConfig.url, {
               method: requestConfig.method,
               headers: requestConfig.headers,
-              body: JSON.stringify(requestConfig.body),
+              body: requestConfig.body,
             });
       const data = await response.json();
       handler(data);
