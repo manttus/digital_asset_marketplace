@@ -7,7 +7,7 @@ import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import MintPage from "./pages/MintPage";
 import RegisterPage from "./pages/RegisterPage";
-import { selectCurrentUser, setWallet } from "./features/auth/authSlice";
+import { setWallet } from "./features/auth/authSlice";
 import useLocalStorage from "./hooks/useLocalStorage";
 import { setContractData } from "./features/market/marketSlice";
 import NFT from "../contract_data/NFT.json";
@@ -50,8 +50,8 @@ const App = () => {
   });
 
   const saveContract = async () => {
-    const market = { address: MarketAddress, abi: Market.abi };
-    const nft = { address: NFTAddress, abi: NFT.abi };
+    const market = { address: MarketAddress.address, abi: Market.abi };
+    const nft = { address: NFTAddress.address, abi: NFT.abi };
     dispatch(setContractData({ market, token: nft }));
   };
 

@@ -22,7 +22,7 @@ const LandingPage = () => {
         letterSpacing={"-0.2em"}
         position={"relative"}
       >
-        <Circular top="-350" left="950" />
+        <Circular top="-350" left="700" />
         <Circular top="200" left="-50" />
         <Flex alignItems={"center"} gap={6} zIndex={2}>
           <Text fontSize={"95px"} fontWeight={"600"}>

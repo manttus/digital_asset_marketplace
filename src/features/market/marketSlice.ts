@@ -36,3 +36,5 @@ export const { setContractData, setMarketItems } = marketSlice.actions;
 export default marketSlice.reducer;
 export const selectMarketItems = (state: any) => state.market.marketItems;
 export const selectMarketSlice = (state: any) => state.market;
+export const selectToken = (state: any) => state.market.token;
+export const selectMarket = (state: any) => state.market.market;
