@@ -70,6 +70,20 @@ const navlinks = [
   { name: "Be a Creator", path: "/mint" },
 ];
 
+const menuItems = [
+  { name: "Profile", path: "/profile", icon: <CgProfile size={"22px"} /> },
+  {
+    name: "Favorites",
+    path: "/favorites",
+    icon: <MdOutlineFavoriteBorder size={"22px"} />,
+  },
+  {
+    name: "Logout",
+    path: "/",
+    icon: <MdLogout size={"22px"} />,
+  },
+];
+
 const Navbar = ({ metaMaskHandler }: NavbarProps) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -170,7 +184,6 @@ const Navbar = ({ metaMaskHandler }: NavbarProps) => {
                       h={"35px"}
                       w={"35px"}
                     >
-                      {/* <IoIosWallet color="white" size={"20px"} /> */}
                       <FaEthereum color="white" size={"20px"} />
                     </Box>
                     <Flex
@@ -191,34 +204,30 @@ const Navbar = ({ metaMaskHandler }: NavbarProps) => {
                 <Menu autoSelect={false}>
                   <Avatar as={MenuButton} h={"45px"} w={"45px"} />
                   <MenuList as={Flex} flexDirection={"column"}>
-                    <MenuItem as={Flex} gap={3}>
-                      <CgProfile size={"22px"} />
-                      <Text fontSize={"16px"} fontWeight={"600"}>
-                        Profile
-                      </Text>
-                    </MenuItem>
-                    <MenuDivider />
-                    <MenuItem as={Flex} gap={3}>
-                      <MdOutlineFavoriteBorder size={"22px"} />
-                      <Text fontSize={"16px"} fontWeight={"600"}>
-                        Favourites
-                      </Text>
-                    </MenuItem>
-                    <MenuDivider />
-                    <MenuItem
-                      as={Flex}
-                      gap={3}
-                      onClick={() => {
-                        localStorage.clear();
-                        navigate("/");
-                        dispatch(logout());
-                      }}
-                    >
-                      <MdLogout size={"22px"} />
-                      <Text fontSize={"16px"} fontWeight={"600"}>
-                        Logout
-                      </Text>
-                    </MenuItem>
+                    {menuItems.map((item, index) => (
+                      <>
+                        <MenuItem
+                          id={item.name}
+                          as={Flex}
+                          gap={3}
+                          onClick={() => {
+                            if (item.name === "Logout") {
+                              localStorage.clear();
+                              navigate("/");
+                              dispatch(logout());
+                            } else {
+                              navigate(item.path);
+                            }
+                          }}
+                        >
+                          {item.icon}
+                          <Text fontSize={"16px"} fontWeight={"600"}>
+                            {item.name}
+                          </Text>
+                        </MenuItem>
+                        {index !== menuItems.length - 1 && <MenuDivider />}
+                      </>
+                    ))}
                   </MenuList>
                 </Menu>
               </Hide>
