@@ -4,41 +4,84 @@ import Mint from "../components/Forms/Mint";
 import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
-import { selectMarketSlice } from "../features/market/marketSlice";
+import { selectToken } from "../features/market/marketSlice";
 import Circular from "../components/Abstracts/Circular";
+import useHttp from "../hooks/useHttp";
+import { selectCurrentWallet } from "../features/auth/authSlice";
+import useAlert from "../hooks/useAlert";
 
 const MintPage = () => {
-  const state = useSelector(selectMarketSlice);
-  const Wallet = useSelector(selectMarketSlice).walletAddress;
-  const [nftInstance, setNftInstance] = useState<any>(null);
+  const contract = useSelector(selectToken);
+  const wallet = useSelector(selectCurrentWallet);
+  const [token, setTokenInst] = useState<any>(null);
+  const { setOpen, setErrorState } = useAlert();
+
+  useEffect(() => {
+    loadContract();
+  }, []);
+
   const loadContract = async () => {
     await window.ethereum.request({ method: "eth_requestAccounts" });
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
-    const nftInstance = new ethers.Contract(
-      state.nftAddress,
-      state.nftAbi,
+    const token = await new ethers.Contract(
+      contract.address,
+      contract.abi,
       signer
     );
-
-    setNftInstance(nftInstance);
+    setTokenInst(token);
   };
-
-  useEffect(() => {
-    loadContract();
-  }, [Wallet]);
 
   const mintAsset = async (
     name: string,
     description: string,
-    image: string,
+    image: any,
     price: string,
     category: string,
     type: string
   ) => {
-    console.log(image);
-    const tx = await nftInstance._getTokens(state.walletAddress);
-    console.log(tx);
+    console.log(name, description, image, price, category, type);
+    const formData = new FormData();
+    formData.append("file", image[0]);
+    formData.append("pinataMetadata", JSON.stringify({ name }));
+    formData.append("pinataOptions", JSON.stringify({ cidVersion: 1 }));
+    const requestConfig = {
+      url: "https://api.pinata.cloud/pinning/pinFileToIPFS",
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${import.meta.env.VITE_PINATA_JWT} `,
+      },
+      body: formData,
+    };
+    const { sendRequest } = useHttp(requestConfig, async (data: any) => {
+      if (!data.error) {
+        console.log(data);
+        const asset = `https://gateway.pinata.cloud/ipfs/${data.IpfsHash}`;
+        try {
+          await token._mint(name, asset, category, type, wallet);
+          setErrorState({
+            message: "Asset Minted",
+            type: "success",
+            action: "SET_MESSAGE",
+          });
+          setOpen(true);
+        } catch (err) {
+          const requestConfig = {
+            url: `https://api.pinata.cloud/pinning/unpin/${data.IpfsHash}`,
+            method: "DELETE",
+          };
+          const { sendRequest } = useHttp(requestConfig, (data: any) => {
+            setErrorState({
+              message: "Asset Minting Failed",
+              type: "error",
+              action: "SET_MESSAGE",
+            });
+          });
+          sendRequest();
+        }
+      }
+    });
+    sendRequest();
   };
 
   return (
