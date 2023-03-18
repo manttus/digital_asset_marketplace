@@ -66,8 +66,8 @@ type NavbarProps = {
 const navlinks = [
   { name: "About us", path: "/about" },
   { name: "Collection", path: "/collection" },
-  { name: "Archives", path: "/archive" },
   { name: "Be a Creator", path: "/mint" },
+  { name: "Archives", path: "/archive" },
 ];
 
 const menuItems = [
@@ -207,6 +207,7 @@ const Navbar = ({ metaMaskHandler }: NavbarProps) => {
                     {menuItems.map((item, index) => (
                       <>
                         <MenuItem
+                          key={item.name}
                           id={item.name}
                           as={Flex}
                           gap={3}

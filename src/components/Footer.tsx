@@ -2,13 +2,7 @@ import { Flex, Text, Box, Image, Input } from "@chakra-ui/react";
 import NormalButton from "./Button/NormalButton";
 import logo from "../assets/logo2.png";
 import CustomIconButton from "./Button/CustomIconButton";
-import {
-  BsGithub,
-  BsInstagram,
-  BsLinkedin,
-  BsPinterest,
-  BsTwitter,
-} from "react-icons/bs";
+import { BsGithub, BsLinkedin, BsTwitter } from "react-icons/bs";
 
 const Footer = () => {
   return (
@@ -56,7 +50,7 @@ const Footer = () => {
           <Flex w={"300px"}>
             <Input placeholder="Email Address" py={"25px"} />
           </Flex>
-          <NormalButton text="Updates" type="filled" />
+          <NormalButton text="Subscribe" type="filled" />
         </Flex>
       </Flex>
       <Flex
