@@ -151,7 +151,6 @@ export const Step3 = ({ submitHandler, userData }: StepProps) => {
   }, []);
 
   useEffect(() => {
-    console.log(watch());
     submitHandler!(watch());
   }, [watch("contact"), watch("address"), watch("zipcode"), watch("country")]);
 

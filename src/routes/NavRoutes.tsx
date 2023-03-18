@@ -4,6 +4,7 @@ import MintPage from "../pages/MintPage";
 import ForgotPassword from "../pages/ForgotPassword";
 import RegisterPage from "../pages/RegisterPage";
 import ArchivesPage from "../pages/ArchivesPage";
+import ProfilePage from "../pages/ProfilePage";
 
 export const NavRoutes = [
   {
@@ -33,5 +34,9 @@ export const NavRoutes = [
   {
     path: "archive",
     element: <ArchivesPage />,
+  },
+  {
+    path: "profile",
+    element: <ProfilePage />,
   },
 ];
