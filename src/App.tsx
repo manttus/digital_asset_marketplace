@@ -14,9 +14,11 @@ import { NavRoutes } from "./routes/NavRoutes";
 
 const App = () => {
   const dispatch = useDispatch();
+  const user = useSelector((state: any) => state.auth.user);
   const { value, setItem, removeItem } = useLocalStorage("wallet");
 
   const metaMaskHandler = async () => {
+    if (!user) return;
     const accounts = await window.ethereum.request({
       method: "eth_requestAccounts",
     });

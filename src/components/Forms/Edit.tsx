@@ -32,6 +32,10 @@ type FormData = {
   address: string;
   postal: string;
   id: string;
+  backgroundImage: Buffer;
+  profileImage: Buffer;
+  followers: string[];
+  following: string[];
 };
 
 const Edit = ({ userData, submitHandler }: EditProps) => {
