@@ -22,6 +22,20 @@ interface Signin {
   otp?: String;
 }
 
+type FormData = {
+  username: string;
+  phone: string;
+  email: string;
+  country: string;
+  address: string;
+  postal: string;
+  id: string;
+  backgroundImage: Buffer;
+  profileImage: Buffer;
+  followers: string[];
+  following: string[];
+};
+
 export const marketApi = createApi({
   reducerPath: "marketApi",
   baseQuery: customBaseQuery,
@@ -55,6 +69,19 @@ export const marketApi = createApi({
         body: credentials,
       }),
     }),
+    update: builder.mutation({
+      query: (data: FormData) => ({
+        url: "/user/update",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    user: builder.query({
+      query: (id: string) => ({
+        url: `/user/get/${id}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -63,4 +90,6 @@ export const {
   useRegisterMutation,
   useVerifyMutation,
   useSendMutation,
+  useUpdateMutation,
+  useUserQuery,
 } = marketApi;

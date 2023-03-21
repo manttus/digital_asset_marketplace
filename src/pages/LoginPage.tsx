@@ -5,6 +5,7 @@ import jwt_decode from "jwt-decode";
 import {
   useLoginMutation,
   useSendMutation,
+  useUserQuery,
 } from "../features/api/authApi/apiSlice";
 import Otp from "../components/Forms/Otp";
 import illustration from "../assets/abstract5.jpg";
@@ -74,14 +75,23 @@ const LoginPage = () => {
           action: "SET_MESSAGE",
         });
         setOpen(true);
-        const user = jwt_decode(response.accessToken) as string;
-        dispatch(setCredintials({ user, token: response.accessToken }));
+        const user: {
+          _id: string;
+          iat: number;
+          exp: number;
+        } = jwt_decode(response.accessToken);
+        dispatch(
+          setCredintials({ user: user._id, token: response.accessToken })
+        );
         setItem(
           JSON.stringify({
             refreshToken: response.accessToken,
             accessToken: response.accessToken,
           })
         );
+
+        const userData = useUserQuery(user._id);
+        console.log(userData);
         navigate("/");
       }
     } catch (err: Error | unknown) {

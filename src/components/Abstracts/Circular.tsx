@@ -7,9 +7,17 @@ type CircularProps = {
   right?: string;
   bottom?: string;
   borderColor?: string;
+  zIndex?: number;
 };
 
-const Circular = ({ top, left, right, bottom, borderColor }: CircularProps) => {
+const Circular = ({
+  top,
+  left,
+  right,
+  bottom,
+  borderColor,
+  zIndex,
+}: CircularProps) => {
   return (
     <Box
       as={motion.div}
@@ -23,7 +31,7 @@ const Circular = ({ top, left, right, bottom, borderColor }: CircularProps) => {
       border={"1px dashed"}
       borderColor={borderColor ? borderColor : "gray.300"}
       rounded={"500px"}
-      zIndex={1}
+      zIndex={zIndex ? zIndex : 1}
       display={"flex"}
       justifyContent={"center"}
       alignItems={"center"}
