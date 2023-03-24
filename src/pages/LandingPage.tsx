@@ -77,7 +77,6 @@ const LandingPage = () => {
         zIndex={2}
       >
         <Collection />
-
         <Partners />
         <Featured />
       </Flex>
