@@ -1,86 +1,27 @@
-import {
-  Flex,
-  Grid,
-  Input,
-  Text,
-  Box,
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionIcon,
-  AccordionPanel,
-  Circle,
-} from "@chakra-ui/react";
+import { Flex, Grid, Text } from "@chakra-ui/react";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 import { VscSettings, VscAdd } from "react-icons/vsc";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import Circular from "../components/Abstracts/Circular";
 import CustomBadge from "../components/Badge/CustomBadge";
 import CustomIconButton from "../components/Button/CustomIconButton";
 import CollectionCard from "../components/Card/CollectionCard";
-import MarketCard from "../components/Card/MarketCard";
 import { selectCurrentWallet } from "../features/auth/authSlice";
 import { selectToken } from "../features/market/marketSlice";
 
 const ArchivesPage = () => {
   const contract = useSelector(selectToken);
   const wallet = useSelector(selectCurrentWallet);
-  const [archives, setArchives] = useState<any>([
-    {
-      id: 1,
-      name: "Mantuu",
-      image: "https://i.imgur.com/1Q1Z1Zu.png",
-      description: "Mantuu",
-      price: 0.1,
-    },
-    {
-      id: 2,
-      name: "Mantuu",
-      image: "https://i.imgur.com/1Q1Z1Zu.png",
-      description: "Mantuu",
-      price: 0.1,
-    },
-    {
-      id: 2,
-      name: "Mantuu",
-      image: "https://i.imgur.com/1Q1Z1Zu.png",
-      description: "Mantuu",
-      price: 0.1,
-    },
-    {
-      id: 2,
-      name: "Mantuu",
-      image: "https://i.imgur.com/1Q1Z1Zu.png",
-      description: "Mantuu",
-      price: 0.1,
-    },
-    {
-      id: 2,
-      name: "Mantuu",
-      image: "https://i.imgur.com/1Q1Z1Zu.png",
-      description: "Mantuu",
-      price: 0.1,
-    },
-    {
-      id: 2,
-      name: "Mantuu",
-      image: "https://i.imgur.com/1Q1Z1Zu.png",
-      description: "Mantuu",
-      price: 0.1,
-    },
-  ]);
+  const [archives, setArchives] = useState<any>([]);
   const [token, setToken] = useState<any>();
+  const [flag, setFlag] = useState<boolean>(false);
 
   const loadListing = async () => {
     const listing = await token._getTokens(wallet);
+    console.log(listing);
     setArchives(listing);
   };
-
-  window.ethereum.on("accountsChanged", async (accounts: any) => {
-    loadListing();
-  });
 
   const loadContract = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -93,50 +34,56 @@ const ArchivesPage = () => {
     setToken(tokenContract);
   };
 
+  useEffect(() => {
+    if (contract) {
+      setFlag(true);
+    }
+  }, [contract]);
+
+  useEffect(() => {
+    if (flag) {
+      loadContract();
+    }
+  }, [flag]);
+
+  useEffect(() => {
+    if (token) {
+      loadListing();
+    }
+  }, [token]);
+
   return (
     <Grid
       height={"full"}
       width={"full"}
       gridTemplateColumns={"20% 2fr"}
-      gridTemplateRows={"200px 100px 1fr"}
-      rowGap={"20px"}
+      gridTemplateRows={"200px  1fr"}
+      rowGap={"50px"}
       p={"30px"}
       position={"relative"}
       zIndex={2}
     >
       <Flex
         px={"90px"}
-        direction={"column"}
         w={"full"}
         gridColumn={"span 2"}
         position={"relative"}
         zIndex={3}
         gap={1}
-      >
-        {/* <Circular top="-400" left={"-140"} zIndex={-4} bottom={"-500"} /> */}
-        {/* <Flex>
-          <CustomBadge text="Inventory" color="orangeDark" bg="orangeLight" />
-        </Flex>
-        <Text fontSize={"95px"} fontWeight={"600"} color={"buttonHover"}>
-          Archives
-        </Text> */}
-      </Flex>
-
-      <Flex
-        gridColumn={"span 2"}
-        gap={5}
-        px={"90px"}
-        justifyContent={"start"}
+        justifyContent={"space-between"}
         alignItems={"center"}
       >
-        <Flex gap={4}>
-          <CustomIconButton
-            aria="filter"
-            color="gray.200"
-            icon={<VscSettings size={"25px"} />}
-            type={"outline"}
-            onClick={() => {}}
-          />
+        <Circular top="-200" left={"-180"} zIndex={-4} />
+        <Flex>
+          <Text fontSize={"95px"} fontWeight={"600"} color={"buttonHover"}>
+            Archives
+          </Text>
+          <Flex>
+            <CustomBadge text="stash" color="orangeDark" bg="orangeLight" />
+          </Flex>
+        </Flex>
+
+        <Flex gap={4} height={"full"} alignItems={"end"} pb={"40px"}>
           <CustomIconButton
             aria="filter"
             color="gray.200"
@@ -144,21 +91,28 @@ const ArchivesPage = () => {
             type={"outline"}
             onClick={() => {}}
           />
+          <CustomIconButton
+            aria="filter"
+            color="gray.200"
+            icon={<VscSettings size={"25px"} />}
+            type={"outline"}
+            onClick={() => {}}
+          />
         </Flex>
       </Flex>
 
       <Flex
-        gap={8}
+        gap={10}
         width={"full"}
         wrap={"wrap"}
         alignItems={"center"}
         gridColumn={"span 2"}
-        pl={"90px"}
         position={"relative"}
         zIndex={3}
+        justifyContent={"center"}
       >
         {archives.map((archive: any) => {
-          return <CollectionCard key={archive.id} />;
+          return <CollectionCard key={archive._id} />;
         })}
       </Flex>
     </Grid>
