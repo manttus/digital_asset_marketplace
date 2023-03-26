@@ -45,7 +45,7 @@ const NormalButton = ({
       _hover={{
         bg: bg ? bg : "buttonPrimary",
         color: "white",
-        transform: "scale(1.02)",
+        transform: "scale(1.01)",
         transition: "all 0.3s ease-in-out",
       }}
       py={py ? py : "25px"}

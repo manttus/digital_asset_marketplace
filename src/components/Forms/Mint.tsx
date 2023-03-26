@@ -82,8 +82,8 @@ const Mint = ({ mintAsset }: MintProps) => {
               Select Category
             </option>
             <option value={"Bored APE"}>Bored APE</option>
-            <option value={"Bored APE"}>Bored APE</option>
-            <option value={"Bored APE"}>Bored APE</option>
+            <option value={"Doge"}>Doge</option>
+            <option value={"Cool Cat"}> Cool Cat</option>
           </Select>
         </FormControl>
       </HStack>

@@ -2,10 +2,7 @@ import { Flex } from "@chakra-ui/react";
 import Edit from "./Forms/Edit";
 import { useSelector } from "react-redux";
 import jwtDecode from "jwt-decode";
-import {
-  useUpdateMutation,
-  useUserQuery,
-} from "../features/api/authApi/apiSlice";
+import { useUpdateMutation } from "../features/api/authApi/apiSlice";
 type User = {
   username: string;
   phone: string;
@@ -30,7 +27,7 @@ type FormData = {
 };
 const EditProfile = () => {
   const user = useSelector((state: any) => state.auth.user);
-  const userData = useUserQuery(user);
+  // const userData = useUserQuery(user);
 
   const [update] = useUpdateMutation();
   const submitHandler = async (data: FormData) => {
@@ -53,7 +50,7 @@ const EditProfile = () => {
       rounded={"md"}
       shadow={"sm"}
     >
-      <Edit userData={userData.data.user} submitHandler={submitHandler} />
+      {/* <Edit userData={userData.data.user} submitHandler={submitHandler} /> */}
     </Flex>
   );
 };
