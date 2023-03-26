@@ -5,14 +5,11 @@ import EditProfile from "../components/EditProfile";
 import Details from "../components/Showcase/Details";
 import FeedTab from "../components/Showcase/FeedTab";
 import Profile from "../components/Showcase/Profile";
-import {
-  useUpdateMutation,
-  useUserQuery,
-} from "../features/api/authApi/apiSlice";
+import { useUpdateMutation } from "../features/api/authApi/apiSlice";
 
 const ProfilePage = () => {
-  const user = useSelector((state: any) => state.auth.user);
-  const userData = useUserQuery(user);
+  // const user = useSelector((state: any) => state.auth.user);
+  // const userData = useUserQuery(user);
   const [isEditPage, setIsEditPage] = useState<boolean>(false);
   const AddImage = async (file: FileList | null) => {};
   return (
