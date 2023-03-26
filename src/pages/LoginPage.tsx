@@ -5,7 +5,6 @@ import jwt_decode from "jwt-decode";
 import {
   useLoginMutation,
   useSendMutation,
-  useUserQuery,
 } from "../features/api/authApi/apiSlice";
 import Otp from "../components/Forms/Otp";
 import illustration from "../assets/abstract5.jpg";
@@ -90,8 +89,6 @@ const LoginPage = () => {
           })
         );
 
-        const userData = useUserQuery(user._id);
-        console.log(userData);
         navigate("/");
       }
     } catch (err: Error | unknown) {

@@ -11,13 +11,14 @@ import {
   MenuList,
   MenuItem,
   MenuDivider,
+  Divider,
 } from "@chakra-ui/react";
 import { Outlet, useNavigate } from "react-router";
 import { BsDot } from "react-icons/bs";
 import CustomButton from "./Button/CustomButton";
 import CustomLink from "./Links/CustomLink";
 import CustomIconButton from "./Button/CustomIconButton";
-import { RxHamburgerMenu } from "react-icons/rx";
+import { RxHamburgerMenu, RxSwitch } from "react-icons/rx";
 import { AiOutlineClose } from "react-icons/ai";
 import { useState } from "react";
 import Overlay from "./Overlay";
@@ -35,7 +36,10 @@ import { useDispatch } from "react-redux";
 import logo from "../assets/logo2.png";
 import { FaEthereum } from "react-icons/fa";
 import { MdOutlineFavoriteBorder, MdLogout } from "react-icons/md";
-import { CgProfile } from "react-icons/cg";
+import { CgProfile, CgLogOut } from "react-icons/cg";
+import NormalBadge from "./Badge/NormalBadge";
+import NormalButton from "./Button/NormalButton";
+import { Link } from "react-router-dom";
 
 declare global {
   interface Window {
@@ -65,18 +69,13 @@ type NavbarProps = {
 
 const navlinks = [
   { name: "About us", path: "/about" },
-  { name: "Collection", path: "/collection" },
+  { name: "Collection", path: "/collections" },
   { name: "Archives", path: "/archive" },
   { name: "Be a Creator", path: "/mint" },
 ];
 
 const menuItems = [
   { name: "Profile", path: "/profile", icon: <CgProfile size={"22px"} /> },
-  {
-    name: "Favorites",
-    path: "/favorites",
-    icon: <MdOutlineFavoriteBorder size={"22px"} />,
-  },
   {
     name: "Logout",
     path: "/",
@@ -171,21 +170,93 @@ const Navbar = ({ metaMaskHandler }: NavbarProps) => {
                     gap={5}
                     alignItems={"center"}
                   >
-                    <Box
-                      display={"flex"}
-                      justifyContent={"center"}
-                      alignItems={"center"}
-                      position={"absolute"}
-                      top={2}
-                      left={3}
-                      bg={"buttonPrimary"}
-                      p={1}
-                      rounded={"full"}
-                      h={"35px"}
-                      w={"35px"}
-                    >
-                      <FaEthereum color="white" size={"20px"} />
-                    </Box>
+                    <Menu autoSelect={false}>
+                      <Flex
+                        as={MenuButton}
+                        position={"absolute"}
+                        top={2}
+                        left={3}
+                      >
+                        <Box
+                          display={"flex"}
+                          justifyContent={"center"}
+                          alignItems={"center"}
+                          bg={"buttonPrimary"}
+                          p={1}
+                          rounded={"full"}
+                          h={"35px"}
+                          w={"35px"}
+                        >
+                          <FaEthereum color="white" size={"20px"} />
+                        </Box>
+                      </Flex>
+                      <MenuList
+                        as={Flex}
+                        flexDirection={"column"}
+                        h={"190px"}
+                        w={"200px"}
+                      >
+                        <Flex
+                          w={"full"}
+                          direction={"column"}
+                          alignItems={"center"}
+                          justifyContent={"center"}
+                          gap={2}
+                        >
+                          <Flex w={"full"} justifyContent={"end"} px={5} py={2}>
+                            <CgLogOut
+                              size={"22px"}
+                              onClick={() => {
+                                dispatch(logout());
+                                navigate("/");
+                              }}
+                            />
+                          </Flex>
+                          <Flex
+                            as={Link}
+                            w={"50%"}
+                            justifyContent={"center"}
+                            alignItems={"center"}
+                            to={"/profile"}
+                          >
+                            <Avatar size={"md"} />
+                          </Flex>
+                          <Flex
+                            w={"50%"}
+                            rounded={"3xl"}
+                            alignItems={"center"}
+                            justifyContent={"center"}
+                            p={2}
+                          >
+                            <Text
+                              color={"buttonHover"}
+                              fontWeight={"700"}
+                              fontSize={"15px"}
+                            >
+                              {wallet.slice(0, 6) + "..." + wallet.slice(-4)}
+                            </Text>
+                          </Flex>
+                        </Flex>
+
+                        {/* {menuItems.map((item) => (
+                          <MenuItem
+                            key={item.name}
+                            onClick={() => navigate(item.path)}
+                          >
+                            <Flex
+                              w={"full"}
+                              h={"full"}
+                              alignItems={"center"}
+                              gap={3}
+                            >
+                              {item.icon}
+                              {item.name}
+                            </Flex>
+                          </MenuItem>
+                        ))} */}
+                      </MenuList>
+                    </Menu>
+
                     <Flex
                       rounded={"3xl"}
                       pl={"60px"}
@@ -201,36 +272,6 @@ const Navbar = ({ metaMaskHandler }: NavbarProps) => {
                     </Flex>
                   </Flex>
                 )}
-                <Menu autoSelect={false}>
-                  <Avatar as={MenuButton} h={"45px"} w={"45px"} />
-                  <MenuList as={Flex} flexDirection={"column"}>
-                    {menuItems.map((item, index) => (
-                      <>
-                        <MenuItem
-                          key={index}
-                          id={item.name}
-                          as={Flex}
-                          gap={3}
-                          onClick={() => {
-                            if (item.name === "Logout") {
-                              localStorage.clear();
-                              navigate("/");
-                              dispatch(logout());
-                            } else {
-                              navigate(item.path);
-                            }
-                          }}
-                        >
-                          {item.icon}
-                          <Text fontSize={"16px"} fontWeight={"600"}>
-                            {item.name}
-                          </Text>
-                        </MenuItem>
-                        {index !== menuItems.length - 1 && <MenuDivider />}
-                      </>
-                    ))}
-                  </MenuList>
-                </Menu>
               </Hide>
             ) : (
               <Hide below="xl">

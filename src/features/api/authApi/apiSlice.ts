@@ -76,10 +76,22 @@ export const marketApi = createApi({
         body: data,
       }),
     }),
-    user: builder.query({
+    user: builder.mutation({
       query: (id: string) => ({
         url: `/user/get/${id}`,
         method: "GET",
+      }),
+    }),
+    addCategory: builder.mutation({
+      query: (data: {
+        name: string;
+        id: string;
+        banner: string;
+        wallet: string;
+      }) => ({
+        url: "user/addCategory",
+        method: "POST",
+        body: data,
       }),
     }),
   }),
@@ -91,5 +103,6 @@ export const {
   useVerifyMutation,
   useSendMutation,
   useUpdateMutation,
-  useUserQuery,
+  useUserMutation,
+  useAddCategoryMutation,
 } = marketApi;

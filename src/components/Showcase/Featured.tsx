@@ -39,7 +39,7 @@ const Featured = () => {
         </Text>
       </Flex>
       {marketData.length === 0 ? (
-        <Flex w={"full"} shadow={"sm"}>
+        <Flex w={"full"} shadow={"sm"} border={"1px solid #E2E8F0"}>
           <Flex w={"50%"} direction={"column"} bg={"white"} rounded={"10px"}>
             <Flex
               alignItems={"center"}
