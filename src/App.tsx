@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import { setWallet } from "./features/auth/authSlice";
+import { setUserData, setWallet } from "./features/auth/authSlice";
 import useLocalStorage from "./hooks/useLocalStorage";
 import { setContractData } from "./features/market/marketSlice";
 import NFT from "../contract_data/NFT.json";
@@ -11,34 +11,71 @@ import MarketAddress from "../contract_data/Market-address.json";
 import { useEffect } from "react";
 import { ethers } from "ethers";
 import { NavRoutes } from "./routes/NavRoutes";
+import detectEthereumProvider from "@metamask/detect-provider";
+import { useUserMutation } from "./features/api/authApi/apiSlice";
 
 const App = () => {
+  const id = useSelector((state: any) => state.auth.user);
+  const [user] = useUserMutation();
   const dispatch = useDispatch();
-  const user = useSelector((state: any) => state.auth.user);
   const { value, setItem, removeItem } = useLocalStorage("wallet");
 
-  const metaMaskHandler = async () => {
-    if (!user) return;
-    const accounts = await window.ethereum.request({
-      method: "eth_requestAccounts",
-    });
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const balance = await provider.getSigner().getBalance();
-    const balanceInEth = ethers.utils.formatEther(balance).slice(0, 5);
-    setItem(JSON.stringify({ wallet: accounts[0], balance: balanceInEth }));
-    dispatch(setWallet({ address: accounts[0], balance: balanceInEth }));
+  const fetchData = async () => {
+    const data = await user(id).unwrap();
+    dispatch(setUserData({ user: data.user }));
   };
 
-  window.ethereum.on("accountsChanged", async (accounts: any) => {
+  const metaMaskHandler = async () => {
+    const isMetaMask = await detectEthereumProvider();
+    !isMetaMask && console.log("MetaMask is not installed");
+    if (isMetaMask === window.ethereum) {
+      const account = await window.ethereum.request({
+        method: "wallet_requestPermissions",
+        params: [
+          {
+            eth_accounts: {},
+          },
+        ],
+      });
+      const address = account[0]["caveats"][0]["value"][0];
+      const balance = await window.ethereum.request({
+        method: "eth_getBalance",
+        params: [address, "latest"],
+      });
+      const balanceInEth = ethers.utils.formatEther(balance).slice(0, 5);
+      setItem(JSON.stringify({ wallet: address, balance: balanceInEth }));
+      dispatch(setWallet({ address: address, balance: balanceInEth }));
+    }
+  };
+
+  const reConnect = async () => {
+    const data = value ? JSON.parse(value) : null;
+    if (data) {
+      const balance = await window.ethereum.request({
+        method: "eth_getBalance",
+        params: [data.wallet, "latest"],
+      });
+      const balanceInEth = ethers.utils.formatEther(balance).slice(0, 5);
+      setItem(JSON.stringify({ wallet: data.wallet, balance: balanceInEth }));
+      dispatch(setWallet({ address: data.wallet, balance: balanceInEth }));
+    }
+  };
+
+  // window.ethereum.on("chainChanged", async (chainId: number) => {});
+  // window.ethereum.on("networkChanged", async (networkId: number) => {});
+
+  window.ethereum.on("accountsChanged", async (accounts: string[]) => {
+    window.location.reload();
     if (accounts.length === 0) {
       removeItem();
       dispatch(setWallet({ address: null, balance: null }));
     } else {
       const data = value ? JSON.parse(value) : null;
-
       if (data) {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const balance = await provider.getSigner().getBalance();
+        const balance = await window.ethereum.request({
+          method: "eth_getBalance",
+          params: [accounts[0], "latest"],
+        });
         const balanceInEth = ethers.utils.formatEther(balance).slice(0, 5);
         setItem(JSON.stringify({ wallet: accounts[0], balance: balanceInEth }));
         dispatch(setWallet({ address: accounts[0], balance: balanceInEth }));
@@ -53,8 +90,12 @@ const App = () => {
   };
 
   useEffect(() => {
-    metaMaskHandler();
+    reConnect();
     saveContract();
+  }, []);
+
+  useEffect(() => {
+    fetchData();
   }, []);
 
   const router = createBrowserRouter([

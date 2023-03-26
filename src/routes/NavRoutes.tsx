@@ -5,6 +5,8 @@ import ForgotPassword from "../pages/ForgotPassword";
 import RegisterPage from "../pages/RegisterPage";
 import ArchivesPage from "../pages/ArchivesPage";
 import ProfilePage from "../pages/ProfilePage";
+import CollectionPage from "../pages/CollectionPage";
+import CategoryPage from "../pages/CategoryPage";
 
 export const NavRoutes = [
   {
@@ -38,5 +40,13 @@ export const NavRoutes = [
   {
     path: "profile",
     element: <ProfilePage />,
+  },
+  {
+    path: "collections",
+    element: <CollectionPage />,
+  },
+  {
+    path: "archive/:id",
+    element: <CategoryPage />,
   },
 ];
