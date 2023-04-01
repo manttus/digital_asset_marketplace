@@ -56,10 +56,14 @@ const FeedItems = [
 
 const FeedTabs = () => {
   return (
-    <Tabs size={"lg"} isFitted w={"80%"}>
+    <Tabs size={"md"} isFitted w={"70%"}>
       <TabList>
         {TabItems.map((item, index) => {
-          return <Tab key={index}>{item.title}</Tab>;
+          return (
+            <Tab fontWeight={"500"} key={index}>
+              {item.title}
+            </Tab>
+          );
         })}
       </TabList>
       <TabPanels>
