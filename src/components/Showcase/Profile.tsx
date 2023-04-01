@@ -2,6 +2,7 @@ import { Flex, Input } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { BiImageAdd } from "react-icons/bi";
 import NormalButton from "../Button/NormalButton";
+
 const buttonVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0 },

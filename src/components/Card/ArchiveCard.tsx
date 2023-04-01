@@ -21,6 +21,7 @@ const ArchiveCard = ({
       shadow={"sm"}
       bg={"white"}
       p={"15px"}
+      my={"20px"}
       border={"1px solid #E2E8F0"}
     >
       <Image

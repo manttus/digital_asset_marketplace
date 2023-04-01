@@ -6,12 +6,16 @@ import MarketCard from "../components/Card/MarketCard";
 const CategoryPage = ({ lisitng }: any) => {
   const state = useLocation();
   const listing = state.state.lisitng;
-  console.log(listing);
 
   return (
     <Flex px={"10"} direction={"column"}>
       <Flex height={"200px"} bg={"fontGhost"} w={"full"} rounded={"md"}></Flex>
-      <Flex width={"full"} gap={5} mt={"10"} wrap={"wrap"}>
+      <Flex
+        width={"full"}
+        my={"10"}
+        wrap={"wrap"}
+        justifyContent={"space-between"}
+      >
         {listing.map((item: any) => {
           return (
             <ArchiveCard

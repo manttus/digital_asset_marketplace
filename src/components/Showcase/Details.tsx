@@ -30,7 +30,7 @@ type DetailsProps = {
 const Details = ({ isEditPage, setEditPage }: DetailsProps) => {
   return (
     <Flex direction={"column"}>
-      <Flex w={"full"} justifyContent={"space-between"} mt={"20px"} mb={"50px"}>
+      <Flex w={"full"} justifyContent={"space-between"} mt={"40px"} mb={"50px"}>
         <Flex direction={"row"} w={"70%"}>
           <Flex
             alignItems={"center"}
@@ -59,7 +59,7 @@ const Details = ({ isEditPage, setEditPage }: DetailsProps) => {
             />
           </Flex>
         </Flex>
-        <Flex>
+        {/* <Flex>
           <Box
             w={"350px"}
             shadow={"sm"}
@@ -109,7 +109,7 @@ const Details = ({ isEditPage, setEditPage }: DetailsProps) => {
               );
             })}
           </Box>
-        </Flex>
+        </Flex> */}
       </Flex>
     </Flex>
   );

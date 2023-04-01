@@ -16,9 +16,9 @@ const CollectionCard = ({ listings, archive }: any) => {
   return (
     <Box
       display={"grid"}
-      width={"350px"}
+      width={"300px"}
       gridTemplateColumns={"100px 20% 20%"}
-      gridTemplateRows={"120px 110px 40px"}
+      gridTemplateRows={"100px 110px 40px"}
       gap={1}
       shadow={"md"}
       p={3}

@@ -163,13 +163,14 @@ const ArchivesPage = () => {
         </Flex>
 
         <Flex
-          gap={10}
           width={"full"}
           wrap={"wrap"}
           alignItems={"center"}
           gridColumn={"span 2"}
           position={"relative"}
           zIndex={3}
+          gap={10}
+          px={"50px"}
           justifyContent={"center"}
         >
           {!archives && (
