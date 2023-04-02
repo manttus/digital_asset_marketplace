@@ -123,7 +123,7 @@ const ArchivesPage = () => {
         zIndex={2}
       >
         <Flex
-          px={"90px"}
+          px={"80px"}
           w={"full"}
           gridColumn={"span 2"}
           position={"relative"}

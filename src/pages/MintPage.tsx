@@ -12,11 +12,22 @@ import useAlert from "../hooks/useAlert";
 
 const MintPage = () => {
   const contract = useSelector(selectToken);
+  const walletCategory = useSelector((state: any) => state.auth.data);
   const wallet = useSelector(selectCurrentWallet);
   const [token, setTokenInst] = useState<any>(null);
   const { setOpen, setErrorState } = useAlert();
+  const [categories, setCategories] = useState<any>([]);
+
+  const getCategory = () => {
+    console.log(walletCategory);
+    const filtered = walletCategory.wallet.filter(
+      (item: { wallet: string }) => wallet === item.wallet
+    );
+    setCategories(filtered);
+  };
 
   useEffect(() => {
+    getCategory();
     loadContract();
   }, []);
 
@@ -133,7 +144,7 @@ const MintPage = () => {
           alignItems={"center"}
           position={"relative"}
         >
-          <Mint mintAsset={mintAsset} />
+          <Mint mintAsset={mintAsset} categories={categories} />
           {/* <Circular top="400" left="740" /> */}
         </Flex>
       </Flex>
