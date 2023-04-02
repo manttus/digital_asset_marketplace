@@ -23,6 +23,7 @@ type MintProps = {
     category: string,
     type: string
   ) => Promise<void>;
+  categories: any;
 };
 
 type MintFormType = {
@@ -34,7 +35,8 @@ type MintFormType = {
   type: string;
 };
 
-const Mint = ({ mintAsset }: MintProps) => {
+const Mint = ({ mintAsset, categories }: MintProps) => {
+  console.log(categories);
   const { register, handleSubmit, reset } = useForm<MintFormType>();
   return (
     <Box
@@ -81,9 +83,9 @@ const Mint = ({ mintAsset }: MintProps) => {
             <option value={""} defaultChecked>
               Select Category
             </option>
-            <option value={"Bored APE"}>Bored APE</option>
-            <option value={"Doge"}>Doge</option>
-            <option value={"Cool Cat"}> Cool Cat</option>
+            {categories.map((category: any) => {
+              return <option value={category.name}>{category.name}</option>;
+            })}
           </Select>
         </FormControl>
       </HStack>

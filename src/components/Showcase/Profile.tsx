@@ -23,7 +23,7 @@ const Profile = ({ addImage }: ProfileProps) => {
     >
       <Flex
         as={motion.div}
-        height={"200px"}
+        height={"250px"}
         bg={"fontGhost"}
         w={"full"}
         rounded={"md"}
@@ -46,7 +46,7 @@ const Profile = ({ addImage }: ProfileProps) => {
       </Flex>
       <Flex
         left={"50"}
-        top={"120"}
+        top={"160"}
         position={"absolute"}
         width={"150px"}
         height={"150px"}
