@@ -1,8 +1,17 @@
 import {
   Box,
+  Drawer,
+  DrawerBody,
+  DrawerCloseButton,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
   Flex,
+  FormLabel,
   Grid,
   Input,
+  InputLeftAddon,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -10,8 +19,14 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  InputGroup,
+  Stack,
   Text,
+  Textarea,
   useDisclosure,
+  Select,
+  Button,
+  InputRightAddon,
 } from "@chakra-ui/react";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
@@ -23,7 +38,6 @@ import CustomBadge from "../components/Badge/CustomBadge";
 import CustomIconButton from "../components/Button/CustomIconButton";
 import NormalButton from "../components/Button/NormalButton";
 import CollectionCard from "../components/Card/CollectionCard";
-import Profile from "../components/Showcase/Profile";
 import {
   useAddCategoryMutation,
   useUserMutation,
@@ -34,38 +48,46 @@ import {
   setUserData,
 } from "../features/auth/authSlice";
 import { selectToken } from "../features/market/marketSlice";
+import NoConnection from "../components/NoConnection";
+import { BiImageAdd } from "react-icons/bi";
 
 const ArchivesPage = () => {
   const currentUser = useSelector(selectUserData);
   const contract = useSelector(selectToken);
   const wallet = useSelector(selectCurrentWallet);
+
+  const [addCategory] = useAddCategoryMutation();
+  const [user] = useUserMutation();
+
+  const [coverImage, setCoverImage] = useState<string>("");
+  const [listings, setListings] = useState<any>([]);
   const [archives, setArchives] = useState<any>(null);
   const [token, setToken] = useState<any>();
   const [flag, setFlag] = useState<boolean>(false);
+
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { register, handleSubmit } = useForm();
-  const [coverImage, setCoverImage] = useState<string>("");
-  const [listings, setListings] = useState<any>([]);
-  const [addCategory] = useAddCategoryMutation();
-  const [user] = useUserMutation();
+
   const dispatch = useDispatch();
 
   const loadListing = async () => {
-    const address = wallet.toUpperCase();
-    const data = currentUser.wallet;
-    const filtered = data.filter(
-      (wallet: {
-        name: string;
-        wallet: string;
-        balance: number;
-        _id: string;
-      }) => wallet.wallet.toUpperCase() === address
-    );
+    if (wallet) {
+      const address = wallet.toUpperCase();
+      const data = currentUser.wallet;
+      const filtered = data.filter(
+        (wallet: {
+          name: string;
+          wallet: string;
+          balance: number;
+          _id: string;
+        }) => wallet.wallet.toUpperCase() === address
+      );
 
-    setArchives(filtered.length > 0 ? filtered : null);
-    const listing = await token._getTokens(wallet);
-    const reversed = [...listing].reverse();
-    setListings(reversed);
+      setArchives(filtered.length > 0 ? filtered : null);
+      const listing = await token._getTokens(wallet);
+      const reversed = [...listing].reverse();
+      setListings(reversed);
+    }
   };
 
   const loadContract = async () => {
@@ -143,54 +165,75 @@ const ArchivesPage = () => {
           </Flex>
 
           <Flex gap={4} height={"full"} alignItems={"end"} pb={"40px"}>
-            <CustomIconButton
-              aria="add"
-              color="gray.200"
-              icon={<VscAdd size={"25px"} />}
-              type={"outline"}
-              onClick={() => {
-                onOpen();
-              }}
-            />
-            <CustomIconButton
-              aria="filter"
-              color="gray.200"
-              icon={<VscSettings size={"25px"} />}
-              type={"outline"}
-              onClick={() => {}}
-            />
+            {wallet && (
+              <>
+                <CustomIconButton
+                  aria="add"
+                  color="gray.200"
+                  icon={<VscAdd size={"25px"} />}
+                  type={"outline"}
+                  onClick={() => {
+                    onOpen();
+                  }}
+                />
+                <CustomIconButton
+                  aria="filter"
+                  color="gray.200"
+                  icon={<VscSettings size={"25px"} />}
+                  type={"outline"}
+                  onClick={() => {}}
+                />
+              </>
+            )}
           </Flex>
         </Flex>
 
-        <Flex
-          width={"full"}
-          wrap={"wrap"}
-          alignItems={"center"}
-          gridColumn={"span 2"}
-          position={"relative"}
-          zIndex={3}
-          gap={10}
-          px={"50px"}
-          justifyContent={"center"}
-        >
-          {!archives && (
-            <Text fontSize={"30px"} fontWeight={"600"} color={"buttonHover"}>
-              No Archives
-            </Text>
-          )}
-          {archives &&
-            archives.map((archive: any) => {
-              return (
-                <CollectionCard
-                  key={archive._id}
-                  listings={listings}
-                  archive={archive}
-                />
-              );
-            })}
-        </Flex>
+        {wallet ? (
+          <Flex
+            width={"full"}
+            wrap={"wrap"}
+            alignItems={"center"}
+            gridColumn={"span 2"}
+            position={"relative"}
+            zIndex={3}
+            gap={10}
+            px={"50px"}
+            justifyContent={"center"}
+          >
+            {!archives && (
+              <Text fontSize={"30px"} fontWeight={"600"} color={"buttonHover"}>
+                No Archives
+              </Text>
+            )}
+            {archives &&
+              archives.map((archive: any) => {
+                return (
+                  <CollectionCard
+                    key={archive._id}
+                    listings={listings}
+                    archive={archive}
+                  />
+                );
+              })}
+          </Flex>
+        ) : (
+          <Flex
+            width={"full"}
+            wrap={"wrap"}
+            alignItems={"center"}
+            gridColumn={"span 2"}
+            position={"relative"}
+            zIndex={3}
+            gap={10}
+            px={"50px"}
+            justifyContent={"center"}
+            py={"100px"}
+          >
+            <NoConnection />
+          </Flex>
+        )}
       </Grid>
-      <Modal onClose={onClose} isOpen={isOpen} size={"lg"} isCentered>
+      {/* <Modal onClose={onClose} isOpen={isOpen} size={"lg"} isCentered>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Create Category </ModalHeader>
@@ -256,7 +299,138 @@ const ArchivesPage = () => {
             </Flex>
           </ModalFooter>
         </ModalContent>
-      </Modal>
+      </Modal> */}
+
+      <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
+        <DrawerOverlay overflow={"hidden"} />
+        <DrawerContent>
+          <DrawerCloseButton />
+          <DrawerHeader borderBottomWidth="1px">Create Category</DrawerHeader>
+          <DrawerBody
+            display={"flex"}
+            w={"full"}
+            flexDirection={"column"}
+            justifyContent={"center"}
+          >
+            <Stack spacing="24px">
+              <Box>
+                <FormLabel htmlFor="username">Name</FormLabel>
+                <Input
+                  id="username"
+                  placeholder="Enter Category "
+                  rounded={"sm"}
+                />
+              </Box>
+
+              <Flex direction={"column"} alignItems={"center"}>
+                <FormLabel htmlFor="owner">Upload Avatar</FormLabel>
+                <Flex
+                  left={"50"}
+                  top={"160"}
+                  width={"150px"}
+                  height={"150px"}
+                  bg={"gray.200"}
+                  rounded={"full"}
+                  justifyContent={"center"}
+                  alignItems={"center"}
+                  cursor={"pointer"}
+                >
+                  <Flex
+                    position={"relative"}
+                    width={"full"}
+                    height={"full"}
+                    bg={"rgba(0,0,0,0.2)"}
+                    rounded={"full"}
+                    justifyContent={"center"}
+                    alignItems={"center"}
+                    transition={"all 0.3s ease-in-out"}
+                    opacity={"0"}
+                    _hover={{
+                      opacity: "1",
+                      transition: "all 0.3s ease-in-out",
+                    }}
+                  >
+                    <BiImageAdd size={"28px"} />
+                    <Input
+                      type={"file"}
+                      position={"absolute"}
+                      height={"100%"}
+                      width={"100%"}
+                      opacity={"0"}
+                      onChange={(e) => {}}
+                    />
+                  </Flex>
+                </Flex>
+              </Flex>
+              <Flex direction={"column"} alignItems={"center"} w={"full"}>
+                <FormLabel htmlFor="owner">Upload Banner</FormLabel>
+                <Flex
+                  height={"100px"}
+                  bg={"gray.200"}
+                  rounded={"10px"}
+                  justifyContent={"center"}
+                  alignItems={"center"}
+                  cursor={"pointer"}
+                  w={"full"}
+                >
+                  <Flex
+                    h={"100%"}
+                    w={"full"}
+                    position={"relative"}
+                    bg={"rgba(0,0,0,0.2)"}
+                    rounded={"10px"}
+                    justifyContent={"center"}
+                    alignItems={"center"}
+                    transition={"all 0.3s ease-in-out"}
+                    opacity={"0"}
+                    _hover={{
+                      opacity: "1",
+                      transition: "all 0.3s ease-in-out",
+                    }}
+                  >
+                    <BiImageAdd size={"28px"} />
+                    <Input
+                      type={"file"}
+                      position={"absolute"}
+                      height={"100%"}
+                      width={"100%"}
+                      opacity={"0"}
+                      onChange={(e) => {}}
+                    />
+                  </Flex>
+                </Flex>
+              </Flex>
+              <Box>
+                <FormLabel htmlFor="owner">Select Type</FormLabel>
+                <Select id="owner" rounded={"sm"}>
+                  <option value="" defaultChecked>
+                    Select Options
+                  </option>
+                  <option value="ART">Image</option>
+                  <option value="VIDEO">Video</option>
+                  <option value="GIFS">GIF</option>
+                  <option value="ALL CATEGORIES"> All Category </option>
+                </Select>
+              </Box>
+            </Stack>
+          </DrawerBody>
+
+          <DrawerFooter borderTopWidth="1px">
+            <Button variant="outline" mr={3} onClick={onClose}>
+              Cancel
+            </Button>
+            <Button
+              bg="buttonPrimary"
+              color={"white"}
+              _hover={{
+                bg: "buttonHover",
+              }}
+            >
+              Create
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 };

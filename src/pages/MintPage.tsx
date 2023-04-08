@@ -9,27 +9,32 @@ import Circular from "../components/Abstracts/Circular";
 import useHttp from "../hooks/useHttp";
 import { selectCurrentWallet } from "../features/auth/authSlice";
 import useAlert from "../hooks/useAlert";
+import NoConnection from "../components/NoConnection";
+import { RootState } from "../types/StoreType";
 
 const MintPage = () => {
   const contract = useSelector(selectToken);
-  const walletCategory = useSelector((state: any) => state.auth.data);
+  const walletCategory = useSelector((state: RootState) => state.auth.data);
   const wallet = useSelector(selectCurrentWallet);
   const [token, setTokenInst] = useState<any>(null);
   const { setOpen, setErrorState } = useAlert();
   const [categories, setCategories] = useState<any>([]);
 
   const getCategory = () => {
-    console.log(walletCategory);
-    const filtered = walletCategory.wallet.filter(
-      (item: { wallet: string }) => wallet === item.wallet
-    );
-    setCategories(filtered);
+    if (wallet) {
+      const filtered = walletCategory.wallet.filter(
+        (item: { wallet: string }) => wallet === item.wallet
+      );
+      setCategories(filtered);
+    }
   };
 
   useEffect(() => {
-    getCategory();
+    if (walletCategory) {
+      getCategory();
+    }
     loadContract();
-  }, []);
+  }, [wallet, walletCategory]);
 
   const loadContract = async () => {
     await window.ethereum.request({ method: "eth_requestAccounts" });
@@ -76,19 +81,13 @@ const MintPage = () => {
             action: "SET_MESSAGE",
           });
           setOpen(true);
-        } catch (err) {
-          const requestConfig = {
-            url: `https://api.pinata.cloud/pinning/unpin/${data.IpfsHash}`,
-            method: "DELETE",
-          };
-          const { sendRequest } = useHttp(requestConfig, (data: any) => {
-            setErrorState({
-              message: "Asset Minting Failed",
-              type: "error",
-              action: "SET_MESSAGE",
-            });
+        } catch (err: Error | any) {
+          setErrorState({
+            message: err.data.data.reason,
+            type: "error",
+            action: "SET_MESSAGE",
           });
-          sendRequest();
+          setOpen(true);
         }
       }
     });
@@ -120,22 +119,28 @@ const MintPage = () => {
         direction={"column"}
         zIndex={2}
         gap={10}
-      ></Flex>
+      >
+        <Text
+          mt={"20"}
+          fontSize={"6xl"}
+          fontWeight={"bold"}
+          color={"white"}
+          zIndex={"10"}
+        >
+          Your asset awaits .
+        </Text>
+      </Flex>
 
       <Flex
         h={"full"}
         width={"full"}
-        mt={"450px"}
+        mt={"410px"}
         direction={"column"}
         gap={20}
         position={"relative"}
       >
         <Circular top="-400" left="-50" />
         <Flex direction={"column"} alignItems={"center"} zIndex={2}>
-          <Text fontSize={"4xl"} fontWeight={"bold"}>
-            Your asset awaits .
-          </Text>
-
           <Text fontSize={"4xl"} fontWeight={"bold"}></Text>
         </Flex>
         <Flex
@@ -144,8 +149,13 @@ const MintPage = () => {
           alignItems={"center"}
           position={"relative"}
         >
-          <Mint mintAsset={mintAsset} categories={categories} />
-          {/* <Circular top="400" left="740" /> */}
+          {wallet ? (
+            <Mint mintAsset={mintAsset} categories={categories} />
+          ) : (
+            <Flex py={"100"}>
+              <NoConnection />
+            </Flex>
+          )}
         </Flex>
       </Flex>
     </Flex>

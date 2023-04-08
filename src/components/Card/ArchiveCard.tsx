@@ -1,18 +1,19 @@
 import { Flex, Box, Text, Image, Avatar, Divider } from "@chakra-ui/react";
-import Illustration from "../../assets/eth1.gif";
-
 import CustomLink from "../Links/CustomLink";
-import { FaArrowRight } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const ArchiveCard = ({
   name,
   description,
   image,
+  _id,
 }: {
   name: string;
   description: string;
   image: string;
+  _id: any;
 }) => {
+  const navigate = useNavigate();
   return (
     <Flex
       width={"250px"}
@@ -35,6 +36,11 @@ const ArchiveCard = ({
         }}
         height={"220px"}
         width={"220px"}
+        onClick={() => {
+          navigate("/details", {
+            state: { name, description, image, _id },
+          });
+        }}
       />
       <Box>
         <Flex
@@ -45,7 +51,7 @@ const ArchiveCard = ({
           alignItems={"center"}
         >
           <Box>
-            <CustomLink text={name} to="mum" size="18px" weight="700" />
+            <CustomLink text={name} to="" size="18px" weight="700" />
           </Box>
           <Text fontSize={"15px"} color={"fontGhost"} fontWeight={"500"}>
             {description}

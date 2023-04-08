@@ -10,17 +10,19 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import useHttp from "../../hooks/useHttp";
 import NormalButton from "../Button/NormalButton";
+import { useSelector } from "react-redux";
+import { selectUserData } from "../../features/auth/authSlice";
 
 type EditProps = {
-  userData: {
-    username: string;
-    phone: string;
-    email: string;
-    country: string;
-    address: string;
-    postal: string;
-    id: string;
-  };
+  // userData: {
+  //   username: string;
+  //   phone: string;
+  //   email: string;
+  //   country: string;
+  //   address: string;
+  //   postal: string;
+  //   id: string;
+  // };
   submitHandler: (data: FormData) => Promise<void>;
 };
 
@@ -38,9 +40,11 @@ type FormData = {
   following: string[];
 };
 
-const Edit = ({ userData, submitHandler }: EditProps) => {
+const Edit = ({ submitHandler }: EditProps) => {
   const [countries, setContries] = useState<any>([]);
   const { register, handleSubmit } = useForm<FormData>();
+  const userData = useSelector(selectUserData);
+  console.log(userData);
 
   useEffect(() => {
     const requestConfig = {

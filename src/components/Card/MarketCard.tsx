@@ -1,66 +1,66 @@
 import { Flex, Box, Text, Image, Avatar, Divider } from "@chakra-ui/react";
 import Illustration from "../../assets/eth1.gif";
+import { useEffect, useState } from "react";
 
 import CustomLink from "../Links/CustomLink";
 import { FaArrowRight } from "react-icons/fa";
 
-const MarketCard = () => {
+const MarketCard = ({ item }: any) => {
   return (
     <Flex
-      width={"340px"}
+      width={"400px"}
       direction={"column"}
       rounded={"5px"}
       shadow={"sm"}
       bg={"white"}
-      p={"15px"}
+      p={"20px"}
     >
       <Image
-        src={Illustration}
+        src={item.image}
+        h={"260px"}
         w={"100%"}
         rounded={"5px"}
         transition={"all 0.5s ease-in-out"}
         _hover={{
-          transform: "scale(1.05)",
+          transform: "scale(1.02)",
           transition: "all 0.5s ease-in-out",
         }}
       />
       <Box>
         <Flex
           direction={"column"}
-          px={"20px"}
-          py={"25px"}
+          px={"4px"}
+          pt={"25px"}
           letterSpacing={"0.4px"}
         >
-          <Box>
-            <CustomLink
-              text="Secret Artistic"
-              to="mum"
-              size="18px"
-              weight="700"
-            />
-          </Box>
-          <Text fontSize={"15px"} color={"fontGhost"} fontWeight={"500"}>
-            Amazing viewing
-          </Text>
+          <Flex justifyContent={"space-between"}>
+            <Box>
+              <CustomLink text={item.name} to="mum" size="18px" weight="700" />
+            </Box>
+            <Box>
+              <CustomLink
+                text={item._id._hex}
+                to="mum"
+                size="18px"
+                weight="700"
+              />
+            </Box>
+          </Flex>
+          <Text fontSize={"15px"} color={"fontGhost"} fontWeight={"500"}></Text>
         </Flex>
-        <Flex alignItems={"center"} px={"18px"} py={"10px"} gap={4}>
-          <Avatar size={"md"} />
-          <Text fontWeight={"600"} fontSize={"15px"} letterSpacing={"0.4px"}>
-            Michael Noris
-          </Text>
-        </Flex>
+
         <Divider w={"full"} py={"10px"} />
         <Flex
           direction={"column"}
-          px={"20px"}
-          py={"20px"}
+          px={"4px"}
+          pt={"15px"}
           letterSpacing={"0.2px"}
         >
           <Flex alignItems={"center"} justifyContent={"space-between"}>
             <Text fontSize={"18px"} fontWeight={"700"}>
-              2.95 ETH
+              {item.price} ETH
             </Text>
-            <FaArrowRight color="#3361FF" />
+            <FaArrowRight color="#3361FF" size={"20px"} />
           </Flex>
         </Flex>
       </Box>

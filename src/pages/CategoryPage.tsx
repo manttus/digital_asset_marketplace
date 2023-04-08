@@ -24,6 +24,7 @@ const CategoryPage = ({ lisitng }: any) => {
               name={item._name}
               image={item._asset}
               description={item._id._hex}
+              _id={item._id}
             />
           );
         })}

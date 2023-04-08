@@ -3,6 +3,8 @@ import { AiOutlineClose } from "react-icons/ai";
 import { FiEdit } from "react-icons/fi";
 import CustomIconButton from "../Button/CustomIconButton";
 import FeedTabs from "./FeedTab";
+import { useSelector } from "react-redux";
+import { selectUserData } from "../../features/auth/authSlice";
 
 const details = [
   {
@@ -28,6 +30,7 @@ type DetailsProps = {
 };
 
 const Details = ({ isEditPage, setEditPage }: DetailsProps) => {
+  const user = useSelector(selectUserData);
   return (
     <Flex direction={"column"}>
       <Flex w={"full"} justifyContent={"space-between"} mt={"40px"} mb={"50px"}>
@@ -46,7 +49,7 @@ const Details = ({ isEditPage, setEditPage }: DetailsProps) => {
             px={"10"}
           >
             <Text fontSize={"2xl"} fontWeight={"600"}>
-              @mantuu
+              @{user?.username.toLowerCase()}
             </Text>
             <CustomIconButton
               aria="Edit"
@@ -59,7 +62,7 @@ const Details = ({ isEditPage, setEditPage }: DetailsProps) => {
             />
           </Flex>
         </Flex>
-        {/* <Flex>
+        <Flex>
           <Box
             w={"350px"}
             shadow={"sm"}
@@ -109,7 +112,7 @@ const Details = ({ isEditPage, setEditPage }: DetailsProps) => {
               );
             })}
           </Box>
-        </Flex> */}
+        </Flex>
       </Flex>
     </Flex>
   );

@@ -43,15 +43,15 @@ const useAlert = () => {
     if (open) {
       toast({
         title: errorState.message,
-        variant: "left-accent",
+        variant: "solid",
         status: errorState.type ? errorState.type : "info",
         duration: 2000,
         isClosable: true,
-        position: "bottom-left",
+        position: "bottom-right",
       });
     }
   }, [open]);
-  return { setOpen, setErrorState };
+  return { setOpen, setErrorState, open, errorState };
 };
 
 export default useAlert;

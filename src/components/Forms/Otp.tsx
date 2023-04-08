@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { LoginType, SignInType } from "../../types/LoginPageType";
 import { OtpType } from "../../types/RegisterPageType";
 import NormalButton from "../Button/NormalButton";
-import CustomLink from "../Links/CustomLink";
+import { useNavigate } from "react-router-dom";
 
 type OtpProps = {
   submitHandler: (data: SignInType) => Promise<void>;
@@ -26,6 +26,8 @@ type OtpProps = {
 const Otp = ({ submitHandler, user, type, sendOtp }: OtpProps) => {
   const [deadline, setDeadline] = useState<number>(0);
   const [timeout, setTimer] = useState<string | null>(null);
+  const [otp, setOtp] = useState<string>("");
+  const navigate = useNavigate();
 
   const onSubmit = (data: OtpType) => {
     if (type === "LOGIN" && user) {
@@ -47,7 +49,7 @@ const Otp = ({ submitHandler, user, type, sendOtp }: OtpProps) => {
     if (distance < 0) {
       setTimer(null);
     } else {
-      setTimer(`( ${minutes} : ${seconds} )`);
+      setTimer(` ${minutes} : ${seconds} `);
     }
   };
 
@@ -61,7 +63,7 @@ const Otp = ({ submitHandler, user, type, sendOtp }: OtpProps) => {
   }, [timeout, deadline]);
 
   return (
-    <Box as={"form"} w={"400px"} mb={20}>
+    <Flex w={"400px"} direction={"column"} mb={5}>
       <Flex
         w={"full"}
         gap={8}
@@ -70,7 +72,10 @@ const Otp = ({ submitHandler, user, type, sendOtp }: OtpProps) => {
         height={"140px"}
       >
         <Flex direction={"column"} alignItems={"center"} gap={2}>
-          <Text fontSize={"18px"}>We have sent code to your email</Text>
+          <Text fontSize={"18px"}>
+            We have sent code to your
+            {user?.user.includes("@") ? " email" : " phone"}
+          </Text>
           <Text fontSize={"15px"} fontWeight={"600"}>
             {user?.user}
           </Text>
@@ -79,7 +84,7 @@ const Otp = ({ submitHandler, user, type, sendOtp }: OtpProps) => {
           <PinInput
             size={"lg"}
             onComplete={(value) => {
-              onSubmit({ otp: value });
+              setOtp(value);
             }}
           >
             <PinInputField />
@@ -92,17 +97,23 @@ const Otp = ({ submitHandler, user, type, sendOtp }: OtpProps) => {
 
       <Flex justifyContent={"center"} mt={5}>
         {!timeout ? (
-          <CustomLink
-            text={"Resend OTP"}
-            size="15px"
+          <Text
+            fontSize={"15px"}
+            transition={"all 0.3s ease-in-out"}
+            cursor={"pointer"}
+            fontWeight={"500"}
             onClick={() => {
               sendOtp({ type: user!.user, pass: user!.pass });
               setDeadline(Date.now() + 300000);
               setTimer("5:00");
             }}
-          />
+            mt={4}
+          >
+            Resend OTP
+          </Text>
         ) : (
           <Text
+            mt={4}
             fontSize={"15px"}
             fontWeight={"500"}
             color={"fontGhost"}
@@ -113,10 +124,24 @@ const Otp = ({ submitHandler, user, type, sendOtp }: OtpProps) => {
         )}
       </Flex>
       <HStack mt={10}>
-        <NormalButton text="Previous" type="outline" width="50%" />
-        <NormalButton text={"Login"} type="filled" width="50%" />
+        <NormalButton
+          text="Previous"
+          type="outline"
+          width="50%"
+          onClick={() => {
+            navigate("/login");
+          }}
+        />
+        <NormalButton
+          text={"Login"}
+          type="filled"
+          width="50%"
+          onClick={() => {
+            onSubmit({ otp });
+          }}
+        />
       </HStack>
-    </Box>
+    </Flex>
   );
 };
 

@@ -1,7 +1,7 @@
 import { IconButton } from "@chakra-ui/react";
 
 type CustomIconButtonProps = {
-  icon: any;
+  icon: JSX.Element;
   aria: string;
   onClick: () => void;
   type: string;

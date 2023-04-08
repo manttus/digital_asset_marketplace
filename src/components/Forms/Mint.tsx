@@ -13,6 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import NormalButton from "../Button/NormalButton";
+import { useEffect, useState } from "react";
 
 type MintProps = {
   mintAsset: (
@@ -36,11 +37,13 @@ type MintFormType = {
 };
 
 const Mint = ({ mintAsset, categories }: MintProps) => {
-  console.log(categories);
   const { register, handleSubmit, reset } = useForm<MintFormType>();
+  const [image, setImage] = useState<string | null>(null);
+
   return (
     <Box
       as="form"
+      w={"600px"}
       display={"flex"}
       flexDirection={"column"}
       gap={"10"}
@@ -70,24 +73,6 @@ const Mint = ({ mintAsset, categories }: MintProps) => {
             fontWeight={"500"}
           />
         </FormControl>
-        <FormControl isRequired>
-          <FormLabel>Category</FormLabel>
-          <Select
-            h={12}
-            rounded={"sm"}
-            {...register("category", {
-              required: true,
-            })}
-            fontWeight={"500"}
-          >
-            <option value={""} defaultChecked>
-              Select Category
-            </option>
-            {categories.map((category: any) => {
-              return <option value={category.name}>{category.name}</option>;
-            })}
-          </Select>
-        </FormControl>
       </HStack>
       <HStack spacing={5}>
         <FormControl isRequired>
@@ -103,12 +88,12 @@ const Mint = ({ mintAsset, categories }: MintProps) => {
             <option value={""} defaultChecked>
               Select Type
             </option>
-            <option value={"Bored APE"}>ART</option>
-            <option value={"Bored APE"}>VIDEO</option>
-            <option value={"Bored APE"}>GIFS</option>
+            <option value={"ART"}>ART</option>
+            <option value={"VIDEO"}>VIDEO</option>
+            <option value={"GIFS"}>GIFS</option>
           </Select>
         </FormControl>
-        <FormControl isRequired>
+        {/* <FormControl isRequired>
           <FormLabel>Proposed Price</FormLabel>
           <Input
             {...register("price", {
@@ -119,6 +104,28 @@ const Mint = ({ mintAsset, categories }: MintProps) => {
             rounded={"sm"}
             fontWeight={"500"}
           />
+        </FormControl> */}
+        <FormControl isRequired>
+          <FormLabel>Category</FormLabel>
+          <Select
+            h={12}
+            rounded={"sm"}
+            {...register("category", {
+              required: true,
+            })}
+            fontWeight={"500"}
+          >
+            <option value={""} defaultChecked>
+              Select Category
+            </option>
+            {categories.map((category: any) => {
+              return (
+                <option key={category._id} value={category.name}>
+                  {category.name}
+                </option>
+              );
+            })}
+          </Select>
         </FormControl>
       </HStack>
       <Stack spacing={6}>
@@ -139,7 +146,7 @@ const Mint = ({ mintAsset, categories }: MintProps) => {
               justifyContent={"center"}
             >
               <Text fontWeight={"500"} fontSize={"16px"}>
-                Attach the preview file *
+                {image ? image : "Attach the preview file *"}
               </Text>
             </Box>
             <Input
@@ -154,6 +161,10 @@ const Mint = ({ mintAsset, categories }: MintProps) => {
               {...register("image", {
                 required: true,
               })}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                setImage(file!.name ? file!.name : null);
+              }}
             />
           </Flex>
         </FormControl>
@@ -168,15 +179,6 @@ const Mint = ({ mintAsset, categories }: MintProps) => {
             rounded={"sm"}
           />
         </FormControl>
-      </HStack>
-      <HStack spacing={5}>
-        <Flex alignItems={"center"} gap={5}>
-          <Checkbox />
-          <Text textAlign={"justify"} fontWeight={"500"}>
-            Click here to indicate that you have read & agree to the terms in
-            the Privacy Policy agreement.
-          </Text>
-        </Flex>
       </HStack>
 
       <HStack w={"full"} display={"flex"} justifyContent={"end"}>

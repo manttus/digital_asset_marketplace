@@ -1,7 +1,8 @@
 import { Text, Flex } from "@chakra-ui/react";
 import Login from "../components/Forms/Login";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import jwt_decode from "jwt-decode";
+
 import {
   useLoginMutation,
   useSendMutation,
@@ -23,8 +24,9 @@ const LoginPage = () => {
   const { oauth } = useGoogleAuth();
   const [otp, setOtp] = useState<boolean | null>(null);
   const [send, { isLoading: sendLoading }] = useSendMutation();
-  const [login] = useLoginMutation();
-  const { setOpen, setErrorState } = useAlert();
+  const [login, { isLoading: loginLoading }] = useLoginMutation();
+  const { setOpen, setErrorState, open, errorState } = useAlert();
+  const [isLogged, setIsLogged] = useState<boolean>(false);
   const [user, setUser] = useState<{
     user: string;
     pass: string | null;
@@ -44,13 +46,12 @@ const LoginPage = () => {
         setOtp(true);
         setErrorState({
           type: "success",
-          message: "Otp Sent",
+          message: "OTP Sent",
           action: "SET_MESSAGE",
         });
         setOpen(true);
       }
     } catch (err: Error | unknown) {
-      console.log(err);
       setErrorState({
         type: "error",
         message: "Something went wrong",
@@ -61,13 +62,13 @@ const LoginPage = () => {
   };
 
   const submitHandler = async ({ user, otp, type, pass }: SignInType) => {
-    setOpen(false);
     try {
       const response =
         type === "FORM"
           ? await login({ user, otp, type, pass }).unwrap()
           : await login({ user, otp, type }).unwrap();
       if (response.message === "SUCCESS") {
+        setOtp(false);
         setErrorState({
           type: "success",
           message: "Login Successful",
@@ -88,13 +89,13 @@ const LoginPage = () => {
             accessToken: response.accessToken,
           })
         );
-
+        console.log(response);
         navigate("/");
       }
-    } catch (err: Error | unknown) {
+    } catch (err: {}) {
       setErrorState({
         type: "error",
-        message: "Invalid Otp",
+        message: err.data.message,
         action: "SET_MESSAGE",
       });
       setOpen(true);

@@ -2,8 +2,6 @@ import { Box, Flex, Text } from "@chakra-ui/react";
 import illustration1 from "../assets/eth3.webp";
 import illustration2 from "../assets/abstract2.webp";
 import illustration3 from "../assets/blob.webp";
-import NormalButton from "../components/Button/NormalButton";
-import { IoIosArrowForward } from "react-icons/io";
 import Partners from "../components/Showcase/Partners";
 import Featured from "../components/Showcase/Featured";
 import Collection from "../components/Showcase/Collection";
@@ -79,6 +77,7 @@ const LandingPage = () => {
         <Collection />
         <Partners />
         <Featured />
+        {/* <Popular /> */}
       </Flex>
     </Flex>
   );
