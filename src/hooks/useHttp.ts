@@ -20,6 +20,7 @@ const useHttp = <T>(
               body: requestConfig.body,
             });
       const data = await response.json();
+
       handler(data);
     } catch (err) {
       console.log(err);

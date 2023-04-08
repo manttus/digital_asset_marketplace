@@ -10,6 +10,8 @@ import {
 } from "../features/api/authApi/apiSlice";
 import useLocalStorage from "../hooks/useLocalStorage";
 import { Data, UserData } from "../types/RegisterPageType";
+import { useNavigate } from "react-router-dom";
+import useAlert from "../hooks/useAlert";
 
 const initialState: UserData = {
   name: "",
@@ -22,14 +24,12 @@ const initialState: UserData = {
 };
 
 const RegisterPage = () => {
-  const { setItem, value, removeItem } = useLocalStorage("register");
-  const [steps, setSteps] = useState<number>(value ? 3 : 1);
-  const [userData, setUserData] = useState<UserData>(
-    value ? JSON.parse(value) : initialState
-  );
-
-  const [register] = useRegisterMutation();
-  const [send] = useSendMutation();
+  const [steps, setSteps] = useState<number>(1);
+  const [userData, setUserData] = useState<UserData>(initialState);
+  const navigate = useNavigate();
+  const { setOpen, setErrorState } = useAlert();
+  const [register, { isLoading: registerLoading }] = useRegisterMutation();
+  const [send, { isLoading }] = useSendMutation();
   const [verify] = useVerifyMutation();
 
   const stepsHandler = (data: Data) => {
@@ -57,15 +57,19 @@ const RegisterPage = () => {
   const sendOtp = async () => {
     try {
       await send({ user: userData.login! }).unwrap();
-      removeItem();
+      setErrorState({
+        type: "success",
+        message: "OTP Sent",
+        action: "SET_MESSAGE",
+      });
+      setOpen(true);
     } catch (err) {}
   };
 
   const verifyOtp = async (user: string, otp: string) => {
     try {
       const res = await verify({ user, otp }).unwrap();
-      console.log(res);
-      setItem(JSON.stringify(userData));
+      registerUser();
     } catch (err) {
       console.log(err);
     }
@@ -76,14 +80,17 @@ const RegisterPage = () => {
       user: userData.login,
       username: userData.name,
       pass: userData.password,
-      postal: userData.zipcode,
-      address: userData.address,
-      country: userData.country,
-      contact: userData.contact,
     };
     try {
       const res = await register(cleared).unwrap();
-      removeItem();
+
+      setErrorState({
+        type: "success",
+        message: "Account Created",
+        action: "SET_MESSAGE",
+      });
+      setOpen(true);
+      navigate("/login");
     } catch (err) {
       console.log(err);
     }
@@ -99,11 +106,10 @@ const RegisterPage = () => {
         top={0}
         position={"absolute"}
       ></Flex>
-      <Flex mt={28} mb={5} justifyContent={"center"}>
+      <Flex mt={28} justifyContent={"center"}>
         <Text fontSize={"38px"} fontWeight={"bold"}>
-          {steps === 1 && "Create Account"}
+          {steps === 1 && "Register"}
           {steps === 2 && "Otp Sent"}
-          {steps === 3 && "Complete Account"}
         </Text>
       </Flex>
       <Flex direction={"column"}>
@@ -116,12 +122,18 @@ const RegisterPage = () => {
           {steps === 1 && (
             <Step1 submitHandler={stepsHandler} userData={userData} />
           )}
-          {steps === 2 && <Step2 verifyOtp={verifyOtp} userData={userData} />}
-          {steps === 3 && (
+          {/* {steps === 2 && (
             <Step3 submitHandler={stepsHandler} userData={userData} />
+          )} */}
+          {steps === 2 && (
+            <Step2
+              verifyOtp={verifyOtp}
+              userData={userData}
+              resendOtp={sendOtp}
+            />
           )}
         </Flex>
-        <HStack mt={5}>
+        <HStack>
           <NormalButton
             text="Previous"
             onClick={() => {
@@ -129,16 +141,24 @@ const RegisterPage = () => {
             }}
             type="outline"
             width="50%"
-            isDisabled={steps === 1 || steps === 3}
+            isDisabled={steps === 1 ? true : false}
           />
           <NormalButton
-            text={steps === 3 ? "Register" : "Next"}
+            text={steps === 2 ? "Register" : "Next"}
+            isLoading={steps === 1 ? isLoading : registerLoading}
             onClick={
-              steps === 3
+              steps === 2
                 ? registerUser
                 : () => {
-                    steps === 1 && sendOtp();
-                    setSteps((prev) => prev + 1);
+                    if (
+                      steps === 1 &&
+                      userData.login &&
+                      userData.password &&
+                      userData.name
+                    ) {
+                      steps === 1 && sendOtp();
+                      setSteps((prev) => prev + 1);
+                    }
                   }
             }
             type="filled"

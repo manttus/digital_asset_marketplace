@@ -94,6 +94,13 @@ export const marketApi = createApi({
         body: data,
       }),
     }),
+    uploadImageUser: builder.mutation({
+      query: (data: { id: string; type: string; image: any }) => ({
+        url: "user/uploadImage",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -105,4 +112,5 @@ export const {
   useUpdateMutation,
   useUserMutation,
   useAddCategoryMutation,
+  useUploadImageUserMutation,
 } = marketApi;

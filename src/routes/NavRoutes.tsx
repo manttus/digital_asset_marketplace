@@ -7,15 +7,13 @@ import ArchivesPage from "../pages/ArchivesPage";
 import ProfilePage from "../pages/ProfilePage";
 import CollectionPage from "../pages/CollectionPage";
 import CategoryPage from "../pages/CategoryPage";
+import AuthRoute from "./AuthRoute";
+import AssetDetails from "../pages/AssetDetails";
 
-export const NavRoutes = [
+const NavRoutes = [
   {
     path: "",
     element: <LandingPage />,
-  },
-  {
-    path: "mint",
-    element: <MintPage />,
   },
   {
     path: "login",
@@ -31,15 +29,19 @@ export const NavRoutes = [
   },
   {
     path: "mint",
-    element: <MintPage />,
+    element: <AuthRoute LoginRoute={<LoginPage />} NextRoute={<MintPage />} />,
   },
   {
     path: "archive",
-    element: <ArchivesPage />,
+    element: (
+      <AuthRoute LoginRoute={<LoginPage />} NextRoute={<ArchivesPage />} />
+    ),
   },
   {
     path: "profile",
-    element: <ProfilePage />,
+    element: (
+      <AuthRoute LoginRoute={<LoginPage />} NextRoute={<ProfilePage />} />
+    ),
   },
   {
     path: "collections",
@@ -47,6 +49,16 @@ export const NavRoutes = [
   },
   {
     path: "archive/:id",
-    element: <CategoryPage />,
+    element: (
+      <AuthRoute LoginRoute={<LoginPage />} NextRoute={<CategoryPage />} />
+    ),
+  },
+  {
+    path: "details",
+    element: (
+      <AuthRoute LoginRoute={<LoginPage />} NextRoute={<AssetDetails />} />
+    ),
   },
 ];
+
+export default NavRoutes;

@@ -43,4 +43,7 @@ export type StepProps = {
   submitHandler?: (data: any) => void;
   userData: UserData;
   verifyOtp?: (email: string, otp: string) => Promise<void>;
+  resendOtp?: (email: string) => Promise<void>;
+  steps?: number;
+  isLoading?: boolean;
 };

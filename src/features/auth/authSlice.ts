@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import jwt_decode from "jwt-decode";
+import { AuthSliceType, RootState } from "../../types/StoreType";
 
-const initialState = {
+const initialState: AuthSliceType = {
   token: localStorage.getItem("Tokens")
     ? JSON.parse(localStorage.getItem("Tokens")!).accessToken
     : null,
@@ -48,8 +49,8 @@ const authSlice = createSlice({
 export const { setCredintials, logout, setWallet, setUserData } =
   authSlice.actions;
 export default authSlice.reducer;
-export const selectCurrentUser = (state: any) => state.auth.user;
-export const selectCurrentWallet = (state: any) => state.auth.wallet;
-export const selectCurrentToken = (state: any) => state.auth.token;
-export const selectCurrentBalance = (state: any) => state.auth.balance;
-export const selectUserData = (state: any) => state.auth.data;
+export const selectCurrentUser = (state: RootState) => state.auth.user;
+export const selectCurrentWallet = (state: RootState) => state.auth.wallet;
+export const selectCurrentToken = (state: RootState) => state.auth.token;
+export const selectCurrentBalance = (state: RootState) => state.auth.balance;
+export const selectUserData = (state: RootState) => state.auth.data;

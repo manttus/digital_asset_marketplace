@@ -2,9 +2,9 @@ import { Spinner, Flex, Text } from "@chakra-ui/react";
 
 const NoConnection = () => {
   return (
-    <Flex gap={5} alignItems={"center"}>
-      <Spinner />
-      <Text fontSize={"18px"}>Awaiting MetaMask Connection</Text>
+    <Flex gap={8} alignItems={"center"} direction={"column"}>
+      <Spinner height={"30px"} width={"30px"} />
+      <Text fontSize={"21px"}>Awaiting MetaMask Connection</Text>
     </Flex>
   );
 };

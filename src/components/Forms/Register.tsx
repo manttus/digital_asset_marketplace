@@ -17,7 +17,13 @@ import useHttp from "../../hooks/useHttp";
 import { StepProps, StepType1, StepType2 } from "../../types/RegisterPageType";
 
 export const Step1 = ({ submitHandler, userData }: StepProps) => {
-  const { register, watch } = useForm<StepType1>();
+  const {
+    register,
+    watch,
+    formState: {
+      errors: { first, last, user, password },
+    },
+  } = useForm<StepType1>();
   useEffect(() => {
     submitHandler!(watch());
   }, [watch("first"), watch("last"), watch("user"), watch("password")]);
@@ -25,7 +31,7 @@ export const Step1 = ({ submitHandler, userData }: StepProps) => {
     <Box as={"form"} w={"450px"}>
       <Stack spacing={5}>
         <HStack spacing={3}>
-          <FormControl>
+          <FormControl isInvalid={first ? true : false}>
             <Input
               {...register("first", {
                 required: true,
@@ -81,33 +87,43 @@ export const Step1 = ({ submitHandler, userData }: StepProps) => {
             px={5}
           />
         </FormControl>
-        <FormControl>
-          <Input
-            {...register("confirm", {
-              required: true,
-              minLength: { value: 4, message: "Minimum Value 4" },
-              maxLength: { value: 4, message: "Maximum Value 4" },
-              validate: (value) => {
-                return value === watch("password");
-              },
-            })}
-            placeholder={"Confirm Password"}
-            type={"password"}
-            py={6}
-            px={5}
-          />
-        </FormControl>
       </Stack>
     </Box>
   );
 };
 
-export const Step2 = ({ userData, verifyOtp }: StepProps) => {
+export const Step2 = ({ userData, verifyOtp, resendOtp }: StepProps) => {
+  const [timeout, setTimer] = useState<string | null>(null);
+  const [deadline, setDeadline] = useState<number>(0);
+  const getTime = () => {
+    const now = new Date().getTime();
+    const distance = deadline - now;
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    if (distance < 0) {
+      setTimer(null);
+    } else {
+      setTimer(` ${minutes} : ${seconds} `);
+    }
+  };
+
+  useEffect(() => {
+    if (timeout && deadline) {
+      const intervalId = setInterval(() => {
+        getTime();
+      }, 1000);
+      return () => clearInterval(intervalId);
+    }
+  }, [timeout, deadline]);
+
   return (
     <Box as={"form"} w={"400px"}>
       <Flex w={"full"} gap={8} direction={"column"} alignItems={"center"}>
         <Flex direction={"column"} alignItems={"center"} gap={2}>
-          <Text fontSize={"18px"}>We have sent code to your email</Text>
+          <Text fontSize={"18px"}>
+            We have sent code to your{" "}
+            {userData.login?.includes("@") ? "email" : "phone"}
+          </Text>
           <Text fontSize={"15px"} fontWeight={"600"}>
             {userData.login}
           </Text>
@@ -127,8 +143,33 @@ export const Step2 = ({ userData, verifyOtp }: StepProps) => {
         </HStack>
       </Flex>
 
-      <Flex justifyContent={"center"} mt={5}>
-        <CustomLink text={"Resend OTP"} size="15px" />
+      <Flex justifyContent={"center"} mt={10}>
+        {!timeout ? (
+          <Text
+            fontSize={"15px"}
+            transition={"all 0.3s ease-in-out"}
+            cursor={"pointer"}
+            fontWeight={"500"}
+            onClick={() => {
+              resendOtp!(userData!.login!);
+              setDeadline(Date.now() + 300000);
+              setTimer("5:00");
+            }}
+            mt={4}
+          >
+            Resend OTP
+          </Text>
+        ) : (
+          <Text
+            mt={4}
+            fontSize={"15px"}
+            fontWeight={"500"}
+            color={"fontGhost"}
+            cursor={"pointer"}
+          >
+            Resend {timeout}
+          </Text>
+        )}
       </Flex>
     </Box>
   );

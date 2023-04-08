@@ -10,56 +10,69 @@ import {
   AccordionIcon,
   AccordionPanel,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Circular from "../components/Abstracts/Circular";
 import CustomBadge from "../components/Badge/CustomBadge";
 import Featured from "../components/Showcase/Featured";
+import { useSelector } from "react-redux";
+import {
+  selectMarket,
+  selectMarketItems,
+} from "../features/market/marketSlice";
+import { ethers } from "ethers";
+import { selectCurrentUser } from "../features/auth/authSlice";
+import MarketCard from "../components/Card/MarketCard";
 
 const CollectionPage = () => {
-  const [archives, setArchives] = useState<any>([
-    {
-      id: 1,
-      name: "Mantuu",
-      image: "https://i.imgur.com/1Q1Z1Zu.png",
-      description: "Mantuu",
-      price: 0.1,
-    },
-    {
-      id: 2,
-      name: "Mantuu",
-      image: "https://i.imgur.com/1Q1Z1Zu.png",
-      description: "Mantuu",
-      price: 0.1,
-    },
-    {
-      id: 2,
-      name: "Mantuu",
-      image: "https://i.imgur.com/1Q1Z1Zu.png",
-      description: "Mantuu",
-      price: 0.1,
-    },
-    {
-      id: 2,
-      name: "Mantuu",
-      image: "https://i.imgur.com/1Q1Z1Zu.png",
-      description: "Mantuu",
-      price: 0.1,
-    },
-    {
-      id: 2,
-      name: "Mantuu",
-      image: "https://i.imgur.com/1Q1Z1Zu.png",
-      description: "Mantuu",
-      price: 0.1,
-    },
-    {
-      id: 2,
-      name: "Mantuu",
-      image: "https://i.imgur.com/1Q1Z1Zu.png",
-      description: "Mantuu",
-      price: 0.1,
-    },
-  ]);
+  const marketlist = useSelector(selectMarketItems);
+  const currentUser = useSelector(selectCurrentUser);
+  const market = useSelector(selectMarket);
+  const [archives, setArchives] = useState<any>([]);
+  const [marketContract, setMarketContract] = useState<any>([]);
+  const [marketItems, setMarketItems] = useState<any>([]);
+  const [flag, setFlag] = useState<boolean>(false);
+
+  const LoadContract = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const shop = new ethers.Contract(market.address, market.abi, signer);
+    console.log(shop);
+    setMarketContract(shop);
+  };
+
+  const fetchMarketData = async () => {
+    const listing = await marketContract._getListings();
+    const refined = [];
+    const limit = listing.length > 4 ? 4 : listing.length;
+    for (let i = listing.length - 1; i >= listing.length - limit; i--) {
+      refined.push({
+        _id: listing[i]._id,
+        name: listing[i][2]._name,
+        price: parseInt(listing[i]._price._hex) / 1000000000000000000,
+        image: listing[i][2]._asset,
+      });
+    }
+    setMarketItems(refined);
+  };
+
+  useEffect(() => {
+    if (marketContract) {
+      setFlag(true);
+    }
+  }, [marketContract]);
+
+  useEffect(() => {
+    if (currentUser) {
+      LoadContract();
+    }
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (marketContract && flag) {
+      fetchMarketData();
+    }
+  }, [marketContract]);
+
   return (
     <Grid
       height={"full"}
@@ -91,7 +104,11 @@ const CollectionPage = () => {
         </Flex>
       </Flex>
       <Flex w={"full"} gridColumn={"span 2"} p={"30px"}>
-        <Flex w={"30%"} zIndex={"3"}></Flex>
+        <Flex w={"30%"} zIndex={"3"}>
+          {marketItems.map((item: any) => {
+            return <MarketCard key={item.id} />;
+          })}
+        </Flex>
       </Flex>
     </Grid>
   );

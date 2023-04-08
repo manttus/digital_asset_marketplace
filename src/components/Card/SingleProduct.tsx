@@ -1,16 +1,27 @@
-import { Flex, Text, Avatar, HStack } from "@chakra-ui/react";
-import { BsInstagram, BsTwitter } from "react-icons/bs";
-import { IoIosArrowForward } from "react-icons/io";
-import Illustration from "../../assets/abstract1.webp";
+import { Flex, Text } from "@chakra-ui/react";
 import CustomBadge from "../Badge/CustomBadge";
-import CustomIconButton from "../Button/CustomIconButton";
 import CustomLink from "../Links/CustomLink";
 import NormalButton from "../Button/NormalButton";
 import { useLocation } from "react-router-dom";
+import { ethers } from "ethers";
+import { useSelector } from "react-redux";
+import { selectCurrentWallet } from "../../features/auth/authSlice";
+import { useState } from "react";
 
-const SingleProduct = () => {
+const SingleProduct = ({ contract }: any) => {
   const { state } = useLocation();
+  const wallet = useSelector(selectCurrentWallet);
+  const [price, setPrice] = useState<number>(2.95);
+
   console.log(state);
+
+  const createListing = () => {
+    console.log(wallet);
+    const priceinWei = ethers.utils.parseEther(price.toString());
+    const id = parseInt(state._id._hex);
+    contract._createListing(id, priceinWei, wallet);
+  };
+
   return (
     <Flex
       bg={"background"}
@@ -113,7 +124,9 @@ const SingleProduct = () => {
                 text="Add to Listing"
                 type="outline"
                 width="380px"
-                onClick={() => {}}
+                onClick={() => {
+                  createListing();
+                }}
                 bg={"buttonHover"}
               />
             </Flex>

@@ -30,7 +30,6 @@ const Login = ({ sendOtp, isLoading, oauth }: LoginProps) => {
     <Box
       as="form"
       onSubmit={handleSubmit((data) => {
-        console.log(data);
         sendOtp(data);
         reset();
       })}

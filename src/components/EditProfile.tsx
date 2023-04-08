@@ -3,6 +3,7 @@ import Edit from "./Forms/Edit";
 import { useSelector } from "react-redux";
 import jwtDecode from "jwt-decode";
 import { useUpdateMutation } from "../features/api/authApi/apiSlice";
+import { RootState } from "../types/StoreType";
 type User = {
   username: string;
   phone: string;
@@ -26,7 +27,7 @@ type FormData = {
   following: string[];
 };
 const EditProfile = () => {
-  const user = useSelector((state: any) => state.auth.user);
+  const user = useSelector((state: RootState) => state.auth.user);
   // const userData = useUserQuery(user);
 
   const [update] = useUpdateMutation();
@@ -50,7 +51,7 @@ const EditProfile = () => {
       rounded={"md"}
       shadow={"sm"}
     >
-      {/* <Edit userData={userData.data.user} submitHandler={submitHandler} /> */}
+      <Edit submitHandler={submitHandler} />
     </Flex>
   );
 };
