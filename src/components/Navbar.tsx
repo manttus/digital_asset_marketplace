@@ -11,7 +11,6 @@ import {
   MenuList,
   MenuItem,
   MenuDivider,
-  Divider,
 } from "@chakra-ui/react";
 import { Outlet, useNavigate } from "react-router";
 import { BsDot } from "react-icons/bs";
@@ -26,7 +25,6 @@ import { motion } from "framer-motion";
 import Footer from "./Footer";
 import { useSelector } from "react-redux";
 import {
-  logout,
   selectCurrentBalance,
   selectCurrentToken,
   selectCurrentWallet,
@@ -35,8 +33,9 @@ import ScrollToTop from "./ScrollToTop";
 import { useDispatch } from "react-redux";
 import logo from "../assets/logo2.png";
 import { FaEthereum } from "react-icons/fa";
-import { FiUser, FiLogOut } from "react-icons/fi";
-import { BiLogOut } from "react-icons/bi";
+import { FiUser } from "react-icons/fi";
+import { AiOutlineDisconnect } from "react-icons/ai";
+import AuthModal from "./AuthModal";
 
 declare global {
   interface Window {
@@ -62,6 +61,13 @@ const bottomVariants = {
 
 type NavbarProps = {
   metaMaskHandler: () => Promise<void>;
+  disconnect: () => Promise<void>;
+  buttonLoading: boolean;
+  isOpen: boolean;
+  onClose: () => void;
+  sendOtp: (email: string) => Promise<boolean>;
+  signupHandler: (email: string, otp: string) => Promise<boolean>;
+  address: string;
 };
 
 const navlinks = [
@@ -73,29 +79,67 @@ const navlinks = [
 
 const menuItems = [
   {
-    name: "Profile",
+    name: "Account",
     path: "/profile",
     icon: <FiUser size={"24px"} />,
   },
 
   {
-    name: "Logout",
+    name: "Sign Out",
     path: "/",
-    icon: <FiLogOut size={"24px"} />,
+    icon: <AiOutlineDisconnect size={"24px"} />,
   },
 ];
 
-const Navbar = ({ metaMaskHandler }: NavbarProps) => {
+const Navbar = ({
+  metaMaskHandler,
+  disconnect,
+  buttonLoading,
+  isOpen,
+  onClose,
+  sendOtp,
+  signupHandler,
+  address,
+}: NavbarProps) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const state = useSelector(selectCurrentToken);
   const wallet = useSelector(selectCurrentWallet);
   const balance = useSelector(selectCurrentBalance);
   const [overlay, setOverlay] = useState<boolean>(false);
+  const [otpField, setOtpField] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>("");
+  const [otpValue, setOtpValue] = useState<string>("");
+  const submitHandler = async (value: any) => {
+    try {
+      const resposne = await sendOtp(value.email);
+      if (resposne) {
+        setOtpField(true);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const registerHandler = () => {
+    console.log(email, otpValue);
+    signupHandler(email, otpValue);
+  };
 
   return (
     <>
       <ScrollToTop />
+      <AuthModal
+        isOpen={isOpen}
+        onClose={onClose}
+        submitHandler={submitHandler}
+        address={address}
+        otpField={otpField}
+        registerHandler={registerHandler}
+        setOtpValue={setOtpValue}
+        setEmail={setEmail}
+        email={email}
+      />
       <Flex height={"115px"} justifyContent={"center"} alignItems={"center"}>
         <Flex
           position={"fixed"}
@@ -157,22 +201,28 @@ const Navbar = ({ metaMaskHandler }: NavbarProps) => {
             justifyContent={"end"}
             gap={3}
           >
-            {state ? (
-              <Hide below="xl">
-                {!wallet ? (
-                  <CustomButton
-                    text={"Connect"}
-                    type="filled"
-                    onClick={!wallet ? metaMaskHandler : () => {}}
-                  />
-                ) : (
+            <Hide below="xl">
+              {!wallet ? (
+                <CustomButton
+                  text="Connect"
+                  onClick={metaMaskHandler}
+                  type={"filled"}
+                  isLoading={buttonLoading}
+                />
+              ) : (
+                <Menu autoSelect={false}>
                   <Flex
                     position={"relative"}
                     cursor={"pointer"}
                     gap={5}
                     alignItems={"center"}
                   >
-                    <Flex position={"absolute"} top={2} left={3}>
+                    <Flex
+                      position={"absolute"}
+                      top={2}
+                      left={3}
+                      as={MenuButton}
+                    >
                       <Box
                         display={"flex"}
                         justifyContent={"center"}
@@ -201,12 +251,10 @@ const Navbar = ({ metaMaskHandler }: NavbarProps) => {
                       <Text> {balance} </Text>
                     </Flex>
                   </Flex>
-                )}
-                <Menu autoSelect={false}>
-                  <Avatar as={MenuButton} size={"md"} />
+
                   <MenuList
                     bg={"background"}
-                    rounded={"2xl"}
+                    rounded={"lg"}
                     shadow={"md"}
                     overflow={"hidden"}
                   >
@@ -214,11 +262,10 @@ const Navbar = ({ metaMaskHandler }: NavbarProps) => {
                       <>
                         <MenuItem
                           bg={"background"}
-                          key={item.path}
+                          key={item.name}
                           onClick={() => {
-                            if (item.name === "Logout") {
-                              localStorage.clear();
-                              dispatch(logout());
+                            if (item.name === "Sign Out") {
+                              disconnect();
                             }
                             navigate(item.path);
                           }}
@@ -231,8 +278,7 @@ const Navbar = ({ metaMaskHandler }: NavbarProps) => {
                             </Flex>
                             <Flex>
                               <Text fontSize={"16px"} fontWeight={"500"}>
-                                {" "}
-                                {item.name}{" "}
+                                {item.name}
                               </Text>
                             </Flex>
                           </Flex>
@@ -242,21 +288,8 @@ const Navbar = ({ metaMaskHandler }: NavbarProps) => {
                     ))}
                   </MenuList>
                 </Menu>
-              </Hide>
-            ) : (
-              <Hide below="xl">
-                <CustomButton
-                  text="Register"
-                  onClick={() => navigate("/register")}
-                  type={"outline"}
-                />
-                <CustomButton
-                  text="Login"
-                  onClick={() => navigate("/login")}
-                  type={"filled"}
-                />
-              </Hide>
-            )}
+              )}
+            </Hide>
             <Show below="xl">
               <CustomIconButton
                 icon={<RxHamburgerMenu size={"20px"} />}
