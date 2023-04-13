@@ -7,39 +7,16 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { LoginType, SignInType } from "../../types/LoginPageType";
-import { OtpType } from "../../types/RegisterPageType";
-import NormalButton from "../Button/NormalButton";
-import { useNavigate } from "react-router-dom";
 
 type OtpProps = {
-  submitHandler: (data: SignInType) => Promise<void>;
-  user: {
-    user: string;
-    pass: string | null;
-    type: string;
-  } | null;
-  type: string;
-  sendOtp: (data: LoginType) => Promise<void>;
+  registerHandler: () => void;
+  email: string;
+  setOtpValue: (value: string) => void;
 };
 
-const Otp = ({ submitHandler, user, type, sendOtp }: OtpProps) => {
+const Otp = ({ registerHandler, email, setOtpValue }: OtpProps) => {
   const [deadline, setDeadline] = useState<number>(0);
   const [timeout, setTimer] = useState<string | null>(null);
-  const [otp, setOtp] = useState<string>("");
-  const navigate = useNavigate();
-
-  const onSubmit = (data: OtpType) => {
-    if (type === "LOGIN" && user) {
-      submitHandler!({
-        user: user.user,
-        pass: user.pass ? user.pass : undefined,
-        type: user?.type,
-        otp: data.otp,
-      });
-    } else {
-    }
-  };
 
   const getTime = () => {
     const now = new Date().getTime();
@@ -63,28 +40,19 @@ const Otp = ({ submitHandler, user, type, sendOtp }: OtpProps) => {
   }, [timeout, deadline]);
 
   return (
-    <Flex w={"400px"} direction={"column"} mb={5}>
-      <Flex
-        w={"full"}
-        gap={8}
-        direction={"column"}
-        alignItems={"center"}
-        height={"140px"}
-      >
+    <Flex w={"full"} direction={"column"} gap={7} py={"25px"}>
+      <Flex w={"full"} direction={"column"} alignItems={"center"} gap={6}>
         <Flex direction={"column"} alignItems={"center"} gap={2}>
-          <Text fontSize={"18px"}>
-            We have sent code to your
-            {user?.user.includes("@") ? " email" : " phone"}
-          </Text>
-          <Text fontSize={"15px"} fontWeight={"600"}>
-            {user?.user}
+          <Text fontSize={"13px"}>We have sent code to your email</Text>
+          <Text fontSize={"12px"} fontWeight={"600"}>
+            {email}
           </Text>
         </Flex>
-        <HStack spacing={3}>
+        <HStack>
           <PinInput
-            size={"lg"}
+            size={"md"}
             onComplete={(value) => {
-              setOtp(value);
+              setOtpValue(value);
             }}
           >
             <PinInputField />
@@ -95,26 +63,23 @@ const Otp = ({ submitHandler, user, type, sendOtp }: OtpProps) => {
         </HStack>
       </Flex>
 
-      <Flex justifyContent={"center"} mt={5}>
+      <Flex justifyContent={"center"}>
         {!timeout ? (
           <Text
-            fontSize={"15px"}
+            fontSize={"12px"}
             transition={"all 0.3s ease-in-out"}
             cursor={"pointer"}
             fontWeight={"500"}
             onClick={() => {
-              sendOtp({ type: user!.user, pass: user!.pass });
               setDeadline(Date.now() + 300000);
               setTimer("5:00");
             }}
-            mt={4}
           >
             Resend OTP
           </Text>
         ) : (
           <Text
-            mt={4}
-            fontSize={"15px"}
+            fontSize={"12px"}
             fontWeight={"500"}
             color={"fontGhost"}
             cursor={"pointer"}
@@ -123,24 +88,6 @@ const Otp = ({ submitHandler, user, type, sendOtp }: OtpProps) => {
           </Text>
         )}
       </Flex>
-      <HStack mt={10}>
-        <NormalButton
-          text="Previous"
-          type="outline"
-          width="50%"
-          onClick={() => {
-            navigate("/login");
-          }}
-        />
-        <NormalButton
-          text={"Login"}
-          type="filled"
-          width="50%"
-          onClick={() => {
-            onSubmit({ otp });
-          }}
-        />
-      </HStack>
     </Flex>
   );
 };
