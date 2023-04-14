@@ -3,6 +3,11 @@ import { motion } from "framer-motion";
 import { BiImageAdd } from "react-icons/bi";
 import NormalButton from "../Button/NormalButton";
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import {
+  selectCurrentUser,
+  selectUserData,
+} from "../../features/auth/authSlice";
 
 const buttonVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -10,23 +15,24 @@ const buttonVariants = {
 };
 
 type ProfileProps = {
-  addImage: (e: FileList | null) => void;
+  addImage: (e: FileList | null, flag: string) => void;
   isEditPage: boolean;
 };
 
 const Profile = ({ addImage, isEditPage }: ProfileProps) => {
-  const [profile, setProfile] = useState<string | null>(null);
-  const [background, setBackground] = useState<any>(null);
+  const user = useSelector(selectCurrentUser);
+  console.log(user);
+  const userData = useSelector(selectUserData);
+  const [profile, setProfile] = useState<string | null>(userData.profileImage);
+  const [background, setBackground] = useState<string | null>(
+    userData.backgroundImage
+  );
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files![0];
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      console.log(e.target);
-      setProfile(e.target?.result as string);
-    };
-    reader.readAsDataURL(selectedFile);
-    addImage(e.target.files);
+  const handleImageChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    flag: string
+  ) => {
+    addImage(e.target.files, flag);
   };
 
   return (
@@ -45,77 +51,90 @@ const Profile = ({ addImage, isEditPage }: ProfileProps) => {
         rounded={"md"}
         justifyContent={"end"}
         alignItems={"end"}
-        pb={5}
-        pr={5}
-        cursor={"pointer"}
-        whileHover={"hover"}
+        bgImage={background ? `url(${background})` : ""}
+        bgPos={"center"}
+        bgSize={"cover"}
       >
-        <Flex as={motion.div} variants={buttonVariants}>
-          {isEditPage && (
-            <NormalButton
-              fontSize="15px"
-              text="Edit Cover"
-              type="filled"
-              bg="buttonPrimary"
-              py="16px"
-            />
-          )}
-        </Flex>
-      </Flex>
-      {isEditPage ? (
         <Flex
-          left={"50"}
-          top={"160"}
-          position={"absolute"}
-          width={"150px"}
-          height={"150px"}
-          bg={profile ? profile : "gray.200"}
-          rounded={"full"}
+          position={"relative"}
+          width={"full"}
+          height={"full"}
+          bg={"rgba(0,0,0,0.2)"}
           justifyContent={"center"}
           alignItems={"center"}
+          transition={"all 0.3s ease-in-out"}
+          opacity={"0"}
+          _hover={{
+            opacity: "1",
+            bg: background ? "rgba(255,255, 255, 0.2)" : "rgba(0,0,0,0.2)",
+            transition: "all 0.3s ease-in-out",
+          }}
           cursor={"pointer"}
         >
-          <Flex
-            position={"relative"}
-            width={"140px"}
-            height={"140px"}
-            bg={"rgba(0,0,0,0.2)"}
-            rounded={"full"}
-            justifyContent={"center"}
-            alignItems={"center"}
-            transition={"all 0.3s ease-in-out"}
+          <BiImageAdd size={"28px"} />
+          <Input
+            type={"file"}
+            position={"absolute"}
+            height={"100%"}
+            width={"100%"}
             opacity={"0"}
-            _hover={{
-              opacity: "1",
-              transition: "all 0.3s ease-in-out",
+            onChange={(e) => {
+              const file = e.target.files![0];
+              const fullPath = URL.createObjectURL(file);
+              setBackground(fullPath);
+              addImage(e.target.files, "background");
             }}
-          >
-            <BiImageAdd size={"28px"} />
-            <Input
-              type={"file"}
-              position={"absolute"}
-              height={"100%"}
-              width={"100%"}
-              opacity={"0"}
-              onChange={(e) => {
-                console.log(URL.createObjectURL(e.target.files![0]));
-              }}
-            />
-          </Flex>
+          />
         </Flex>
-      ) : (
+      </Flex>
+
+      <Flex
+        left={"50"}
+        top={"160"}
+        position={"absolute"}
+        width={"150px"}
+        height={"150px"}
+        bg={"gray.200"}
+        bgImage={profile ? `url(${profile})` : ""}
+        bgPos={"center"}
+        bgSize={"cover"}
+        rounded={"full"}
+        justifyContent={"center"}
+        alignItems={"center"}
+        cursor={"pointer"}
+      >
         <Flex
-          left={"50"}
-          top={"160"}
-          position={"absolute"}
-          width={"150px"}
-          height={"150px"}
-          bg={"gray.200"}
+          position={"relative"}
+          width={"140px"}
+          height={"140px"}
+          bg={"rgba(0,0,0,0.2)"}
           rounded={"full"}
           justifyContent={"center"}
           alignItems={"center"}
-        ></Flex>
-      )}
+          transition={"all 0.3s ease-in-out"}
+          opacity={"0"}
+          _hover={{
+            opacity: "1",
+            bg: profile ? "rgba(255,255, 255, 0.2)" : "rgba(0,0,0,0.2)",
+            transition: "all 0.3s ease-in-out",
+          }}
+        >
+          <BiImageAdd size={"28px"} />
+          <Input
+            type={"file"}
+            position={"absolute"}
+            height={"100%"}
+            width={"100%"}
+            opacity={"0"}
+            onChange={(e) => {
+              const file = e.target.files![0];
+              const fullPath = URL.createObjectURL(file);
+              setProfile(fullPath);
+              addImage(e.target.files, "profile");
+            }}
+          />
+        </Flex>
+      </Flex>
     </Flex>
   );
 };
