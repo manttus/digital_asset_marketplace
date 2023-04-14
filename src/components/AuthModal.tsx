@@ -1,20 +1,72 @@
 import {
+  Button,
+  Checkbox,
   Divider,
   Flex,
+  FormControl,
+  Input,
+  Link,
   Modal,
   ModalBody,
   ModalContent,
+  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Text,
+  VStack,
+  Progress,
 } from "@chakra-ui/react";
+import NormalButton from "./Button/NormalButton";
+import { CgUser } from "react-icons/cg";
+import { useForm } from "react-hook-form";
+import { NavLink } from "react-router-dom";
+import Otp from "./Forms/Otp";
 
 type AuthModalProps = {
   isOpen: boolean;
   onClose: () => void;
+  submitHandler: (value: FormValues) => void;
+  address: string;
+  otpField: boolean;
+  setOtpValue: (value: string) => void;
+  setEmail: (value: string) => void;
+  registerHandler: () => void;
+  email: string;
+  isSendLoading: boolean;
+  sendOtp: (email: string) => Promise<boolean>;
+  setUsername: (value: string) => void;
+  setOtpField: (value: boolean) => void;
+  username: string;
 };
 
-const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
+type FormValues = {
+  username: string;
+  email: string;
+  terms: boolean;
+};
+
+const AuthModal = ({
+  isOpen,
+  onClose,
+  submitHandler,
+  address,
+  otpField,
+  setOtpValue,
+  setEmail,
+  registerHandler,
+  email,
+  isSendLoading,
+  sendOtp,
+  setUsername,
+  setOtpField,
+  username,
+}: AuthModalProps) => {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<FormValues>();
   return (
     <Modal
       isOpen={isOpen}
@@ -23,181 +75,176 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
       closeOnOverlayClick={true}
     >
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent
+        as={"form"}
+        onSubmit={handleSubmit((value) => {
+          setEmail(value.email);
+          setUsername(value.username);
+          submitHandler(value);
+          reset();
+        })}
+      >
         <ModalHeader>
           <Flex
             gap={5}
             py={"10px"}
             justifyContent={"space-between"}
-            alignItems={"Center"}
+            alignItems={"center"}
           >
-            <Text fontSize={"20px"} fontWeight={"bold"}>
-              Connect Wallet
-            </Text>
-            <Flex>
-              <Flex
-                alignItems={"center"}
-                gap={5}
-                cursor={"pointer"}
-                px={"20px"}
-                py={"10px"}
-                rounded={"md"}
-                _hover={{
-                  bg: "gray.100",
-                }}
-                onClick={() => {}}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="30"
-                  height="25"
-                  viewBox="0 0 212 189"
-                  id="metamask"
-                >
-                  <g fill="none" fill-rule="evenodd">
-                    <polygon
-                      fill="#CDBDB2"
-                      points="60.75 173.25 88.313 180.563 88.313 171 90.563 168.75 106.313 168.75 106.313 180 106.313 187.875 89.438 187.875 68.625 178.875"
-                    ></polygon>
-                    <polygon
-                      fill="#CDBDB2"
-                      points="105.75 173.25 132.75 180.563 132.75 171 135 168.75 150.75 168.75 150.75 180 150.75 187.875 133.875 187.875 113.063 178.875"
-                      transform="matrix(-1 0 0 1 256.5 0)"
-                    ></polygon>
-                    <polygon
-                      fill="#393939"
-                      points="90.563 152.438 88.313 171 91.125 168.75 120.375 168.75 123.75 171 121.5 152.438 117 149.625 94.5 150.188"
-                    ></polygon>
-                    <polygon
-                      fill="#F89C35"
-                      points="75.375 27 88.875 58.5 95.063 150.188 117 150.188 123.75 58.5 136.125 27"
-                    ></polygon>
-                    <polygon
-                      fill="#F89D35"
-                      points="16.313 96.188 .563 141.75 39.938 139.5 65.25 139.5 65.25 119.813 64.125 79.313 58.5 83.813"
-                    ></polygon>
-                    <polygon
-                      fill="#D87C30"
-                      points="46.125 101.25 92.25 102.375 87.188 126 65.25 120.375"
-                    ></polygon>
-                    <polygon
-                      fill="#EA8D3A"
-                      points="46.125 101.813 65.25 119.813 65.25 137.813"
-                    ></polygon>
-                    <polygon
-                      fill="#F89D35"
-                      points="65.25 120.375 87.75 126 95.063 150.188 90 153 65.25 138.375"
-                    ></polygon>
-                    <polygon
-                      fill="#EB8F35"
-                      points="65.25 138.375 60.75 173.25 90.563 152.438"
-                    ></polygon>
-                    <polygon
-                      fill="#EA8E3A"
-                      points="92.25 102.375 95.063 150.188 86.625 125.719"
-                    ></polygon>
-                    <polygon
-                      fill="#D87C30"
-                      points="39.375 138.938 65.25 138.375 60.75 173.25"
-                    ></polygon>
-                    <polygon
-                      fill="#EB8F35"
-                      points="12.938 188.438 60.75 173.25 39.375 138.938 .563 141.75"
-                    ></polygon>
-                    <polygon
-                      fill="#E8821E"
-                      points="88.875 58.5 64.688 78.75 46.125 101.25 92.25 102.938"
-                    ></polygon>
-                    <polygon
-                      fill="#DFCEC3"
-                      points="60.75 173.25 90.563 152.438 88.313 170.438 88.313 180.563 68.063 176.625"
-                    ></polygon>
-                    <polygon
-                      fill="#DFCEC3"
-                      points="121.5 173.25 150.75 152.438 148.5 170.438 148.5 180.563 128.25 176.625"
-                      transform="matrix(-1 0 0 1 272.25 0)"
-                    ></polygon>
-                    <polygon
-                      fill="#393939"
-                      points="70.313 112.5 64.125 125.438 86.063 119.813"
-                      transform="matrix(-1 0 0 1 150.188 0)"
-                    ></polygon>
-                    <polygon
-                      fill="#E88F35"
-                      points="12.375 .563 88.875 58.5 75.938 27"
-                    ></polygon>
-                    <path
-                      fill="#8E5A30"
-                      d="M12.3750002,0.562500008 L2.25000003,31.5000005 L7.87500012,65.250001 L3.93750006,67.500001 L9.56250014,72.5625 L5.06250008,76.5000011 L11.25,82.1250012 L7.31250011,85.5000013 L16.3125002,96.7500014 L58.5000009,83.8125012 C79.1250012,67.3125004 89.2500013,58.8750003 88.8750013,58.5000009 C88.5000013,58.1250009 63.0000009,38.8125006 12.3750002,0.562500008 Z"
-                    ></path>
-                    <g transform="matrix(-1 0 0 1 211.5 0)">
-                      <polygon
-                        fill="#F89D35"
-                        points="16.313 96.188 .563 141.75 39.938 139.5 65.25 139.5 65.25 119.813 64.125 79.313 58.5 83.813"
-                      ></polygon>
-                      <polygon
-                        fill="#D87C30"
-                        points="46.125 101.25 92.25 102.375 87.188 126 65.25 120.375"
-                      ></polygon>
-                      <polygon
-                        fill="#EA8D3A"
-                        points="46.125 101.813 65.25 119.813 65.25 137.813"
-                      ></polygon>
-                      <polygon
-                        fill="#F89D35"
-                        points="65.25 120.375 87.75 126 95.063 150.188 90 153 65.25 138.375"
-                      ></polygon>
-                      <polygon
-                        fill="#EB8F35"
-                        points="65.25 138.375 60.75 173.25 90 153"
-                      ></polygon>
-                      <polygon
-                        fill="#EA8E3A"
-                        points="92.25 102.375 95.063 150.188 86.625 125.719"
-                      ></polygon>
-                      <polygon
-                        fill="#D87C30"
-                        points="39.375 138.938 65.25 138.375 60.75 173.25"
-                      ></polygon>
-                      <polygon
-                        fill="#EB8F35"
-                        points="12.938 188.438 60.75 173.25 39.375 138.938 .563 141.75"
-                      ></polygon>
-                      <polygon
-                        fill="#E8821E"
-                        points="88.875 58.5 64.688 78.75 46.125 101.25 92.25 102.938"
-                      ></polygon>
-                      <polygon
-                        fill="#393939"
-                        points="70.313 112.5 64.125 125.438 86.063 119.813"
-                        transform="matrix(-1 0 0 1 150.188 0)"
-                      ></polygon>
-                      <polygon
-                        fill="#E88F35"
-                        points="12.375 .563 88.875 58.5 75.938 27"
-                      ></polygon>
-                      <path
-                        fill="#8E5A30"
-                        d="M12.3750002,0.562500008 L2.25000003,31.5000005 L7.87500012,65.250001 L3.93750006,67.500001 L9.56250014,72.5625 L5.06250008,76.5000011 L11.25,82.1250012 L7.31250011,85.5000013 L16.3125002,96.7500014 L58.5000009,83.8125012 C79.1250012,67.3125004 89.2500013,58.8750003 88.8750013,58.5000009 C88.5000013,58.1250009 63.0000009,38.8125006 12.3750002,0.562500008 Z"
-                      ></path>
-                    </g>
-                  </g>
-                </svg>
-                <Text fontSize={"18px"} fontWeight={"bold"}>
-                  MetaMask
-                </Text>
-              </Flex>
-            </Flex>
+            <Progress
+              hasStripe
+              value={!otpField ? 50 : 100}
+              size="xs"
+              color="buttonPrimary"
+              w={"100%"}
+            />
           </Flex>
         </ModalHeader>
         <Divider />
-        <ModalBody>
+        <ModalBody p={0}>
           <Flex
             alignItems={"center"}
-            justifyContent={"space-between"}
             py={"20px"}
-          ></Flex>
+            gap={5}
+            p={5}
+            bg={"gray.100"}
+            pl={10}
+          >
+            <Flex>
+              <Flex
+                border={"1px solid"}
+                borderColor={"gray.300"}
+                rounded={"full"}
+                p={3}
+              >
+                <CgUser size={"30px"} color="black" />
+              </Flex>
+            </Flex>
+            <Flex direction={"column"}>
+              <Text fontSize={"13px"} fontWeight={"400"} color={"gray.500"}>
+                CONNECTED ADDRESS
+              </Text>
+              <Text fontSize={"13px"} fontWeight={"500"} color={"gray.600"}>
+                {address}
+              </Text>
+            </Flex>
+          </Flex>
+          {!otpField ? (
+            <Flex p={5} direction={"column"} gap={5} alignItems={"center"}>
+              <VStack w={"80%"}>
+                <FormControl isInvalid={errors.username ? true : false}>
+                  <Input
+                    {...register("username", {
+                      required: true,
+                      minLength: 6,
+                    })}
+                    fontSize={"13px"}
+                    type={"text"}
+                    placeholder={"Username"}
+                    rounded={"sm"}
+                    border={"1px solid"}
+                    borderColor={"gray.300"}
+                    _placeholder={{
+                      fontSize: "13px",
+                      color: "black",
+                    }}
+                    defaultValue={username ? username : ""}
+                  />
+                </FormControl>
+                <FormControl isInvalid={errors.email ? true : false}>
+                  <Input
+                    {...register("email", {
+                      required: true,
+                      minLength: 6,
+                    })}
+                    fontSize={"13px"}
+                    type={"email"}
+                    placeholder={"Email address"}
+                    rounded={"sm"}
+                    border={"1px solid"}
+                    borderColor={"gray.300"}
+                    _placeholder={{
+                      fontSize: "13px",
+                      color: "black",
+                    }}
+                    defaultValue={email ? email : ""}
+                  />
+                </FormControl>
+                <FormControl>
+                  <Checkbox
+                    mt={"10px"}
+                    size={"md"}
+                    {...register("terms", {
+                      required: true,
+                    })}
+                    defaultChecked
+                    isInvalid={errors.terms ? true : false}
+                  >
+                    <Text fontSize={"13px"}>
+                      I agree to the Mintables{" "}
+                      <Link to={""} as={NavLink} color="buttonPrimary">
+                        Terms of Service
+                      </Link>
+                    </Text>
+                  </Checkbox>
+                </FormControl>
+              </VStack>
+            </Flex>
+          ) : (
+            <Otp
+              sendOtpHandler={sendOtp}
+              setOtpValue={setOtpValue}
+              email={email}
+            />
+          )}
         </ModalBody>
+        <Divider />
+        <ModalFooter>
+          {!otpField ? (
+            <NormalButton
+              text={"Send"}
+              py="20px"
+              fontSize="14px"
+              isLoading={isSendLoading}
+            />
+          ) : (
+            <Flex
+              w={"100%"}
+              alignItems={"center"}
+              justifyContent={"space-between"}
+            >
+              <Text
+                fontSize={"13px"}
+                fontWeight={"400"}
+                textDecoration={"underline"}
+                cursor={"pointer"}
+                onClick={() => {
+                  setOtpField(false);
+                }}
+              >
+                Back
+              </Text>
+              <Button
+                py="20px"
+                fontSize="14px"
+                type="button"
+                onClick={() => {
+                  registerHandler();
+                }}
+                bg={"buttonPrimary"}
+                color={"white"}
+                _hover={{
+                  bg: "buttonPrimary",
+                  color: "white",
+                  transform: "scale(1.03)",
+                  transition: "all 0.3s ease-in-out",
+                }}
+              >
+                Complete
+              </Button>
+            </Flex>
+          )}
+        </ModalFooter>
       </ModalContent>
     </Modal>
   );
