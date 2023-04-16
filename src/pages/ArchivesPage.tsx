@@ -33,7 +33,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { VscSettings, VscAdd } from "react-icons/vsc";
 import { useDispatch, useSelector } from "react-redux";
-import Circular from "../components/Abstracts/Circular";
+import Circular from "../components/Abstract/Circular";
 import CustomBadge from "../components/Badge/CustomBadge";
 import CustomIconButton from "../components/Button/CustomIconButton";
 import NormalButton from "../components/Button/NormalButton";
@@ -50,42 +50,42 @@ import {
 import { selectToken } from "../features/market/marketSlice";
 import NoConnection from "../components/NoConnection";
 import { BiImageAdd } from "react-icons/bi";
+import useHttp from "../hooks/useHttp";
+import { id } from "ethers/lib/utils";
 
 const ArchivesPage = () => {
   const currentUser = useSelector(selectUserData);
   const contract = useSelector(selectToken);
   const wallet = useSelector(selectCurrentWallet);
-
   const [addCategory] = useAddCategoryMutation();
+  const [isLoading, setisLoading] = useState<boolean>(false);
   const [user] = useUserMutation();
-
-  const [coverImage, setCoverImage] = useState<string>("");
+  const [avatarImage, setAvatar] = useState<string>("");
+  const [bannerImage, setBanner] = useState<string>("");
   const [listings, setListings] = useState<any>([]);
-  const [archives, setArchives] = useState<any>(null);
+  const [archives, setArchives] = useState<any>([]);
   const [token, setToken] = useState<any>();
   const [flag, setFlag] = useState<boolean>(false);
+  const cloudName = import.meta.env.VITE_CLOUD_NAME;
+
+  type AddCategory = {
+    name: string;
+    avatar: FileList;
+    banner: FileList;
+    type: string;
+  };
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { register, handleSubmit } = useForm();
-
+  const { register, handleSubmit } = useForm<AddCategory>();
   const dispatch = useDispatch();
 
   const loadListing = async () => {
     if (wallet) {
-      const address = wallet.toUpperCase();
-      const data = currentUser.wallet;
-      const filtered = data.filter(
-        (wallet: {
-          name: string;
-          wallet: string;
-          balance: number;
-          _id: string;
-        }) => wallet.wallet.toUpperCase() === address
-      );
-
-      setArchives(filtered.length > 0 ? filtered : null);
+      setArchives(currentUser.category);
       const listing = await token._getTokens(wallet);
+      if (listing.length === 0) return;
       const reversed = [...listing].reverse();
+      console.log(reversed[0]["_asset"]);
       setListings(reversed);
     }
   };
@@ -119,17 +119,68 @@ const ArchivesPage = () => {
     }
   }, [token, currentUser]);
 
-  const createCategory = async (name: string) => {
-    const payload = {
-      name,
-      wallet: wallet as string,
-      banner: coverImage,
-      id: currentUser._id as string,
+  const AddImage = async (file: FileList | null): Promise<string> => {
+    setisLoading(true);
+    const formData = new FormData();
+    formData.append("file", file![0]);
+    formData.append("upload_preset", import.meta.env.VITE_CLOUD_UPLOAD_PRESET);
+    const requestConfig = {
+      url: `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+      method: "POST",
+      body: formData,
     };
-    const data = await addCategory(payload).unwrap();
-    const newData = await user(currentUser._id).unwrap();
-    dispatch(setUserData({ user: newData.user }));
-    onClose();
+
+    const response = await fetch(requestConfig.url, {
+      method: requestConfig.method,
+      body: requestConfig.body,
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return data.secure_url;
+    } else {
+      return "";
+    }
+  };
+
+  const createCategory = async ({
+    name,
+    avatar,
+    banner,
+    type,
+  }: {
+    name: string;
+    avatar: FileList;
+    banner: FileList;
+    type: string;
+  }) => {
+    const avatarUrl = await AddImage(avatar);
+    const bannerUrl = await AddImage(banner);
+    const data = {
+      id: currentUser!._id,
+      name,
+      avatar: avatarUrl,
+      banner: bannerUrl,
+      type,
+    };
+    try {
+      const response = await addCategory(data).unwrap();
+      if (response.message === "Success") {
+        setisLoading(false);
+        onClose();
+        console.log(currentUser!._id);
+        const userData = await user(currentUser!._id).unwrap();
+        if (userData) {
+          dispatch(
+            setUserData({
+              user: userData.user,
+            })
+          );
+        }
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -200,7 +251,7 @@ const ArchivesPage = () => {
             px={"50px"}
             justifyContent={"center"}
           >
-            {!archives && (
+            {archives.length === 0 && (
               <Text fontSize={"30px"} fontWeight={"600"} color={"buttonHover"}>
                 No Archives
               </Text>
@@ -233,202 +284,182 @@ const ArchivesPage = () => {
           </Flex>
         )}
       </Grid>
-      {/* <Modal onClose={onClose} isOpen={isOpen} size={"lg"} isCentered>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Create Category </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Flex
-              h={"200px"}
-              bg={"fontGhost"}
-              rounded={"md"}
-              justifyContent={"end"}
-              alignItems={"end"}
-              p={"5"}
-            >
-              <NormalButton
-                fontSize="15px"
-                text="Edit Cover"
-                type="filled"
-                bg="buttonPrimary"
-                py="16px"
-              />
-            </Flex>
-          </ModalBody>
-          <ModalFooter my={"2"}>
-            <Flex
-              as={"form"}
-              w={"full"}
-              alignItems={"end"}
-              justifyContent={"space-between"}
-              direction={"column"}
-              gap={4}
-              onSubmit={handleSubmit((data) => {
-                createCategory(data.category);
-              })}
-            >
-              <Flex w={"full"}>
-                <Input
-                  {...register("category", {
-                    required: true,
-                  })}
-                  type={"text"}
-                  h={10}
-                  rounded={"sm"}
-                  fontWeight={"500"}
-                  placeholder={"Category Name"}
-                />
-              </Flex>
-
-              <Flex>
-                <NormalButton
-                  text="Save"
-                  fontSize="15px"
-                  py="20px"
-                  width="100px"
-                />
-                <NormalButton
-                  text="Close"
-                  fontSize="15px"
-                  py="20px"
-                  bg="red"
-                  width="100px"
-                />
-              </Flex>
-            </Flex>
-          </ModalFooter>
-        </ModalContent>
-      </Modal> */}
-
       <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
         <DrawerOverlay overflow={"hidden"} />
         <DrawerContent>
-          <DrawerCloseButton />
-          <DrawerHeader borderBottomWidth="1px">Create Category</DrawerHeader>
-          <DrawerBody
-            display={"flex"}
+          <Flex
+            direction={"column"}
             w={"full"}
-            flexDirection={"column"}
-            justifyContent={"center"}
+            as={"form"}
+            onSubmit={handleSubmit((value) => {
+              createCategory({
+                name: value.name,
+                avatar: value.avatar,
+                banner: value.banner,
+                type: value.type,
+              });
+            })}
           >
-            <Stack spacing="24px">
-              <Box>
-                <FormLabel htmlFor="username">Name</FormLabel>
-                <Input
-                  id="username"
-                  placeholder="Enter Category "
-                  rounded={"sm"}
-                />
-              </Box>
+            <DrawerCloseButton />
+            <DrawerHeader
+              borderBottomWidth="1px"
+              fontSize={"18px"}
+              h={"50px"}
+              display={"flex"}
+              alignItems={"center"}
+            >
+              Create Category
+            </DrawerHeader>
+            <DrawerBody
+              display={"flex"}
+              w={"full"}
+              flexDirection={"column"}
+              justifyContent={"center"}
+              alignItems={"center"}
+            >
+              <Stack spacing="24px">
+                <Box>
+                  <Input
+                    id="username"
+                    {...register("name", {
+                      required: true,
+                    })}
+                    placeholder="Enter Category Name"
+                  />
+                </Box>
 
-              <Flex direction={"column"} alignItems={"center"}>
-                <FormLabel htmlFor="owner">Upload Avatar</FormLabel>
-                <Flex
-                  left={"50"}
-                  top={"160"}
-                  width={"150px"}
-                  height={"150px"}
-                  bg={"gray.200"}
-                  rounded={"full"}
-                  justifyContent={"center"}
-                  alignItems={"center"}
-                  cursor={"pointer"}
-                >
+                <Flex direction={"column"} alignItems={"center"}>
+                  <FormLabel htmlFor="owner">Upload Avatar</FormLabel>
                   <Flex
-                    position={"relative"}
-                    width={"full"}
-                    height={"full"}
-                    bg={"rgba(0,0,0,0.2)"}
+                    left={"50"}
+                    top={"160"}
+                    width={"150px"}
+                    height={"150px"}
+                    bg={"gray.200"}
                     rounded={"full"}
                     justifyContent={"center"}
                     alignItems={"center"}
-                    transition={"all 0.3s ease-in-out"}
-                    opacity={"0"}
-                    _hover={{
-                      opacity: "1",
-                      transition: "all 0.3s ease-in-out",
-                    }}
+                    cursor={"pointer"}
+                    bgImage={avatarImage ? `url(${avatarImage})` : ""}
+                    bgPos={"center"}
+                    bgSize={"cover"}
                   >
-                    <BiImageAdd size={"28px"} />
-                    <Input
-                      type={"file"}
-                      position={"absolute"}
-                      height={"100%"}
-                      width={"100%"}
+                    <Flex
+                      position={"relative"}
+                      width={"full"}
+                      height={"full"}
+                      bg={"rgba(0,0,0,0.2)"}
+                      rounded={"full"}
+                      justifyContent={"center"}
+                      alignItems={"center"}
+                      transition={"all 0.3s ease-in-out"}
                       opacity={"0"}
-                      onChange={(e) => {}}
-                    />
+                      _hover={{
+                        opacity: "1",
+                        transition: "all 0.3s ease-in-out",
+                      }}
+                    >
+                      <BiImageAdd size={"28px"} />
+                      <Input
+                        type={"file"}
+                        position={"absolute"}
+                        height={"100%"}
+                        width={"100%"}
+                        opacity={"0"}
+                        {...register("avatar", {
+                          required: true,
+                        })}
+                        onChange={(e) => {
+                          const file = e.target.files![0];
+                          const fullPath = URL.createObjectURL(file);
+                          setAvatar(fullPath);
+                        }}
+                      />
+                    </Flex>
                   </Flex>
                 </Flex>
-              </Flex>
-              <Flex direction={"column"} alignItems={"center"} w={"full"}>
-                <FormLabel htmlFor="owner">Upload Banner</FormLabel>
-                <Flex
-                  height={"100px"}
-                  bg={"gray.200"}
-                  rounded={"10px"}
-                  justifyContent={"center"}
-                  alignItems={"center"}
-                  cursor={"pointer"}
-                  w={"full"}
-                >
+                <Flex direction={"column"} alignItems={"center"} w={"full"}>
+                  <FormLabel htmlFor="owner">Upload Banner</FormLabel>
                   <Flex
-                    h={"100%"}
-                    w={"full"}
-                    position={"relative"}
-                    bg={"rgba(0,0,0,0.2)"}
+                    height={"100px"}
+                    bg={"gray.200"}
                     rounded={"10px"}
                     justifyContent={"center"}
                     alignItems={"center"}
-                    transition={"all 0.3s ease-in-out"}
-                    opacity={"0"}
-                    _hover={{
-                      opacity: "1",
-                      transition: "all 0.3s ease-in-out",
-                    }}
+                    cursor={"pointer"}
+                    w={"full"}
+                    bgImage={bannerImage ? `url(${bannerImage})` : ""}
+                    bgPos={"center"}
+                    bgSize={"cover"}
                   >
-                    <BiImageAdd size={"28px"} />
-                    <Input
-                      type={"file"}
-                      position={"absolute"}
-                      height={"100%"}
-                      width={"100%"}
+                    <Flex
+                      h={"100%"}
+                      w={"full"}
+                      position={"relative"}
+                      bg={"rgba(0,0,0,0.2)"}
+                      rounded={"10px"}
+                      justifyContent={"center"}
+                      alignItems={"center"}
+                      transition={"all 0.3s ease-in-out"}
                       opacity={"0"}
-                      onChange={(e) => {}}
-                    />
+                      _hover={{
+                        opacity: "1",
+                        transition: "all 0.3s ease-in-out",
+                      }}
+                    >
+                      <BiImageAdd size={"28px"} />
+                      <Input
+                        type={"file"}
+                        position={"absolute"}
+                        height={"100%"}
+                        width={"100%"}
+                        opacity={"0"}
+                        {...register("banner", {
+                          required: true,
+                        })}
+                        onChange={(e) => {
+                          const file = e.target.files![0];
+                          const fullPath = URL.createObjectURL(file);
+                          setBanner(fullPath);
+                        }}
+                      />
+                    </Flex>
                   </Flex>
                 </Flex>
-              </Flex>
-              <Box>
-                <FormLabel htmlFor="owner">Select Type</FormLabel>
-                <Select id="owner" rounded={"sm"}>
-                  <option value="" defaultChecked>
-                    Select Options
-                  </option>
-                  <option value="ART">Image</option>
-                  <option value="VIDEO">Video</option>
-                  <option value="GIFS">GIF</option>
-                  <option value="ALL CATEGORIES"> All Category </option>
-                </Select>
-              </Box>
-            </Stack>
-          </DrawerBody>
+                <Box>
+                  <Select
+                    id="owner"
+                    {...register("type", {
+                      required: true,
+                    })}
+                    defaultValue={"Select Category Type"}
+                  >
+                    <option value="IMAGE">Image</option>
+                    <option value="VIDEO">Video</option>
+                    <option value="GIFS">GIF</option>
+                    <option value="ALL CATEGORIES"> All Category </option>
+                  </Select>
+                </Box>
+              </Stack>
+            </DrawerBody>
 
-          <DrawerFooter borderTopWidth="1px">
-            <Button variant="outline" mr={3} onClick={onClose}>
-              Cancel
-            </Button>
-            <Button
-              bg="buttonPrimary"
-              color={"white"}
-              _hover={{
-                bg: "buttonHover",
-              }}
-            >
-              Create
-            </Button>
-          </DrawerFooter>
+            <DrawerFooter borderTopWidth="1px">
+              <Button variant="outline" mr={3} onClick={onClose}>
+                Cancel
+              </Button>
+              <Button
+                bg="buttonPrimary"
+                color={"white"}
+                type="submit"
+                _hover={{
+                  bg: "buttonHover",
+                }}
+                isLoading={isLoading}
+              >
+                Create
+              </Button>
+            </DrawerFooter>
+          </Flex>
         </DrawerContent>
       </Drawer>
     </>

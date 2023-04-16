@@ -1,4 +1,4 @@
-import { Flex, Text } from "@chakra-ui/react";
+import { Flex, Img, Input, Text } from "@chakra-ui/react";
 import CustomBadge from "../Badge/CustomBadge";
 import CustomLink from "../Links/CustomLink";
 import NormalButton from "../Button/NormalButton";
@@ -11,12 +11,10 @@ import { useState } from "react";
 const SingleProduct = ({ contract }: any) => {
   const { state } = useLocation();
   const wallet = useSelector(selectCurrentWallet);
-  const [price, setPrice] = useState<number>(2.95);
-
-  console.log(state);
+  const [price, setPrice] = useState<number>(0);
 
   const createListing = () => {
-    console.log(wallet);
+    if (price === 0) return;
     const priceinWei = ethers.utils.parseEther(price.toString());
     const id = parseInt(state._id._hex);
     contract._createListing(id, priceinWei, wallet);
@@ -31,7 +29,7 @@ const SingleProduct = ({ contract }: any) => {
       mt={"40px"}
       mb={"100px"}
     >
-      {/* <Flex w={"full"} justifyContent={"space-between"}>
+      <Flex w={"full"} justifyContent={"space-between"}>
         <Text
           as={Flex}
           fontSize={"28px"}
@@ -53,7 +51,7 @@ const SingleProduct = ({ contract }: any) => {
         >
           DISCOVERY
         </Text>
-      </Flex> */}
+      </Flex>
 
       <Flex
         w={"full"}
@@ -61,73 +59,68 @@ const SingleProduct = ({ contract }: any) => {
         border={"1px solid #E2E8F0"}
         rounded={"10px"}
         mt={"20px"}
+        justifyContent={"center"}
+        alignItems={"center"}
+        p={"20px"}
       >
         <Flex
           w={"50%"}
-          bgImg={state.image}
           bgPos={"center"}
           bgSize={"cover"}
           height={"600px"}
           rounded={"10px"}
-        ></Flex>
+        >
+          <Img src={state.image} />
+        </Flex>
         <Flex
           w={"50%"}
           direction={"column"}
           bg={"white"}
           rounded={"10px"}
-          justifyContent={"center"}
+          alignItems={"center"}
+          height={"600px"}
         >
           <Flex
             mt={"20px"}
             direction={"column"}
-            justifyContent={"center"}
+            justifyContent={"start"}
             alignItems={"center"}
             gap={1}
           >
-            <CustomBadge
-              bg="greenLight"
-              color="successLight"
-              text="Best Popular"
-            />
-            <CustomLink size="38px" text={state.name} to="mum" />
-            <Text
-              color={"fontGhost"}
-              px={"100px"}
-              fontSize={"15px"}
-              fontWeight={"600"}
-              mt={"20px"}
-              textAlign={"center"}
-            >
-              A unique collection of missing puzzles. Attractive appearance and
-              attractive power in colored wooden blocks
+            <Text fontSize={"3xl"} fontWeight={"600"}>
+              {state.name}
             </Text>
+            {/* <Text fontSize={"lg"} fontWeight={"600"}>
+              {state.description}
+            </Text> */}
             <Flex
-              mt={"30px"}
-              gap={5}
-              direction={"column"}
+              rounded={"5px"}
               justifyContent={"center"}
               alignItems={"center"}
+              direction={"column"}
+              position={"relative"}
+              p={"60px"}
+              gap={5}
             >
-              <Flex
-                direction={"column"}
-                justifyContent={"center"}
-                alignItems={"center"}
-              >
-                <Text fontSize={"18px"} fontWeight={"600"}>
-                  Price Proposition
-                </Text>
-                <Text fontSize={"38px"} fontWeight={"600"}>
-                  2.95 ETH
-                </Text>
-              </Flex>
+              <Input
+                rounded={"md"}
+                type="text"
+                placeholder="Proposed Price"
+                border={"1px solid"}
+                borderColor={"gray.200"}
+                h={"50px"}
+                onChange={(e) => {
+                  setPrice(parseFloat(e.target.value));
+                }}
+              />
               <NormalButton
                 text="Add to Listing"
                 type="outline"
-                width="380px"
+                width="330px"
                 onClick={() => {
                   createListing();
                 }}
-                bg={"buttonHover"}
+                bg={"buttonPrimary"}
               />
             </Flex>
           </Flex>

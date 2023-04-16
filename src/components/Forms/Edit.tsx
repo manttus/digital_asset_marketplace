@@ -2,61 +2,29 @@ import {
   Box,
   FormControl,
   FormLabel,
-  HStack,
+  VStack,
   Input,
-  Select,
+  HStack,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import useHttp from "../../hooks/useHttp";
 import NormalButton from "../Button/NormalButton";
 import { useSelector } from "react-redux";
 import { selectUserData } from "../../features/auth/authSlice";
 
 type EditProps = {
-  // userData: {
-  //   username: string;
-  //   phone: string;
-  //   email: string;
-  //   country: string;
-  //   address: string;
-  //   postal: string;
-  //   id: string;
-  // };
   submitHandler: (data: FormData) => Promise<void>;
 };
 
 type FormData = {
   username: string;
-  phone: string;
   email: string;
-  country: string;
-  address: string;
-  postal: string;
-  id: string;
-  backgroundImage: Buffer;
-  profileImage: Buffer;
-  followers: string[];
-  following: string[];
+  twitter: string;
+  instagram: string;
 };
 
 const Edit = ({ submitHandler }: EditProps) => {
-  const [countries, setContries] = useState<any>([]);
   const { register, handleSubmit } = useForm<FormData>();
   const userData = useSelector(selectUserData);
-  console.log(userData);
-
-  useEffect(() => {
-    const requestConfig = {
-      url: "https://restcountries.com/v3.1/all",
-      method: "GET",
-      body: {},
-    };
-    const { sendRequest } = useHttp<any>(requestConfig, (data) => {
-      setContries(data);
-    });
-    sendRequest();
-  }, []);
 
   return (
     <Box
@@ -77,76 +45,47 @@ const Edit = ({ submitHandler }: EditProps) => {
             h={12}
             rounded={"sm"}
             fontWeight={"500"}
-            value={userData.username}
+            defaultValue={userData.username}
           />
         </FormControl>
         <FormControl>
-          <FormLabel>Email Address</FormLabel>
+          <FormLabel>Email</FormLabel>
           <Input
             {...register("email", { required: true })}
             type={"text"}
             h={12}
             rounded={"sm"}
             fontWeight={"500"}
-            value={userData.email}
+            defaultValue={userData.email}
+            disabled
           />
         </FormControl>
       </HStack>
       <HStack spacing={5}>
         <FormControl>
-          <FormLabel>Country</FormLabel>
-          <Select
-            {...register("country", { required: true })}
-            fontWeight={"500"}
-          >
-            {countries.map((country: any) => {
-              return (
-                <option
-                  key={country.cca2}
-                  selected={country.name.common === userData.country}
-                >
-                  {country.name.common}
-                </option>
-              );
-            })}
-          </Select>
-        </FormControl>
-        <FormControl>
-          <FormLabel>Address Line</FormLabel>
+          <FormLabel>Twitter</FormLabel>
           <Input
-            {...register("address", { required: true })}
+            {...register("twitter", { required: true })}
             type={"text"}
             h={12}
             rounded={"sm"}
             fontWeight={"500"}
-            value={userData.address}
+            defaultValue={userData.social.twitter}
+          />
+        </FormControl>
+        <FormControl>
+          <FormLabel>Instagram</FormLabel>
+          <Input
+            {...register("instagram", { required: true })}
+            type={"text"}
+            h={12}
+            rounded={"sm"}
+            fontWeight={"500"}
+            defaultValue={userData.social.instagram}
           />
         </FormControl>
       </HStack>
-      <HStack spacing={5}>
-        <FormControl>
-          <FormLabel>Zip Code</FormLabel>
-          <Input
-            {...register("postal", { required: true })}
-            type={"text"}
-            h={12}
-            rounded={"sm"}
-            fontWeight={"500"}
-            value={userData.postal}
-          />
-        </FormControl>
-        <FormControl>
-          <FormLabel> Phone Number</FormLabel>
-          <Input
-            {...register("phone", { required: true })}
-            type={"text"}
-            h={12}
-            rounded={"sm"}
-            fontWeight={"500"}
-            value={userData.phone}
-          />
-        </FormControl>
-      </HStack>
+
       <HStack w={"full"} display={"flex"} justifyContent={"end"}>
         <NormalButton text="Save Changes" width="200px" />
       </HStack>

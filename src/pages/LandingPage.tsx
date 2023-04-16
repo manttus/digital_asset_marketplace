@@ -5,7 +5,7 @@ import illustration3 from "../assets/blob.webp";
 import Partners from "../components/Showcase/Partners";
 import Featured from "../components/Showcase/Featured";
 import Collection from "../components/Showcase/Collection";
-import Circular from "../components/Abstracts/Circular";
+import Circular from "../components/Abstract/Circular";
 
 const LandingPage = () => {
   return (

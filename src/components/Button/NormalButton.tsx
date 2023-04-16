@@ -13,6 +13,7 @@ type NormalButtonProps = {
   zindex?: number;
   py?: string;
   px?: string;
+  buttonType?: string;
 };
 
 const NormalButton = ({
@@ -28,6 +29,7 @@ const NormalButton = ({
   zindex,
   py,
   px,
+  buttonType,
 }: NormalButtonProps) => {
   return (
     <Button
@@ -45,7 +47,7 @@ const NormalButton = ({
       _hover={{
         bg: bg ? bg : "buttonPrimary",
         color: "white",
-        transform: "scale(1.01)",
+        transform: "scale(1.03)",
         transition: "all 0.3s ease-in-out",
       }}
       py={py ? py : "25px"}

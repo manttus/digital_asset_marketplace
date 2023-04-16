@@ -31,7 +31,7 @@ const CollectionCard = ({ listings, archive }: any) => {
         transition: "all 0.2s ease-in-out",
       }}
       onClick={() => {
-        navigate(`/archive/${archive?.name}`, { state: { lisitng } });
+        navigate(`/archive/${archive?.name}`, { state: { lisitng, archive } });
       }}
     >
       <Box

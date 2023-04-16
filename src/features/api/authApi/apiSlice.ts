@@ -1,39 +1,20 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import customBaseQuery from "../../customBaseUrl";
 
-interface Result {
-  accessToken: String;
-  refreshToken: String;
-}
-interface Signup {
-  user?: String;
-  username?: String;
-  pass?: String;
-  postal?: String;
-  address?: String;
-  contact?: String;
-  state?: String;
-}
+type Signup = {
+  email: String;
+  address: String;
+  username: String;
+};
 
 interface Signin {
-  user: String;
-  pass?: String;
-  type: String;
-  otp?: String;
+  address: String;
 }
 
 type FormData = {
-  username: string;
-  phone: string;
-  email: string;
-  country: string;
-  address: string;
-  postal: string;
   id: string;
-  backgroundImage: Buffer;
-  profileImage: Buffer;
-  followers: string[];
-  following: string[];
+  coverImage?: string;
+  profileImage?: string;
 };
 
 export const marketApi = createApi({
@@ -56,15 +37,15 @@ export const marketApi = createApi({
       }),
     }),
     verify: builder.mutation({
-      query: (credentials: { user: string; otp: string }) => ({
-        url: "/otp/verifyOTP",
+      query: (credentials: { email: string; otp: string }) => ({
+        url: "/otp/verify",
         method: "POST",
         body: credentials,
       }),
     }),
     send: builder.mutation({
-      query: (credentials: { user: string }) => ({
-        url: "/otp/sendOTP",
+      query: (credentials: { email: string; address: string }) => ({
+        url: "/otp/send",
         method: "POST",
         body: credentials,
       }),
@@ -72,7 +53,7 @@ export const marketApi = createApi({
     update: builder.mutation({
       query: (data: FormData) => ({
         url: "/user/update",
-        method: "POST",
+        method: "PATCH",
         body: data,
       }),
     }),
@@ -82,21 +63,21 @@ export const marketApi = createApi({
         method: "GET",
       }),
     }),
+    minters: builder.mutation({
+      query: (address: string) => ({
+        url: `/user/get/${address}`,
+        method: "GET",
+      }),
+    }),
     addCategory: builder.mutation({
       query: (data: {
         name: string;
         id: string;
         banner: string;
-        wallet: string;
+        avatar: string;
+        type: string;
       }) => ({
         url: "user/addCategory",
-        method: "POST",
-        body: data,
-      }),
-    }),
-    uploadImageUser: builder.mutation({
-      query: (data: { id: string; type: string; image: any }) => ({
-        url: "user/uploadImage",
         method: "POST",
         body: data,
       }),
@@ -112,5 +93,5 @@ export const {
   useUpdateMutation,
   useUserMutation,
   useAddCategoryMutation,
-  useUploadImageUserMutation,
+  useMintersMutation,
 } = marketApi;

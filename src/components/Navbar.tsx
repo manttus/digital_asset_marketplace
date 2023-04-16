@@ -25,6 +25,7 @@ import { motion } from "framer-motion";
 import Footer from "./Footer";
 import { useSelector } from "react-redux";
 import {
+  logout,
   selectCurrentBalance,
   selectCurrentToken,
   selectCurrentWallet,
@@ -66,8 +67,13 @@ type NavbarProps = {
   isOpen: boolean;
   onClose: () => void;
   sendOtp: (email: string) => Promise<boolean>;
-  signupHandler: (email: string, otp: string) => Promise<boolean>;
+  signupHandler: (
+    email: string,
+    otp: string,
+    username: string
+  ) => Promise<void>;
   address: string;
+  isSendLoading: boolean;
 };
 
 const navlinks = [
@@ -100,6 +106,7 @@ const Navbar = ({
   sendOtp,
   signupHandler,
   address,
+  isSendLoading,
 }: NavbarProps) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -109,6 +116,7 @@ const Navbar = ({
   const [overlay, setOverlay] = useState<boolean>(false);
   const [otpField, setOtpField] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
   const [otpValue, setOtpValue] = useState<string>("");
   const submitHandler = async (value: any) => {
     try {
@@ -122,8 +130,7 @@ const Navbar = ({
   };
 
   const registerHandler = () => {
-    console.log(email, otpValue);
-    signupHandler(email, otpValue);
+    signupHandler(email, otpValue, username);
   };
 
   return (
@@ -139,6 +146,11 @@ const Navbar = ({
         setOtpValue={setOtpValue}
         setEmail={setEmail}
         email={email}
+        isSendLoading={buttonLoading}
+        sendOtp={sendOtp}
+        setUsername={setUsername}
+        setOtpField={setOtpField}
+        username={username}
       />
       <Flex height={"115px"} justifyContent={"center"} alignItems={"center"}>
         <Flex
@@ -265,7 +277,8 @@ const Navbar = ({
                           key={item.name}
                           onClick={() => {
                             if (item.name === "Sign Out") {
-                              disconnect();
+                              localStorage.clear();
+                              dispatch(logout());
                             }
                             navigate(item.path);
                           }}

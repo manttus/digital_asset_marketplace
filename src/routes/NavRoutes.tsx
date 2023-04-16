@@ -29,19 +29,15 @@ const NavRoutes = [
   },
   {
     path: "mint",
-    element: <AuthRoute LoginRoute={<LoginPage />} NextRoute={<MintPage />} />,
+    element: <MintPage />,
   },
   {
     path: "archive",
-    element: (
-      <AuthRoute LoginRoute={<LoginPage />} NextRoute={<ArchivesPage />} />
-    ),
+    element: <ArchivesPage />,
   },
   {
     path: "profile",
-    element: (
-      <AuthRoute LoginRoute={<LoginPage />} NextRoute={<ProfilePage />} />
-    ),
+    element: <ProfilePage />,
   },
   {
     path: "collections",
@@ -49,15 +45,11 @@ const NavRoutes = [
   },
   {
     path: "archive/:id",
-    element: (
-      <AuthRoute LoginRoute={<LoginPage />} NextRoute={<CategoryPage />} />
-    ),
+    element: <CategoryPage />,
   },
   {
     path: "details",
-    element: (
-      <AuthRoute LoginRoute={<LoginPage />} NextRoute={<AssetDetails />} />
-    ),
+    element: <AssetDetails />,
   },
 ];
 

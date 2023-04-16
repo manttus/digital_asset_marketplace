@@ -9,12 +9,12 @@ import {
 import { useEffect, useState } from "react";
 
 type OtpProps = {
-  registerHandler: () => void;
+  sendOtpHandler: (email: string) => Promise<boolean>;
   email: string;
   setOtpValue: (value: string) => void;
 };
 
-const Otp = ({ registerHandler, email, setOtpValue }: OtpProps) => {
+const Otp = ({ sendOtpHandler, email, setOtpValue }: OtpProps) => {
   const [deadline, setDeadline] = useState<number>(0);
   const [timeout, setTimer] = useState<string | null>(null);
 
@@ -40,9 +40,9 @@ const Otp = ({ registerHandler, email, setOtpValue }: OtpProps) => {
   }, [timeout, deadline]);
 
   return (
-    <Flex w={"full"} direction={"column"} gap={7} py={"25px"}>
-      <Flex w={"full"} direction={"column"} alignItems={"center"} gap={6}>
-        <Flex direction={"column"} alignItems={"center"} gap={2}>
+    <Flex w={"full"} direction={"column"} gap={5} py={"25px"}>
+      <Flex w={"full"} direction={"column"} alignItems={"center"} gap={5}>
+        <Flex direction={"column"} alignItems={"center"} gap={1}>
           <Text fontSize={"13px"}>We have sent code to your email</Text>
           <Text fontSize={"12px"} fontWeight={"600"}>
             {email}
@@ -73,9 +73,11 @@ const Otp = ({ registerHandler, email, setOtpValue }: OtpProps) => {
             onClick={() => {
               setDeadline(Date.now() + 300000);
               setTimer("5:00");
+              sendOtpHandler(email);
             }}
+            textDecoration={"underline"}
           >
-            Resend OTP
+            Resend Code
           </Text>
         ) : (
           <Text

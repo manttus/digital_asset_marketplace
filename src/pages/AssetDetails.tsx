@@ -1,8 +1,5 @@
 import { Flex, Text } from "@chakra-ui/react";
 import SingleProduct from "../components/Card/SingleProduct";
-import Circular from "../components/Abstracts/Circular";
-import CustomBadge from "../components/Badge/CustomBadge";
-import CustomIconButton from "../components/Button/CustomIconButton";
 import Collection from "../components/Showcase/Collection";
 import { useSelector } from "react-redux";
 import { selectMarket } from "../features/market/marketSlice";

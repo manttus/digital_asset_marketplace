@@ -11,23 +11,21 @@ import {
   AccordionPanel,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import Circular from "../components/Abstracts/Circular";
+import Circular from "../components/Abstract/Circular";
 import CustomBadge from "../components/Badge/CustomBadge";
-import Featured from "../components/Showcase/Featured";
 import { useSelector } from "react-redux";
-import {
-  selectMarket,
-  selectMarketItems,
-} from "../features/market/marketSlice";
+import { selectMarket } from "../features/market/marketSlice";
 import { ethers } from "ethers";
-import { selectCurrentUser } from "../features/auth/authSlice";
+import {
+  selectCurrentUser,
+  selectCurrentWallet,
+} from "../features/auth/authSlice";
 import MarketCard from "../components/Card/MarketCard";
 
 const CollectionPage = () => {
-  const marketlist = useSelector(selectMarketItems);
   const currentUser = useSelector(selectCurrentUser);
+  const currentWallet = useSelector(selectCurrentWallet);
   const market = useSelector(selectMarket);
-  const [archives, setArchives] = useState<any>([]);
   const [marketContract, setMarketContract] = useState<any>([]);
   const [marketItems, setMarketItems] = useState<any>([]);
   const [flag, setFlag] = useState<boolean>(false);
@@ -36,7 +34,6 @@ const CollectionPage = () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     const shop = new ethers.Contract(market.address, market.abi, signer);
-    console.log(shop);
     setMarketContract(shop);
   };
 
@@ -44,15 +41,24 @@ const CollectionPage = () => {
     const listing = await marketContract._getListings();
     const refined = [];
     const limit = listing.length > 4 ? 4 : listing.length;
+
     for (let i = listing.length - 1; i >= listing.length - limit; i--) {
       refined.push({
         _id: listing[i]._id,
         name: listing[i][2]._name,
         price: parseInt(listing[i]._price._hex) / 1000000000000000000,
         image: listing[i][2]._asset,
+        owner: listing[i][2]._owner,
       });
     }
-    setMarketItems(refined);
+    if (currentUser) {
+      const filtered = refined.filter((item: any) => {
+        return item.owner.toUpperCase() !== currentWallet!.toUpperCase();
+      });
+      setMarketItems(filtered);
+    } else {
+      setMarketItems(refined);
+    }
   };
 
   useEffect(() => {
@@ -62,9 +68,8 @@ const CollectionPage = () => {
   }, [marketContract]);
 
   useEffect(() => {
-    if (currentUser) {
-      LoadContract();
-    }
+    console.log("load contract");
+    LoadContract();
   }, [currentUser]);
 
   useEffect(() => {
@@ -103,10 +108,17 @@ const CollectionPage = () => {
           </Flex>
         </Flex>
       </Flex>
-      <Flex w={"full"} gridColumn={"span 2"} p={"30px"}>
-        <Flex w={"30%"} zIndex={"3"}>
+      <Flex
+        gridColumn={"span 2"}
+        w={"full"}
+        justifyContent={"center"}
+        alignItems={"center"}
+        wrap={"wrap"}
+        gap={10}
+      >
+        <Flex w={"100%"} zIndex={"3"} justifyContent={"center"}>
           {marketItems.map((item: any) => {
-            return <MarketCard key={item.id} />;
+            return <MarketCard item={item} key={item.id} />;
           })}
         </Flex>
       </Flex>

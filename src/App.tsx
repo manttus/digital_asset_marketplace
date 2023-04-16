@@ -1,7 +1,12 @@
 import { useDispatch, useSelector } from "react-redux";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import { logout, setUserData, setWallet } from "./features/auth/authSlice";
+import {
+  logout,
+  setUserData,
+  setUserId,
+  setWallet,
+} from "./features/auth/authSlice";
 import useLocalStorage from "./hooks/useLocalStorage";
 import { setContractData } from "./features/market/marketSlice";
 import NFT from "../contract_data/NFT.json";
@@ -17,9 +22,11 @@ import {
   useLoginMutation,
   useSendMutation,
   useVerifyMutation,
+  useRegisterMutation,
 } from "./features/api/authApi/apiSlice";
 import { RootState } from "./types/StoreType";
 import { useDisclosure } from "@chakra-ui/react";
+import jwt_decode from "jwt-decode";
 
 const App = () => {
   const id = useSelector((state: RootState) => state.auth.user);
@@ -31,21 +38,26 @@ const App = () => {
     useSendMutation();
   const [verify, { isLoading: isVerifyLoading, isError: isErrorLoading }] =
     useVerifyMutation();
+  const [register, { isLoading: isRegisterLoading }] = useRegisterMutation();
   const dispatch = useDispatch();
   const { value, setItem, removeItem } = useLocalStorage("wallet");
+  const {
+    value: tokens,
+    setItem: setTokens,
+    removeItem: removeTokens,
+  } = useLocalStorage("Tokens");
 
   const fetchData = async () => {
     if (id) {
       const data = await user(id).unwrap();
-      console.log(data);
       dispatch(setUserData({ user: data.user }));
     }
   };
 
   const sendOtp = async (email: string): Promise<boolean> => {
-    console.log(email);
     try {
       const response = await send({ email, address }).unwrap();
+      console.log(isLoading);
       if (response.message === "Success") {
         return true;
       }
@@ -57,19 +69,37 @@ const App = () => {
 
   const signupHandler = async (
     email: string,
-    otp: string
-  ): Promise<boolean> => {
-    console.log(email, otp);
+    otp: string,
+    username: string
+  ) => {
     try {
       const response = await verify({ email, otp }).unwrap();
-      console.log(response);
-      if (response.status === 200) {
-        return true;
+      if (response.message === "Success") {
+        const data = await register({ email, address, username }).unwrap();
+        if (data.message === "Success") {
+          setTokens(
+            JSON.stringify({
+              accessToken: data.accessToken,
+              refreshToken: data.refreshToken,
+            })
+          );
+          const id: {
+            _id: string;
+          } = jwt_decode(data.accessToken);
+          const balance = await window.ethereum.request({
+            method: "eth_getBalance",
+            params: [address, "latest"],
+          });
+          const balanceInEth = ethers.utils.formatEther(balance).slice(0, 5);
+          const userData = await user(id._id).unwrap();
+          dispatch(setUserData({ user: userData.user }));
+          dispatch(setWallet({ address: address, balance: balanceInEth }));
+          onClose();
+        } else {
+          console.log(data);
+        }
       }
-      return false;
-    } catch (err: Error | unknown) {
-      return false;
-    }
+    } catch (err: Error | unknown) {}
   };
 
   const metaMaskHandler = async () => {
@@ -93,8 +123,22 @@ const App = () => {
       const balanceInEth = ethers.utils.formatEther(balance).slice(0, 5);
       try {
         const response = await login({ address }).unwrap();
-        setItem(JSON.stringify({ wallet: address, balance: balanceInEth }));
-        dispatch(setWallet({ address: address, balance: balanceInEth }));
+        if (response.message === "Success") {
+          setTokens(
+            JSON.stringify({
+              accessToken: response.accessToken,
+              refreshToken: response.refreshToken,
+            })
+          );
+          const id: {
+            _id: string;
+          } = jwt_decode(response.accessToken);
+          const data = await user(id._id).unwrap();
+          setItem(JSON.stringify({ wallet: address, balance: balanceInEth }));
+          dispatch(setWallet({ address: address, balance: balanceInEth }));
+          dispatch(setUserId({ id: id._id }));
+          dispatch(setUserData({ user: data.user }));
+        }
       } catch (err:
         | {
             status: number;
@@ -149,23 +193,24 @@ const App = () => {
   // window.ethereum.on("chainChanged", async (chainId: number) => {});
   // window.ethereum.on("networkChanged", async (networkId: number) => {});
 
-  window.ethereum.on("accountsChanged", async (accounts: string[]) => {
-    if (accounts.length === 0) {
-      removeItem();
-      dispatch(setWallet({ address: null, balance: null }));
-    } else {
-      const data = value ? JSON.parse(value) : null;
-      if (data) {
-        const balance = await window.ethereum.request({
-          method: "eth_getBalance",
-          params: [accounts[0], "latest"],
-        });
-        const balanceInEth = ethers.utils.formatEther(balance).slice(0, 5);
-        setItem(JSON.stringify({ wallet: accounts[0], balance: balanceInEth }));
-        dispatch(setWallet({ address: accounts[0], balance: balanceInEth }));
-      }
-    }
-  });
+  // window.ethereum.on("accountsChanged", async (accounts: string[]) => {
+  //   if (accounts.length === 0) {
+  //     removeItem();
+  //     dispatch(setWallet({ address: null, balance: null }));
+  //   } else {
+  //     const data = value ? JSON.parse(value) : null;
+  //     if (data) {
+  //       const balance = await window.ethereum.request({
+  //         method: "eth_getBalance",
+  //         params: [accounts[0], "latest"],
+  //       });
+  //       const balanceInEth = ethers.utils.formatEther(balance).slice(0, 5);
+  //       setItem(JSON.stringify({ wallet: accounts[0], balance: balanceInEth }));
+  //       dispatch(setWallet({ address: accounts[0], balance: balanceInEth }));
+  //     }
+  //   }
+
+  // });
 
   const saveContract = async () => {
     const market = { address: MarketAddress.address, abi: Market.abi };
@@ -180,7 +225,7 @@ const App = () => {
 
   useEffect(() => {
     fetchData();
-  }, [id]);
+  }, []);
 
   const router = createBrowserRouter([
     {
@@ -195,6 +240,7 @@ const App = () => {
           sendOtp={sendOtp}
           signupHandler={signupHandler}
           address={address}
+          isSendLoading={isSendLoading}
         />
       ),
       children: NavRoutes,

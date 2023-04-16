@@ -6,8 +6,6 @@ import { Provider } from "react-redux/es/exports";
 import store from "./features/store";
 import theme from "./theme/index";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { Suspense, lazy } from "react";
-import Circular from "./components/Abstracts/Circular";
 import App from "./App";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(

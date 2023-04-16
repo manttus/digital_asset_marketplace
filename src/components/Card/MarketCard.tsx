@@ -8,7 +8,7 @@ import { FaArrowRight } from "react-icons/fa";
 const MarketCard = ({ item }: any) => {
   return (
     <Flex
-      width={"400px"}
+      width={"300px"}
       direction={"column"}
       rounded={"5px"}
       shadow={"sm"}
@@ -17,7 +17,7 @@ const MarketCard = ({ item }: any) => {
     >
       <Image
         src={item.image}
-        h={"260px"}
+        h={"250px"}
         w={"100%"}
         rounded={"5px"}
         transition={"all 0.5s ease-in-out"}

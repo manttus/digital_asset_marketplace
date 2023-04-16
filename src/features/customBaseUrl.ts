@@ -1,7 +1,7 @@
 import { fetchBaseQuery } from "@reduxjs/toolkit/dist/query";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "http://localhost:3000",
+  baseUrl: "http://localhost:5000/api/v1",
 });
 
 const customBaseQuery = async (args: any, api: any, extraOptions: any) => {
@@ -13,6 +13,7 @@ const customBaseQuery = async (args: any, api: any, extraOptions: any) => {
       if (accessToken) {
         headers.Authorization = `Bearer ${accessToken}`;
       }
+      return headers;
     },
   };
   let result = await baseQuery(argsWithHeader, api, extraOptions);

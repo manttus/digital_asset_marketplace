@@ -71,9 +71,9 @@ const ProfilePage = () => {
     <Flex direction={"column"} px={"10"} py={"5"}>
       <Profile addImage={AddImage} isEditPage={isEditPage} />
       <Details isEditPage={isEditPage} setEditPage={setIsEditPage} />
-      {/* <Flex w={"70%"} justifyContent={"center"}>
-        {!isEditPage ? <FeedTabs /> : <EditProfile />}
-      </Flex> */}
+      <Flex w={"70%"} justifyContent={"center"}>
+        <FeedTabs />
+      </Flex>
     </Flex>
   );
 };

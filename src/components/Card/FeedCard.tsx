@@ -1,10 +1,14 @@
 import { Flex, Box, Avatar, Text, Img, Stack } from "@chakra-ui/react";
-import { BsArrowBarUp } from "react-icons/bs";
+import { MdLink } from "react-icons/md";
 import { MdFavoriteBorder } from "react-icons/md";
-import card from "../../assets/abstract2.webp";
 import CustomIconButton from "../Button/CustomIconButton";
+import { useMintersMutation } from "../../features/api/authApi/apiSlice";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
-const FeedCard = () => {
+const FeedCard = ({ data }: any) => {
+  const [minters] = useMintersMutation();
+
   return (
     <Box
       as={Stack}
@@ -19,14 +23,14 @@ const FeedCard = () => {
         <Flex gap={3} alignItems={"center"}>
           <Avatar />
           <Text>
-            <b>@mantuu</b> created <b>03_06</b>
+            <b>{data.owner.slice(0, 6)}</b> created <b>{data._id._hex}</b>
           </Text>
         </Flex>
 
         <Flex gap={4}>
           <CustomIconButton
             aria="liked"
-            icon={<BsArrowBarUp />}
+            icon={<MdLink />}
             type={"outline"}
             color={"gray.200"}
             onClick={() => {}}
@@ -42,7 +46,13 @@ const FeedCard = () => {
         </Flex>
       </Flex>
       <Flex>
-        <Img src={card} />
+        <Flex
+          bgImage={data.image}
+          w={"full"}
+          height={"500px"}
+          bgPos={"center"}
+          bgSize={"cover"}
+        />
       </Flex>
     </Box>
   );

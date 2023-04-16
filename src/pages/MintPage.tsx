@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { selectToken } from "../features/market/marketSlice";
-import Circular from "../components/Abstracts/Circular";
+import Circular from "../components/Abstract/Circular";
 import useHttp from "../hooks/useHttp";
 import { selectCurrentWallet } from "../features/auth/authSlice";
 import useAlert from "../hooks/useAlert";
@@ -19,13 +19,12 @@ const MintPage = () => {
   const [token, setTokenInst] = useState<any>(null);
   const { setOpen, setErrorState } = useAlert();
   const [categories, setCategories] = useState<any>([]);
+  const cloudName = import.meta.env.VITE_CLOUD_NAME;
 
   const getCategory = () => {
     if (wallet) {
-      const filtered = walletCategory.wallet.filter(
-        (item: { wallet: string }) => wallet === item.wallet
-      );
-      setCategories(filtered);
+      const category = walletCategory?.category;
+      setCategories(category);
     }
   };
 
@@ -56,42 +55,84 @@ const MintPage = () => {
     category: string,
     type: string
   ) => {
-    console.log(name, description, image, price, category, type);
+    // console.log(name, description, image, price, category, type);
+    // const formData = new FormData();
+    // formData.append("file", image[0]);
+    // formData.append("pinataMetadata", JSON.stringify({ name }));
+    // formData.append("pinataOptions", JSON.stringify({ cidVersion: 1 }));
+    // const requestConfig = {
+    //   url: "https://api.pinata.cloud/pinning/pinFileToIPFS",
+    //   method: "POST",
+    //   headers: {
+    //     Authorization: `Bearer ${import.meta.env.VITE_PINATA_JWT} `,
+    //   },
+    //   body: formData,
+    // };
+    // const { sendRequest } = useHttp(requestConfig, async (data: any) => {
+    //   if (!data.error) {
+    //     console.log(data);
+    //     const asset = `https://gateway.pinata.cloud/ipfs/${data.IpfsHash}`;
+    //     try {
+    //       await token._mint(name, asset, category, type, wallet);
+    //       setErrorState({
+    //         message: "Asset Minted",
+    //         type: "success",
+    //         action: "SET_MESSAGE",
+    //       });
+    //       setOpen(true);
+    //     } catch (err: Error | any) {
+    //       console.log(err);
+    //       setErrorState({
+    //         message: err.data.data.reason,
+    //         type: "error",
+    //         action: "SET_MESSAGE",
+    //       });
+    //       setOpen(true);
+    //     }
+    //   }
+    // });
+    // sendRequest();
     const formData = new FormData();
-    formData.append("file", image[0]);
-    formData.append("pinataMetadata", JSON.stringify({ name }));
-    formData.append("pinataOptions", JSON.stringify({ cidVersion: 1 }));
+    formData.append("file", image![0]);
+    formData.append("upload_preset", import.meta.env.VITE_CLOUD_UPLOAD_PRESET);
     const requestConfig = {
-      url: "https://api.pinata.cloud/pinning/pinFileToIPFS",
+      url: `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${import.meta.env.VITE_PINATA_JWT} `,
-      },
       body: formData,
     };
-    const { sendRequest } = useHttp(requestConfig, async (data: any) => {
-      if (!data.error) {
-        console.log(data);
-        const asset = `https://gateway.pinata.cloud/ipfs/${data.IpfsHash}`;
-        try {
-          await token._mint(name, asset, category, type, wallet);
-          setErrorState({
-            message: "Asset Minted",
-            type: "success",
-            action: "SET_MESSAGE",
-          });
-          setOpen(true);
-        } catch (err: Error | any) {
-          setErrorState({
-            message: err.data.data.reason,
-            type: "error",
-            action: "SET_MESSAGE",
-          });
-          setOpen(true);
-        }
-      }
+
+    const response = await fetch(requestConfig.url, {
+      method: requestConfig.method,
+      body: requestConfig.body,
     });
-    sendRequest();
+
+    if (response.ok) {
+      const data = await response.json();
+      try {
+        await token._mint(name, data.secure_url, category, type, wallet);
+        setErrorState({
+          message: "Asset Minted",
+          type: "success",
+          action: "SET_MESSAGE",
+        });
+        setOpen(true);
+      } catch (err: Error | any) {
+        console.log(err);
+        setErrorState({
+          message: err.data.data.reason,
+          type: "error",
+          action: "SET_MESSAGE",
+        });
+        setOpen(true);
+      }
+    } else {
+      setErrorState({
+        message: "Error Minting Asset",
+        type: "error",
+        action: "SET_MESSAGE",
+      });
+      setOpen(true);
+    }
   };
 
   return (

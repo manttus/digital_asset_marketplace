@@ -73,6 +73,12 @@ const AuthModal = ({
       onClose={onClose}
       size={"xl"}
       closeOnOverlayClick={true}
+      onCloseComplete={() => {
+        reset();
+        setOtpField(false);
+        setEmail("");
+        setUsername("");
+      }}
     >
       <ModalOverlay />
       <ModalContent

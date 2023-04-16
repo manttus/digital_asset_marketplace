@@ -10,16 +10,23 @@ import NoResult from "../NoResult";
 import NormalButton from "../Button/NormalButton";
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
-import { selectUserData } from "../../features/auth/authSlice";
+import {
+  selectCurrentUser,
+  selectCurrentWallet,
+  selectUserData,
+} from "../../features/auth/authSlice";
 import { useNavigate } from "react-router-dom";
 
 const Collection = () => {
   const currentUser = useSelector(selectUserData);
+  const id = useSelector(selectCurrentUser);
   const marketContract = useSelector(selectMarket);
+  const wallet = useSelector(selectCurrentWallet);
   const [market, setMarket] = useState<any>([]);
   const [marketItems, setMarketItems] = useState<any>([]);
   const [flag, setFlag] = useState<boolean>(false);
   const navigate = useNavigate();
+
   const LoadContract = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
@@ -34,6 +41,7 @@ const Collection = () => {
   const fetchMarketData = async () => {
     const listing = await market._getListings();
     const refined = [];
+
     const limit = listing.length > 4 ? 4 : listing.length;
     for (let i = listing.length - 1; i >= listing.length - limit; i--) {
       refined.push({
@@ -41,9 +49,17 @@ const Collection = () => {
         name: listing[i][2]._name,
         price: parseInt(listing[i]._price._hex) / 1000000000000000000,
         image: listing[i][2]._asset,
+        owner: listing[i][2]._owner,
       });
     }
-    setMarketItems(refined);
+    if (currentUser !== null) {
+      const filtered = refined.filter((item: any) => {
+        return item.owner.toUpperCase() !== currentUser.address.toUpperCase();
+      });
+      setMarketItems(filtered);
+    } else {
+      setMarketItems(refined);
+    }
   };
 
   useEffect(() => {
@@ -53,10 +69,8 @@ const Collection = () => {
   }, [market]);
 
   useEffect(() => {
-    if (currentUser) {
-      LoadContract();
-    }
-  }, [currentUser]);
+    LoadContract();
+  }, [id]);
 
   useEffect(() => {
     if (market && flag) {

@@ -31,22 +31,29 @@ const authSlice = createSlice({
       state.token = action.payload.token;
     },
     setUserData: (state, action) => {
+      console.log(action.payload.user);
       state.data = action.payload.user;
+      console.log(state.user);
     },
     setWallet: (state, action) => {
       state.wallet = action.payload.address;
       state.balance = action.payload.balance;
+    },
+    setUserId: (state, action) => {
+      console.log(action.payload.user);
+      state.user = action.payload.user;
     },
     logout: (state) => {
       state.user = null;
       state.token = null;
       state.wallet = null;
       state.balance = null;
+      state.data = null;
     },
   },
 });
 
-export const { setCredintials, logout, setWallet, setUserData } =
+export const { setCredintials, logout, setWallet, setUserData, setUserId } =
   authSlice.actions;
 export default authSlice.reducer;
 export const selectCurrentUser = (state: RootState) => state.auth.user;
