@@ -9,7 +9,7 @@ lerna-debug.log*
 contract_data
 .env
 node_modules
-web3
+dam_hardhat
 server
 dist
 dist-ssr
