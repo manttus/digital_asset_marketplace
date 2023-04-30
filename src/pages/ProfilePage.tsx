@@ -10,7 +10,7 @@ import {
   HStack,
   Icon,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Details from "../components/Showcase/Details";
 import Profile from "../components/Showcase/Profile";
 import { RiSendPlaneFill } from "react-icons/ri";
@@ -19,6 +19,7 @@ import {
   useUpdateMutation,
   useUserMutation,
   useFollowMutation,
+  useMessagesMutation,
 } from "../features/api/authApi/apiSlice";
 import useHttp from "../hooks/useHttp";
 import FeedTabs from "../components/Showcase/FeedTab";
@@ -33,6 +34,7 @@ const ProfilePage = () => {
   const socket = io("http://localhost:3001");
   const id = useSelector((state: RootState) => state.auth.user);
   const [follow] = useFollowMutation();
+  const [getMessages] = useMessagesMutation();
   const [isEditPage, setIsEditPage] = useState<boolean>(false);
   const [updateUser] = useUpdateMutation();
   const [message, setMessage] = useState<string>();
@@ -46,6 +48,7 @@ const ProfilePage = () => {
   const [user] = useUserMutation();
   const cloudName = import.meta.env.VITE_CLOUD_NAME;
   const userData = useSelector(selectUserData);
+  const flexRef = useRef<HTMLDivElement>(null);
 
   const dispatch = useDispatch();
   const { id: profileId } = useParams();
@@ -63,21 +66,35 @@ const ProfilePage = () => {
     }
   };
 
-  useEffect(() => {
-    socket.on("message", (data) => {
-      // Add the new message to your UI
-      setMessages((messages) => [...messages, data]);
-    });
-  }, []);
+  const fetchMessages = async () => {
+    try {
+      const messages = await getMessages({
+        senderId: userData._id,
+        receiverId: messageId!.id!,
+      }).unwrap();
+      setMessages(messages.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  socket.on("message", (data) => {
+    // Add the new message to your UI
+    setMessages(data);
+  });
 
   const sendMessages = async () => {
-    socket.emit("message", {
+    socket.emit("new-message", {
       message,
       senderId: id,
       receiverId: messageId!.id,
     });
     setMessage("");
   };
+
+  useEffect(() => {
+    flexRef.current?.scrollTo(0, flexRef.current!.scrollHeight);
+  }, [messages]);
 
   useEffect(() => {
     if (profileId) {
@@ -91,7 +108,13 @@ const ProfilePage = () => {
     } else {
       setProfileData(userData);
     }
-  }, [profileId, id, userData]);
+  }, [profileId, id, userData, messageId]);
+
+  useEffect(() => {
+    if (messageId && userData) {
+      fetchMessages();
+    }
+  }, [userData, messageId]);
 
   const AddImage = async (file: FileList | null, flag: string) => {
     const formData = new FormData();
@@ -136,14 +159,14 @@ const ProfilePage = () => {
   const followHandler = async (profileId: string, indicator: string) => {
     try {
       if (indicator === "follow") {
-        const response = await follow({
+        await follow({
           id,
           followId: profileId,
           status: "follow",
         }).unwrap();
         showToast("Started Following", "success", 2000);
       } else {
-        const response = await follow({
+        await follow({
           id,
           followId: profileId,
           status: "unfollow",
@@ -154,9 +177,7 @@ const ProfilePage = () => {
 
       const updateData = await user(id!).unwrap();
       dispatch(setUserData({ user: updateData.user }));
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   };
 
   return (
@@ -244,8 +265,14 @@ const ProfilePage = () => {
                     borderColor={"gray.300"}
                     alignItems={"center"}
                     py={"8"}
+                    marginBottom={"5px"}
                   >
-                    <Input type={"text"} rounded={"sm"} bg={"white"} />
+                    <Input
+                      type={"text"}
+                      rounded={"md"}
+                      bg={"white"}
+                      placeholder={"Search"}
+                    />
                   </Flex>
                   {userData?.following?.map((user: any) => (
                     <Flex
@@ -253,8 +280,6 @@ const ProfilePage = () => {
                       px={"10px"}
                       bg={"background"}
                       h={"60px"}
-                      borderBottom={"1px solid"}
-                      borderColor={"gray.300"}
                       alignItems={"center"}
                       py={"8"}
                       gap={"2"}
@@ -264,8 +289,13 @@ const ProfilePage = () => {
                           username: user.username,
                         });
                       }}
+                      rounded={"md"}
+                      marginX={"10px"}
+                      marginY={"5px"}
+                      border={"1px solid "}
+                      borderColor={"gray.300"}
                     >
-                      <Avatar size={"sm"} />
+                      <Avatar size={"md"} src={user?.profileImage} />
                       {user.username}
                     </Flex>
                   ))}
@@ -297,34 +327,55 @@ const ProfilePage = () => {
                       {messageId?.username}
                     </Text>
                   </Flex>
-                  <Flex height={"400px"} w={"full"} p={"2"}>
-                    <Flex
-                      direction={"column"}
-                      w={"full"}
-                      height={"400px"}
-                      background={"white"}
-                      overflowY={"scroll"}
-                      border={"1px solid"}
-                      borderColor={"gray.300"}
-                      sx={{
-                        "&::-webkit-scrollbar": {
-                          display: "none",
-                        },
-                      }}
-                      boxShadow={"md"}
-                    >
-                      {messages?.map((message: any) => (
+
+                  <Flex
+                    direction={"column"}
+                    w={"full"}
+                    h={"300px"}
+                    overflowY={"scroll"}
+                    boxShadow={"md"}
+                    sx={{
+                      "&::-webkit-scrollbar": {
+                        display: "none",
+                      },
+                    }}
+                    ref={flexRef}
+                  >
+                    {messages?.map((message: any) => {
+                      return (
                         <Flex
                           key={message._id}
                           w={"full"}
-                          direction={"column"}
                           p={"2"}
+                          justifyContent={
+                            message.senderId === userData._id ? "end" : "start"
+                          }
+                          wrap={"wrap"}
                         >
-                          {message.message}
+                          <Flex
+                            justifyContent={"center"}
+                            alignItems={"center"}
+                            rounded={"md"}
+                            p={"2"}
+                            wrap={"wrap"}
+                            bg={
+                              message.senderId === userData._id
+                                ? "buttonPrimary"
+                                : "gray.300"
+                            }
+                            color={
+                              message.senderId === userData._id
+                                ? "white"
+                                : "black"
+                            }
+                          >
+                            {message.message}
+                          </Flex>
                         </Flex>
-                      ))}
-                    </Flex>
+                      );
+                    })}
                   </Flex>
+
                   <Flex
                     zIndex={"2"}
                     position={"sticky"}
@@ -334,6 +385,13 @@ const ProfilePage = () => {
                     h={"50px"}
                     alignItems={"center"}
                     py={"8"}
+                    as={"form"}
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      sendMessages();
+                    }}
+                    borderTop={"1px solid"}
+                    borderColor={"gray.300"}
                   >
                     <HStack w={"full"} spacing={2} p={0}>
                       <Input
@@ -346,16 +404,12 @@ const ProfilePage = () => {
                           setMessage(e.target.value);
                         }}
                       />
-                      <Button bg={"buttonPrimary"}>
+                      <Button bg={"buttonPrimary"} type="submit">
                         <Icon
                           as={RiSendPlaneFill}
                           color={"white"}
-                          size={"22px"}
-                          type="submit"
-                          onClick={() => {
-                            console.log("send");
-                            sendMessages();
-                          }}
+                          h={"20px"}
+                          w={"20px"}
                         />
                       </Button>
                     </HStack>
