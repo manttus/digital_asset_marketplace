@@ -23,4 +23,6 @@ export type MarketSliceType = {
   marketItems: [];
   feeds: [];
   wallet: string;
+  marketInstance: any;
+  nftInstance: any;
 };
