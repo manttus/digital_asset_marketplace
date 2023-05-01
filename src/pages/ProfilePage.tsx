@@ -9,6 +9,7 @@ import {
   Button,
   HStack,
   Icon,
+  IconButton,
 } from "@chakra-ui/react";
 import { useEffect, useState, useRef } from "react";
 import Details from "../components/Showcase/Details";
@@ -28,10 +29,13 @@ import { selectUserData, setUserData } from "../features/auth/authSlice";
 import { RootState } from "../types/StoreType";
 import { useParams, useNavigate } from "react-router-dom";
 import useCustomToast from "../hooks/useToast";
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
+import { GoKebabVertical } from "react-icons/go";
+import { BiArrowBack } from "react-icons/bi";
+
+const socket = io("http://localhost:3001/");
 
 const ProfilePage = () => {
-  const socket = io("http://localhost:3001");
   const id = useSelector((state: RootState) => state.auth.user);
   const [follow] = useFollowMutation();
   const [getMessages] = useMessagesMutation();
@@ -49,7 +53,6 @@ const ProfilePage = () => {
   const cloudName = import.meta.env.VITE_CLOUD_NAME;
   const userData = useSelector(selectUserData);
   const flexRef = useRef<HTMLDivElement>(null);
-
   const dispatch = useDispatch();
   const { id: profileId } = useParams();
 
@@ -66,6 +69,11 @@ const ProfilePage = () => {
     }
   };
 
+  const generateRoom = (id1: string, id2: string) => {
+    const room = [id1, id2].sort().join("");
+    return room;
+  };
+
   const fetchMessages = async () => {
     try {
       const messages = await getMessages({
@@ -78,21 +86,39 @@ const ProfilePage = () => {
     }
   };
 
-  socket.on("message", (data) => {
-    // Add the new message to your UI
-    setMessages(data);
-  });
+  useEffect(() => {
+    socket.on(
+      "new-message",
+      (data: { message: string; senderId: string; receiverId: string }) => {
+        console.log(data);
+        setMessages((prev) => [...prev, data]);
+      }
+    );
+    return () => {
+      socket.off("new-message");
+    };
+  }, [messageId, id]);
 
   const sendMessages = async () => {
-    socket.emit("new-message", {
-      message,
-      senderId: id,
-      receiverId: messageId!.id,
-    });
+    const room = generateRoom(profileData._id, messageId!.id);
+    socket.emit(
+      "new-message",
+      {
+        message,
+        senderId: profileData._id,
+        receiverId: messageId!.id,
+      },
+      room
+    );
+    // setMessages((prev) => [
+    //   ...prev,
+    //   { message, senderId: profileData._id, receiverId: messageId!.id },
+    // ]);
     setMessage("");
   };
 
   useEffect(() => {
+    flexRef.current?.scrollIntoView({ behavior: "smooth" });
     flexRef.current?.scrollTo(0, flexRef.current!.scrollHeight);
   }, [messages]);
 
@@ -288,6 +314,8 @@ const ProfilePage = () => {
                           id: user._id,
                           username: user.username,
                         });
+                        const roomId = generateRoom(id!, user._id);
+                        socket.emit("join", roomId);
                       }}
                       rounded={"md"}
                       marginX={"10px"}
@@ -315,17 +343,23 @@ const ProfilePage = () => {
                     py={"8"}
                     justifyContent={"space-between"}
                   >
-                    <Button
+                    <IconButton
+                      aria-label={"close"}
+                      icon={<BiArrowBack size={"22px"} />}
                       onClick={() => {
                         setMessageId(null);
+                        setMessages([]);
+                        const roomId = generateRoom(id!, messageId?.id!);
+                        socket.emit("leave", roomId);
                       }}
-                      fontSize={"12px"}
-                    >
-                      Go Back
-                    </Button>
+                    />
                     <Text fontWeight={"600"} fontSize={"16px"}>
-                      {messageId?.username}
+                      @{messageId?.username}
                     </Text>
+                    <IconButton
+                      aria-label={"close"}
+                      icon={<GoKebabVertical size={"22px"} />}
+                    />
                   </Flex>
 
                   <Flex
@@ -351,6 +385,7 @@ const ProfilePage = () => {
                             message.senderId === userData._id ? "end" : "start"
                           }
                           wrap={"wrap"}
+                          transition={"all 0.4s ease"}
                         >
                           <Flex
                             justifyContent={"center"}
