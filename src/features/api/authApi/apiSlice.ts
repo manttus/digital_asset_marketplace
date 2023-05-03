@@ -15,6 +15,9 @@ type FormData = {
   id: string;
   coverImage?: string;
   profileImage?: string;
+  username?: string;
+  twitter?: string;
+  instagram?: string;
 };
 
 export const marketApi = createApi({
@@ -82,6 +85,68 @@ export const marketApi = createApi({
         body: data,
       }),
     }),
+    follow: builder.mutation({
+      query: (data: {
+        id: string | null;
+        followId: string;
+        status: string;
+      }) => ({
+        url: "user/follow",
+        method: "PATCH",
+        body: data,
+      }),
+    }),
+    messages: builder.mutation({
+      query: (data: { senderId: string; receiverId: string }) => ({
+        url: "user/messages",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    getMessageUser: builder.mutation({
+      query: (id: string) => ({
+        url: `user/getMessageUser/${id}`,
+        method: "GET",
+      }),
+    }),
+    postFeed: builder.mutation({
+      query: (data: {
+        id: string;
+        token_id: string;
+        token_name: string;
+        token_url: string;
+      }) => ({
+        url: "user/post",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    getPosts: builder.mutation<any, void>({
+      query: () => ({
+        url: "user/getPosts",
+        method: "GET",
+      }),
+    }),
+    postLike: builder.mutation<
+      any,
+      {
+        id: string;
+        postId: string;
+        indi: string;
+        owner: string;
+      }
+    >({
+      query: (data: {
+        id: string;
+        postId: string;
+        indi: string;
+        owner: string;
+      }) => ({
+        url: "user/like",
+        method: "PATCH",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -94,4 +159,10 @@ export const {
   useUserMutation,
   useAddCategoryMutation,
   useMintersMutation,
+  useFollowMutation,
+  useMessagesMutation,
+  useGetMessageUserMutation,
+  usePostFeedMutation,
+  useGetPostsMutation,
+  usePostLikeMutation,
 } = marketApi;
