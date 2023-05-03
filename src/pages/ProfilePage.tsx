@@ -27,6 +27,7 @@ import {
   useFollowMutation,
   useMessagesMutation,
   useGetMessageUserMutation,
+  useGetPostsMutation,
 } from "../features/api/authApi/apiSlice";
 import useHttp from "../hooks/useHttp";
 import FeedTabs from "../components/Showcase/FeedTab";
@@ -50,8 +51,11 @@ const socket = io("http://localhost:3001/");
 const ProfilePage = () => {
   const id = useSelector((state: RootState) => state.auth.user);
   const [follow] = useFollowMutation();
+  const [getPosts] = useGetPostsMutation();
+  const [feedsData, setFeedsData] = useState<any[]>([]);
   const [getMessages] = useMessagesMutation();
   const [getMessage] = useGetMessageUserMutation();
+
   const [isEditPage, setIsEditPage] = useState<boolean>(false);
   const [updateUser] = useUpdateMutation();
   const [message, setMessage] = useState<string>();
@@ -149,6 +153,21 @@ const ProfilePage = () => {
       console.log(err);
     }
   };
+
+  const fetchFeeds = async () => {
+    try {
+      const data = await getPosts().unwrap();
+      setFeedsData([...data.data].reverse());
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    if (userData) {
+      fetchFeeds();
+    }
+  }, [userData]);
 
   useEffect(() => {
     if (userData) {
@@ -329,8 +348,8 @@ const ProfilePage = () => {
           followHandler={followHandler}
         />
         {!profileId && (
-          <Flex w={"100%"} justifyContent={"space-between"}>
-            <Flex w={"60%"} justifyContent={"center"}>
+          <Flex w={"100%"} justifyContent={"start"}>
+            <Flex w={"55%"} justifyContent={"center"}>
               {isEditPage ? (
                 <Flex
                   as={"form"}
@@ -457,7 +476,7 @@ const ProfilePage = () => {
                   </HStack>
                 </Flex>
               ) : (
-                <FeedTabs />
+                <FeedTabs feedItems={feedsData} />
               )}
             </Flex>
           </Flex>
