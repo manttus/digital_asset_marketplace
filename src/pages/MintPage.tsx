@@ -1,25 +1,43 @@
-import { Flex, Text } from "@chakra-ui/react";
+import {
+  Flex,
+  Text,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
+  Button,
+  useDisclosure,
+  Divider,
+} from "@chakra-ui/react";
+
 import illustration1 from "../assets/register.png";
 import Mint from "../components/Forms/Mint";
 import { useSelector } from "react-redux";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ethers } from "ethers";
 import { selectToken } from "../features/market/marketSlice";
 import Circular from "../components/Abstract/Circular";
-import useHttp from "../hooks/useHttp";
 import { selectCurrentWallet } from "../features/auth/authSlice";
-import useAlert from "../hooks/useAlert";
 import NoConnection from "../components/NoConnection";
 import { RootState } from "../types/StoreType";
+import useToast from "../hooks/useToast";
+import { usePostFeedMutation } from "../features/api/authApi/apiSlice";
 
 const MintPage = () => {
+  const id = useSelector((state: RootState) => state.auth.user);
   const contract = useSelector(selectToken);
+  const [postFeed] = usePostFeedMutation();
   const walletCategory = useSelector((state: RootState) => state.auth.data);
+  const { isOpen, onToggle, onClose } = useDisclosure();
   const wallet = useSelector(selectCurrentWallet);
   const [token, setTokenInst] = useState<any>(null);
-  const { setOpen, setErrorState } = useAlert();
   const [categories, setCategories] = useState<any>([]);
+  const [mintDetails, setMintDetails] = useState<any>({});
   const cloudName = import.meta.env.VITE_CLOUD_NAME;
+  const { showToast } = useToast();
+  const cancelRef = useRef<any>();
 
   const getCategory = () => {
     if (wallet) {
@@ -36,7 +54,6 @@ const MintPage = () => {
   }, [wallet, walletCategory]);
 
   const loadContract = async () => {
-    await window.ethereum.request({ method: "eth_requestAccounts" });
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     const token = await new ethers.Contract(
@@ -51,7 +68,6 @@ const MintPage = () => {
     name: string,
     description: string,
     image: any,
-    price: string,
     category: string,
     type: string
   ) => {
@@ -107,31 +123,33 @@ const MintPage = () => {
     });
 
     if (response.ok) {
+      showToast("Image Uploaded", "success", 2000);
       const data = await response.json();
+
       try {
-        await token._mint(name, data.secure_url, category, type, wallet);
-        setErrorState({
-          message: "Asset Minted",
-          type: "success",
-          action: "SET_MESSAGE",
-        });
-        setOpen(true);
+        const response = await token._mint(
+          name,
+          data.secure_url,
+          category,
+          type,
+          wallet
+        );
+        const receipt = await response.wait();
+        const tokenId = receipt.events[0].args[2];
+
+        await postFeed({
+          id: id!,
+          token_name: name,
+          token_id: parseInt(tokenId._hex.toString()).toString(),
+          token_url: data.secure_url,
+        }).unwrap();
+
+        showToast("Asset Minted", "success", 2000);
       } catch (err: Error | any) {
-        console.log(err);
-        setErrorState({
-          message: err.data.data.reason,
-          type: "error",
-          action: "SET_MESSAGE",
-        });
-        setOpen(true);
+        showToast("Server Error", "error", 2000);
       }
     } else {
-      setErrorState({
-        message: "Error Minting Asset",
-        type: "error",
-        action: "SET_MESSAGE",
-      });
-      setOpen(true);
+      showToast("Image Upload Failed", "error", 2000);
     }
   };
 
@@ -144,7 +162,7 @@ const MintPage = () => {
         bgSize={"cover"}
         top={0}
         pos={"absolute"}
-        bgPos={"center"}
+        bgPos={"bottom"}
         _after={{
           content: '""',
           display: "block",
@@ -181,6 +199,7 @@ const MintPage = () => {
         position={"relative"}
       >
         <Circular top="-400" left="-50" />
+        <Circular top="300" left="1000" zIndex={0} />
         <Flex direction={"column"} alignItems={"center"} zIndex={2}>
           <Text fontSize={"4xl"} fontWeight={"bold"}></Text>
         </Flex>
