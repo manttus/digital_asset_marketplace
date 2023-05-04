@@ -1,14 +1,11 @@
 import { Flex, Box, Avatar, Text, Img, Stack } from "@chakra-ui/react";
 import { MdLink } from "react-icons/md";
-import { MdFavoriteBorder } from "react-icons/md";
+import { MdFavoriteBorder, MdFavorite } from "react-icons/md";
 import CustomIconButton from "../Button/CustomIconButton";
-import { useMintersMutation } from "../../features/api/authApi/apiSlice";
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
-const FeedCard = ({ data }: any) => {
-  const [minters] = useMintersMutation();
-
+const FeedCard = ({ data, liked, handleLike }: any) => {
+  const navigate = useNavigate();
   return (
     <Box
       as={Stack}
@@ -19,18 +16,25 @@ const FeedCard = ({ data }: any) => {
       borderColor={"gray.200"}
       rounded={"md"}
     >
-      <Flex justifyContent={"space-between"}>
-        <Flex gap={3} alignItems={"center"}>
-          <Avatar />
-          <Text>
-            <b>{data.owner.slice(0, 6)}</b> created <b>{data._id._hex}</b>
-          </Text>
+      <Flex justifyContent={"space-between"} alignItems={"center"}>
+        <Flex alignItems={"center"} gap={6}>
+          <Avatar
+            src={data.user.profileImage}
+            size={"lg"}
+            onClick={() => {
+              navigate(`/profile/${data.user._id}`);
+            }}
+            cursor={"pointer"}
+          />
+          <Flex fontSize={"18px"} gap={2} alignItems={"center"}>
+            <b>{data.user.username.split(0, 10)}</b>created <b>{data.title}</b>
+          </Flex>
         </Flex>
 
         <Flex gap={4}>
           <CustomIconButton
             aria="liked"
-            icon={<MdLink />}
+            icon={<MdLink size={"22px"} />}
             type={"outline"}
             color={"gray.200"}
             onClick={() => {}}
@@ -38,18 +42,26 @@ const FeedCard = ({ data }: any) => {
 
           <CustomIconButton
             aria="liked"
-            icon={<MdFavoriteBorder />}
+            icon={
+              !liked ? (
+                <MdFavoriteBorder size={"22px"} />
+              ) : (
+                <MdFavorite size={"22px"} />
+              )
+            }
             type={"outline"}
             color={"gray.200"}
-            onClick={() => {}}
+            onClick={() => {
+              liked ? handleLike("unlike", data) : handleLike("like", data);
+            }}
           />
         </Flex>
       </Flex>
       <Flex>
         <Flex
-          bgImage={data.image}
+          bgImage={data.tokenUrl}
           w={"full"}
-          height={"500px"}
+          height={"450px"}
           bgPos={"center"}
           bgSize={"cover"}
         />

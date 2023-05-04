@@ -7,17 +7,12 @@ import {
   TabPanel,
 } from "@chakra-ui/react";
 import FeedCard from "../Card/FeedCard";
-import { useEffect, useState } from "react";
-import { ethers } from "ethers";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import {
-  selectCurrentUser,
-  selectCurrentWallet,
-  selectUserData,
-} from "../../features/auth/authSlice";
-import { selectMarket } from "../../features/market/marketSlice";
-import { set } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
+import { selectUserData, setUserData } from "../../features/auth/authSlice";
+import { usePostLikeMutation } from "../../features/api/authApi/apiSlice";
+import { selectCurrentUser } from "../../features/auth/authSlice";
+import useCustomToast from "../../hooks/useToast";
+import { useUserMutation } from "../../features/api/authApi/apiSlice";
 
 const TabItems = [
   {
@@ -28,67 +23,54 @@ const TabItems = [
     title: "Following",
     content: "three!",
   },
+  {
+    title: "Liked",
+    content: "three!",
+  },
 ];
 
-const FeedTabs = () => {
-  const currentUser = useSelector(selectUserData);
+const FeedTabs = ({ feedItems }: { feedItems: any }) => {
   const id = useSelector(selectCurrentUser);
-  const marketContract = useSelector(selectMarket);
-  const wallet = useSelector(selectCurrentWallet);
-  const [market, setMarket] = useState<any>([]);
-  const [feedItems, setFeedsItems] = useState<any>([]);
-  const [flag, setFlag] = useState<boolean>(false);
-  const navigate = useNavigate();
-  const LoadContract = async () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    const market = new ethers.Contract(
-      marketContract.address,
-      marketContract.abi,
-      signer
-    );
-    setMarket(market);
-  };
-
-  const fetchMarketData = async () => {
-    const listing = await market._getListings();
-    const refined = [];
-
-    const limit = listing.length > 4 ? 4 : listing.length;
-    for (let i = listing.length - 1; i >= listing.length - limit; i--) {
-      refined.push({
-        _id: listing[i]._id,
-        name: listing[i][2]._name,
-        price: parseInt(listing[i]._price._hex) / 1000000000000000000,
-        image: listing[i][2]._asset,
-        owner: listing[i][2]._owner,
+  const { showToast } = useCustomToast();
+  const userData = useSelector(selectUserData);
+  const [postLike] = usePostLikeMutation();
+  const [user] = useUserMutation();
+  const dispatch = useDispatch();
+  const handleLike = async (indi: string, data: any) => {
+    try {
+      await postLike({
+        postId: data._id,
+        owner: data.user._id,
+        indi,
+        id: id!,
       });
+      showToast(indi === "like" ? "Post Liked" : "Undo Liked", "success", 2000);
+      const userInfo = await user(id!).unwrap();
+      dispatch(setUserData({ user: userInfo.user }));
+    } catch (err) {
+      showToast("Something went wrong", "error", 2000);
     }
-    console.log(refined);
-    setFeedsItems(refined);
   };
 
-  useEffect(() => {
-    if (market) {
-      setFlag(true);
+  const checkFollow = (id: string) => {
+    const data = userData.following.find((item: any) => item._id === id);
+    if (data) {
+      return true;
     }
-  }, [market]);
+    return false;
+  };
 
-  useEffect(() => {
-    LoadContract();
-  }, [id]);
-
-  useEffect(() => {
-    if (market && flag) {
-      fetchMarketData();
-    }
-  }, [market]);
+  const checkLiked = (id: string) => {
+    console.log(id);
+    console.log(userData.liked);
+    return userData.liked.includes(id);
+  };
   return (
-    <Tabs size={"md"} isFitted w={"70%"}>
+    <Tabs size={"lg"} isFitted w={"70%"} zIndex={"2"} mt={"40px"}>
       <TabList>
         {TabItems.map((item, index) => {
           return (
-            <Tab fontWeight={"500"} key={index}>
+            <Tab fontWeight={"600"} key={index}>
               {item.title}
             </Tab>
           );
@@ -98,11 +80,49 @@ const FeedTabs = () => {
         <TabPanel>
           <Flex direction={"column"} my={10} gap={10}>
             {feedItems.map((item: any) => {
-              return <FeedCard key={item.id} data={item} />;
+              return (
+                <FeedCard
+                  key={item._id}
+                  data={item}
+                  liked={userData.liked.includes(item._id)}
+                  handleLike={handleLike}
+                />
+              );
             })}
           </Flex>
         </TabPanel>
-        <TabPanel></TabPanel>
+        <TabPanel>
+          <Flex direction={"column"} my={10} gap={10}>
+            {feedItems.map((item: any) => {
+              if (checkFollow(item.user._id)) {
+                return (
+                  <FeedCard
+                    key={item._id}
+                    data={item}
+                    liked={userData.liked.includes(item._id)}
+                    handleLike={handleLike}
+                  />
+                );
+              }
+            })}
+          </Flex>
+        </TabPanel>
+        <TabPanel>
+          <Flex direction={"column"} my={10} gap={10}>
+            {feedItems.map((item: any) => {
+              if (checkLiked(item._id)) {
+                return (
+                  <FeedCard
+                    key={item._id}
+                    data={item}
+                    liked={userData.liked.includes(item._id)}
+                    handleLike={handleLike}
+                  />
+                );
+              }
+            })}
+          </Flex>
+        </TabPanel>
       </TabPanels>
     </Tabs>
   );
