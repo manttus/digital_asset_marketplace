@@ -11,22 +11,21 @@ import {
   FormLabel,
   Grid,
   Input,
-  InputLeftAddon,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  InputGroup,
   Stack,
   Text,
-  Textarea,
   useDisclosure,
   Select,
   Button,
-  InputRightAddon,
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  AccordionIcon,
+  Slider,
+  SliderTrack,
+  SliderFilledTrack,
+  SliderThumb,
+  Checkbox,
 } from "@chakra-ui/react";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
@@ -36,8 +35,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Circular from "../components/Abstract/Circular";
 import CustomBadge from "../components/Badge/CustomBadge";
 import CustomIconButton from "../components/Button/CustomIconButton";
-import NormalButton from "../components/Button/NormalButton";
-import CollectionCard from "../components/Card/CollectionCard";
+
 import {
   useAddCategoryMutation,
   useUserMutation,
@@ -47,15 +45,15 @@ import {
   selectUserData,
   setUserData,
 } from "../features/auth/authSlice";
-import { selectToken } from "../features/market/marketSlice";
+import { selectMarket, selectToken } from "../features/market/marketSlice";
 import NoConnection from "../components/NoConnection";
 import { BiImageAdd } from "react-icons/bi";
-import useHttp from "../hooks/useHttp";
-import { id } from "ethers/lib/utils";
+import CollectionCard from "../components/Card/CollectionCard";
 
 const ArchivesPage = () => {
   const currentUser = useSelector(selectUserData);
   const contract = useSelector(selectToken);
+  const market = useSelector(selectMarket);
   const wallet = useSelector(selectCurrentWallet);
   const [addCategory] = useAddCategoryMutation();
   const [isLoading, setisLoading] = useState<boolean>(false);
@@ -65,6 +63,7 @@ const ArchivesPage = () => {
   const [listings, setListings] = useState<any>([]);
   const [archives, setArchives] = useState<any>([]);
   const [token, setToken] = useState<any>();
+  const [marketContract, setMarketContract] = useState<any>();
   const [flag, setFlag] = useState<boolean>(false);
   const cloudName = import.meta.env.VITE_CLOUD_NAME;
 
@@ -80,25 +79,36 @@ const ArchivesPage = () => {
   const dispatch = useDispatch();
 
   const loadListing = async () => {
+    console.log("loading");
     if (wallet) {
-      setArchives(currentUser.category);
-      const listing = await token._getTokens(wallet);
-      if (listing.length === 0) return;
-      const reversed = [...listing].reverse();
-      console.log(reversed[0]["_asset"]);
-      setListings(reversed);
+      console.log(wallet);
+      const listing = await marketContract._getListings();
+      console.log(listing);
+      // setArchives(currentUser.category);
+      // const listing = await token._getTokens(wallet);
+      // if (listing.length === 0) return;
+      // const reversed = [...listing].reverse();
+      // setListings(reversed);
     }
   };
 
   const loadContract = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
-    const tokenContract = await new ethers.Contract(
-      contract.address,
-      contract.abi,
+    // const tokenContract = await new ethers.Contract(
+    //   contract.address,
+    //   contract.abi,
+    //   signer
+    // );
+    const marketContract = await new ethers.Contract(
+      market.address,
+      market.abi,
       signer
     );
-    setToken(tokenContract);
+    const initialListing = await marketContract._getListings();
+    console.log(initialListing);
+    setMarketContract(marketContract);
+    // setToken(tokenContract);
   };
 
   useEffect(() => {
@@ -168,7 +178,6 @@ const ArchivesPage = () => {
       if (response.message === "Success") {
         setisLoading(false);
         onClose();
-        console.log(currentUser!._id);
         const userData = await user(currentUser!._id).unwrap();
         if (userData) {
           dispatch(
@@ -251,7 +260,7 @@ const ArchivesPage = () => {
             px={"50px"}
             justifyContent={"center"}
           >
-            {archives.length === 0 && (
+            {/* {archives.length === 0 && (
               <Text fontSize={"30px"} fontWeight={"600"} color={"buttonHover"}>
                 No Archives
               </Text>
@@ -265,7 +274,116 @@ const ArchivesPage = () => {
                     archive={archive}
                   />
                 );
-              })}
+              })} */}
+            <Flex w={"full"} justifyContent={"space-between"} zIndex={"10"}>
+              <Flex w={"40%"} direction={"column"} bg={"background"} gap={4}>
+                <Flex>
+                  <Input
+                    type="text"
+                    placeholder="Search"
+                    height={"50px"}
+                    rounded={"sm"}
+                    fontSize={"22px"}
+                    _placeholder={{ fontSize: "22px" }}
+                  />
+                </Flex>
+                <Accordion
+                  allowToggle
+                  display={"flex"}
+                  flexDirection={"column"}
+                >
+                  <AccordionItem>
+                    <h2>
+                      <AccordionButton height={"60px"}>
+                        <Box
+                          as="span"
+                          flex="1"
+                          textAlign="left"
+                          fontSize={"22px"}
+                        >
+                          Categories
+                        </Box>
+                        <AccordionIcon />
+                      </AccordionButton>
+                    </h2>
+                    <AccordionPanel pb={4}>
+                      <Input
+                        type="text"
+                        placeholder="Category Name"
+                        height={"50px"}
+                        rounded={"sm"}
+                        fontSize={"20px"}
+                        _placeholder={{ fontSize: "22px" }}
+                      />
+                    </AccordionPanel>
+                  </AccordionItem>
+
+                  <AccordionItem>
+                    <h2>
+                      <AccordionButton height={"60px"}>
+                        <Box
+                          as="span"
+                          flex="1"
+                          textAlign="left"
+                          fontSize={"22px"}
+                        >
+                          Types
+                        </Box>
+                        <AccordionIcon />
+                      </AccordionButton>
+                    </h2>
+                    <AccordionPanel pb={4}>
+                      <Flex direction={"column"} gap={"2"}>
+                        <Checkbox borderColor={"gray.400"}>
+                          <Text fontSize={"22px"}>Image</Text>
+                        </Checkbox>
+                        <Checkbox borderColor={"gray.400"}>
+                          <Text fontSize={"22px"}>GIFs</Text>
+                        </Checkbox>
+                        <Checkbox borderColor={"gray.400"}>
+                          <Text fontSize={"22px"}>Video</Text>
+                        </Checkbox>
+                      </Flex>
+                    </AccordionPanel>
+                  </AccordionItem>
+                  <AccordionItem>
+                    <h2>
+                      <AccordionButton height={"60px"}>
+                        <Box
+                          as="span"
+                          flex="1"
+                          textAlign="left"
+                          fontSize={"22px"}
+                        >
+                          Price Range
+                        </Box>
+                        <AccordionIcon />
+                      </AccordionButton>
+                    </h2>
+                    <AccordionPanel pb={4}>
+                      <Slider aria-label="slider-ex-1" defaultValue={30}>
+                        <SliderTrack>
+                          <SliderFilledTrack />
+                        </SliderTrack>
+                        <SliderThumb />
+                      </Slider>
+                    </AccordionPanel>
+                  </AccordionItem>
+                </Accordion>
+              </Flex>
+              <Flex w={"80%"} height={"500px"}>
+                {/* {archives &&
+                  archives.map((archive: any) => {
+                    return (
+                      <CollectionCard
+                        key={archive._id}
+                        listings={listings}
+                        archive={archive}
+                      />
+                    );
+                  })} */}
+              </Flex>
+            </Flex>
           </Flex>
         ) : (
           <Flex
