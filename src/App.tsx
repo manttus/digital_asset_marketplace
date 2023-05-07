@@ -1,22 +1,29 @@
-import { useDispatch, useSelector } from "react-redux";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import {
-  logout,
-  setUserData,
-  setUserId,
-  setWallet,
-} from "./features/auth/authSlice";
-import useLocalStorage from "./hooks/useLocalStorage";
+import { useDisclosure } from "@chakra-ui/react";
 import { setContractData } from "./features/market/marketSlice";
+
 import NFT from "../contract_data/NFT.json";
 import NFTAddress from "../contract_data/NFT-address.json";
 import Market from "../contract_data/Market.json";
 import MarketAddress from "../contract_data/Market-address.json";
+
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
+import { useDispatch, useSelector } from "react-redux";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+
+import Navbar from "./components/Navbar";
 import NavRoutes from "./routes/NavRoutes";
+
+import useLocalStorage from "./hooks/useLocalStorage";
+import useCustomToast from "./hooks/useToast";
 import detectEthereumProvider from "@metamask/detect-provider";
+import jwt_decode from "jwt-decode";
+import { RootState } from "./types/StoreType";
+
+import { Socket, io } from "socket.io-client";
+
+const socket = io("http://localhost:3001/");
+
 import {
   useUserMutation,
   useLoginMutation,
@@ -24,45 +31,70 @@ import {
   useVerifyMutation,
   useRegisterMutation,
 } from "./features/api/authApi/apiSlice";
-import { RootState } from "./types/StoreType";
-import { useDisclosure } from "@chakra-ui/react";
-import jwt_decode from "jwt-decode";
+
+import {
+  logout,
+  setUserData,
+  setUserId,
+  setWallet,
+} from "./features/auth/authSlice";
 
 const App = () => {
-  const id = useSelector((state: RootState) => state.auth.user);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [address, setAddress] = useState<string>("");
-  const [user] = useUserMutation();
-  const [login, { isLoading, isError }] = useLoginMutation();
-  const [send, { isLoading: isSendLoading, isError: isOtpError }] =
-    useSendMutation();
-  const [verify, { isLoading: isVerifyLoading, isError: isErrorLoading }] =
-    useVerifyMutation();
-  const [register, { isLoading: isRegisterLoading }] = useRegisterMutation();
-  const dispatch = useDispatch();
+  const id = useSelector((state: RootState) => state.auth.user);
   const { value, setItem, removeItem } = useLocalStorage("wallet");
+  const [address, setAddress] = useState<string>("");
+  const [notification, setNotification] = useState<any>([]);
+  const dispatch = useDispatch();
+
+  const [user] = useUserMutation();
+  const [login] = useLoginMutation();
+  const [send, { isLoading }] = useSendMutation();
+  const [verify] = useVerifyMutation();
+  const [register] = useRegisterMutation();
+
   const {
     value: tokens,
     setItem: setTokens,
     removeItem: removeTokens,
   } = useLocalStorage("Tokens");
 
+  const { showToast } = useCustomToast();
+
+  useEffect(() => {
+    socket.on("notification", (notification) => {
+      showToast(`Message from ${notification.senderName}`, "info", 2000);
+      setNotification((prev) => [...prev, notification]);
+    });
+  }, []);
+
+  const joinRoom = (roomid: string) => {
+    socket.emit("join-notification", roomid);
+  };
+
   const fetchData = async () => {
     if (id) {
-      const data = await user(id).unwrap();
-      dispatch(setUserData({ user: data.user }));
+      try {
+        const data = await user(id).unwrap();
+        dispatch(setUserData({ user: data.user }));
+        joinRoom(5001 + data.user._id);
+      } catch (err) {
+        showToast("Server Error", "error", 2000);
+      }
     }
   };
 
   const sendOtp = async (email: string): Promise<boolean> => {
     try {
       const response = await send({ email, address }).unwrap();
-      console.log(isLoading);
       if (response.message === "Success") {
+        showToast("Otp Sent", "success", 2000);
         return true;
       }
+      showToast("Otp Not Sent", "error", 2000);
       return false;
     } catch (err: Error | unknown) {
+      showToast("Otp Not Sent", "error", 2000);
       return false;
     }
   };
@@ -77,6 +109,7 @@ const App = () => {
       if (response.message === "Success") {
         const data = await register({ email, address, username }).unwrap();
         if (data.message === "Success") {
+          showToast("Account Registered", "success", 2000);
           setTokens(
             JSON.stringify({
               accessToken: data.accessToken,
@@ -96,7 +129,7 @@ const App = () => {
           dispatch(setWallet({ address: address, balance: balanceInEth }));
           onClose();
         } else {
-          console.log(data);
+          showToast("Account Not Registered", "error", 2000);
         }
       }
     } catch (err: Error | unknown) {}
@@ -124,6 +157,7 @@ const App = () => {
       try {
         const response = await login({ address }).unwrap();
         if (response.message === "Success") {
+          showToast("Account Connected", "success", 2000);
           setTokens(
             JSON.stringify({
               accessToken: response.accessToken,
@@ -136,7 +170,8 @@ const App = () => {
           const data = await user(id._id).unwrap();
           setItem(JSON.stringify({ wallet: address, balance: balanceInEth }));
           dispatch(setWallet({ address: address, balance: balanceInEth }));
-          dispatch(setUserId({ id: id._id }));
+          console.log(id._id);
+          dispatch(setUserId({ user: id._id }));
           dispatch(setUserData({ user: data.user }));
         }
       } catch (err:
@@ -151,7 +186,7 @@ const App = () => {
             data: { message: string };
           };
           if (data.message === "Account Invalid") {
-            console.log("Account Invalid");
+            showToast("Account Invalid", "error", 2000);
             onOpen();
           }
         }
@@ -160,20 +195,10 @@ const App = () => {
   };
 
   const disconnect = async () => {
-    const isMetaMask = await detectEthereumProvider();
-    !isMetaMask && console.log("MetaMask is not installed");
-    if (isMetaMask === window.ethereum) {
-      window.ethereum.request({
-        method: "wallet_requestPermissions",
-        params: [
-          {
-            eth_accounts: {},
-          },
-        ],
-      });
-      removeItem();
-      dispatch(logout());
-    }
+    showToast("Account Disconnected", "info", 2000);
+    removeItem();
+    removeTokens();
+    dispatch(logout());
   };
 
   const reConnect = async () => {
@@ -190,27 +215,23 @@ const App = () => {
     }
   };
 
-  // window.ethereum.on("chainChanged", async (chainId: number) => {});
-  // window.ethereum.on("networkChanged", async (networkId: number) => {});
-
-  // window.ethereum.on("accountsChanged", async (accounts: string[]) => {
-  //   if (accounts.length === 0) {
-  //     removeItem();
-  //     dispatch(setWallet({ address: null, balance: null }));
-  //   } else {
-  //     const data = value ? JSON.parse(value) : null;
-  //     if (data) {
-  //       const balance = await window.ethereum.request({
-  //         method: "eth_getBalance",
-  //         params: [accounts[0], "latest"],
-  //       });
-  //       const balanceInEth = ethers.utils.formatEther(balance).slice(0, 5);
-  //       setItem(JSON.stringify({ wallet: accounts[0], balance: balanceInEth }));
-  //       dispatch(setWallet({ address: accounts[0], balance: balanceInEth }));
-  //     }
-  //   }
-
-  // });
+  window.ethereum.on("accountsChanged", async (accounts: string[]) => {
+    if (accounts.length === 0) {
+      removeItem();
+      dispatch(setWallet({ address: null, balance: null }));
+    } else {
+      const data = value ? JSON.parse(value) : null;
+      if (data) {
+        const balance = await window.ethereum.request({
+          method: "eth_getBalance",
+          params: [accounts[0], "latest"],
+        });
+        const balanceInEth = ethers.utils.formatEther(balance).slice(0, 5);
+        setItem(JSON.stringify({ wallet: accounts[0], balance: balanceInEth }));
+        dispatch(setWallet({ address: accounts[0], balance: balanceInEth }));
+      }
+    }
+  });
 
   const saveContract = async () => {
     const market = { address: MarketAddress.address, abi: Market.abi };
@@ -225,7 +246,7 @@ const App = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [id]);
 
   const router = createBrowserRouter([
     {
@@ -240,7 +261,8 @@ const App = () => {
           sendOtp={sendOtp}
           signupHandler={signupHandler}
           address={address}
-          isSendLoading={isSendLoading}
+          isSendLoading={isLoading}
+          notification={notification}
         />
       ),
       children: NavRoutes,
