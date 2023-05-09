@@ -1,15 +1,4 @@
-import {
-  Flex,
-  Grid,
-  Input,
-  Text,
-  Box,
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionIcon,
-  AccordionPanel,
-} from "@chakra-ui/react";
+import { Flex, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import Circular from "../components/Abstract/Circular";
 import CustomBadge from "../components/Badge/CustomBadge";
@@ -21,11 +10,13 @@ import {
   selectCurrentWallet,
 } from "../features/auth/authSlice";
 import MarketCard from "../components/Card/MarketCard";
+import { bottomVariants } from "../theme/animation/variants";
+import { motion } from "framer-motion";
 
 const CollectionPage = () => {
   const currentUser = useSelector(selectCurrentUser);
   const currentWallet = useSelector(selectCurrentWallet);
-  const market = useSelector(selectMarket);
+  const { market } = useSelector(selectMarket);
   const [marketContract, setMarketContract] = useState<any>([]);
   const [marketItems, setMarketItems] = useState<any>([]);
   const [flag, setFlag] = useState<boolean>(false);
@@ -34,6 +25,7 @@ const CollectionPage = () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     const shop = new ethers.Contract(market.address, market.abi, signer);
+    console.log(shop);
     setMarketContract(shop);
   };
 
@@ -79,26 +71,25 @@ const CollectionPage = () => {
   }, [marketContract]);
 
   return (
-    <Grid
-      height={"full"}
-      width={"full"}
-      gridTemplateRows={"200px  1fr"}
-      rowGap={"100px"}
-      p={"30px"}
-      position={"relative"}
-      zIndex={2}
+    <Flex
+      direction={"column"}
+      w={"full"}
+      marginTop={"60px"}
+      as={motion.div}
+      variants={bottomVariants}
+      initial={"hidden"}
+      animate={"visible"}
     >
       <Flex
-        px={"90px"}
+        px={"110px"}
         w={"full"}
-        gridColumn={"span 2"}
         position={"relative"}
-        zIndex={3}
+        zIndex={1}
         gap={1}
         justifyContent={"space-between"}
         alignItems={"center"}
       >
-        <Circular top="-200" left={"-180"} zIndex={-4} />
+        <Circular top="-230" left={"-180"} zIndex={-4} />
         <Flex>
           <Text fontSize={"95px"} fontWeight={"600"} color={"buttonHover"}>
             Collections
@@ -109,20 +100,111 @@ const CollectionPage = () => {
         </Flex>
       </Flex>
       <Flex
-        gridColumn={"span 2"}
         w={"full"}
-        justifyContent={"center"}
-        alignItems={"center"}
-        wrap={"wrap"}
-        gap={10}
+        direction={"column"}
+        justifyContent={"space-between"}
+        px={"110px"}
+        py={"50px"}
+        zIndex={2}
       >
-        <Flex w={"100%"} zIndex={"3"} justifyContent={"center"}>
-          {marketItems.map((item: any) => {
-            return <MarketCard item={item} key={item.id} />;
-          })}
+        <Flex w={"full"} h={"350px"} bg={"gray.400"} rounded={"10px"}></Flex>
+
+        <Flex marginTop={"70px"} gap={10} direction={"column"}>
+          <Flex
+            justifyContent={{
+              sm: "center",
+              md: "space-between",
+              lg: "space-between",
+              xl: "space-between",
+            }}
+          >
+            <Text
+              as={Flex}
+              fontSize={{
+                sm: "18px",
+                md: "28px",
+              }}
+              fontWeight={"600"}
+              alignItems={"center"}
+              gap={5}
+            >
+              Collection Products
+              <CustomBadge text="new" color="successLight " bg="greenLight" />
+            </Text>
+
+            <Text
+              as={Flex}
+              alignItems={"center"}
+              fontSize={{
+                sm: "15px",
+                md: "13px",
+                lg: "13px",
+                xl: "13px",
+              }}
+              fontWeight={"700"}
+              letterSpacing={"2px"}
+              textDecoration={"underline"}
+              textUnderlineOffset={"10px"}
+              textDecorationThickness={"1.5px"}
+            >
+              LATEST 4 PRODUCTS
+            </Text>
+          </Flex>
+          <Flex gap={"20px"}>
+            {marketItems.map((item: any) => {
+              return <MarketCard item={item} />;
+            })}
+          </Flex>
+        </Flex>
+        <Flex marginTop={"70px"} gap={10} direction={"column"}>
+          <Flex
+            justifyContent={{
+              sm: "center",
+              md: "space-between",
+              lg: "space-between",
+              xl: "space-between",
+            }}
+          >
+            <Text
+              as={Flex}
+              fontSize={{
+                sm: "18px",
+                md: "28px",
+              }}
+              fontWeight={"600"}
+              alignItems={"center"}
+              gap={5}
+            >
+              Hot Categories
+              <CustomBadge text="Hot" color="red.400 " bg="red.100" />
+            </Text>
+
+            <Text
+              as={Flex}
+              alignItems={"center"}
+              fontSize={{
+                sm: "15px",
+                md: "13px",
+                lg: "13px",
+                xl: "13px",
+              }}
+              fontWeight={"700"}
+              letterSpacing={"2px"}
+              textDecoration={"underline"}
+              textUnderlineOffset={"10px"}
+              textDecorationThickness={"1.5px"}
+            >
+              LATEST 4 PRODUCTS
+            </Text>
+          </Flex>
+          <Flex gap={"20px"}>
+            {marketItems.map((item: any) => {
+              return <MarketCard item={item} />;
+            })}
+          </Flex>
         </Flex>
       </Flex>
-    </Grid>
+    </Flex>
   );
 };
 

@@ -11,13 +11,15 @@ import {
   MenuList,
   MenuItem,
   MenuDivider,
+  Button,
+  IconButton,
 } from "@chakra-ui/react";
 import { Outlet, useNavigate } from "react-router";
 import { BsDot } from "react-icons/bs";
 import CustomButton from "./Button/CustomButton";
 import CustomLink from "./Links/CustomLink";
 import CustomIconButton from "./Button/CustomIconButton";
-import { RxHamburgerMenu, RxSwitch } from "react-icons/rx";
+import { RxHamburgerMenu } from "react-icons/rx";
 import { AiOutlineClose } from "react-icons/ai";
 import { useState } from "react";
 import Overlay from "./Overlay";
@@ -25,7 +27,6 @@ import { motion } from "framer-motion";
 import Footer from "./Footer";
 import { useSelector } from "react-redux";
 import {
-  logout,
   selectCurrentBalance,
   selectCurrentToken,
   selectCurrentWallet,
@@ -74,6 +75,7 @@ type NavbarProps = {
   ) => Promise<void>;
   address: string;
   isSendLoading: boolean;
+  notification: any;
 };
 
 const navlinks = [
@@ -106,10 +108,10 @@ const Navbar = ({
   sendOtp,
   signupHandler,
   address,
+  notification,
   isSendLoading,
 }: NavbarProps) => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const state = useSelector(selectCurrentToken);
   const wallet = useSelector(selectCurrentWallet);
   const balance = useSelector(selectCurrentBalance);
@@ -193,7 +195,7 @@ const Navbar = ({
                 <Flex gap={8} wrap={"nowrap"}>
                   {navlinks.map((link) => (
                     <CustomLink
-                      key={link.name}
+                      key={link.path}
                       text={link.name}
                       to={link.path}
                       size={"18px"}
@@ -203,7 +205,6 @@ const Navbar = ({
               </Flex>
             </Hide>
           </Flex>
-
           <Flex
             w={"30%"}
             height={"full"}
@@ -214,6 +215,28 @@ const Navbar = ({
             gap={3}
           >
             <Hide below="xl">
+              <Menu autoSelect={false}>
+                <Flex
+                  h={"40px"}
+                  w={"40px"}
+                  rounded={"full"}
+                  border={"1px solid"}
+                  borderColor={"gray.500"}
+                  justifyContent={"center"}
+                  alignItems={"center"}
+                  cursor={"pointer"}
+                  as={MenuButton}
+                >
+                  {notification.length}
+                </Flex>
+                <MenuList
+                  bg={"background"}
+                  rounded={"lg"}
+                  shadow={"md"}
+                  overflow={"hidden"}
+                ></MenuList>
+              </Menu>
+
               {!wallet ? (
                 <CustomButton
                   text="Connect"
@@ -274,11 +297,10 @@ const Navbar = ({
                       <>
                         <MenuItem
                           bg={"background"}
-                          key={item.name}
+                          key={item.path}
                           onClick={() => {
                             if (item.name === "Sign Out") {
-                              localStorage.clear();
-                              dispatch(logout());
+                              disconnect();
                             }
                             navigate(item.path);
                           }}

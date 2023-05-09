@@ -50,12 +50,13 @@ const NormalButton = ({
         transform: "scale(1.03)",
         transition: "all 0.3s ease-in-out",
       }}
-      py={py ? py : "25px"}
+      py={py ? py : "26px"}
       fontSize={fontSize ? fontSize : "18px"}
       onClick={onClick}
       rightIcon={rightIcon}
       justifyContent={"center"}
       gap={1}
+      rounded={"sm"}
     >
       {text}
     </Button>

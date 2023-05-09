@@ -79,9 +79,7 @@ const ArchivesPage = () => {
   const dispatch = useDispatch();
 
   const loadListing = async () => {
-    console.log("loading");
     if (wallet) {
-      console.log(wallet);
       const listing = await marketContract._getListings();
       console.log(listing);
       // setArchives(currentUser.category);
@@ -95,11 +93,11 @@ const ArchivesPage = () => {
   const loadContract = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
-    // const tokenContract = await new ethers.Contract(
-    //   contract.address,
-    //   contract.abi,
-    //   signer
-    // );
+    const tokenContract = await new ethers.Contract(
+      contract.address,
+      contract.abi,
+      signer
+    );
     const marketContract = await new ethers.Contract(
       market.address,
       market.abi,
@@ -108,7 +106,7 @@ const ArchivesPage = () => {
     const initialListing = await marketContract._getListings();
     console.log(initialListing);
     setMarketContract(marketContract);
-    // setToken(tokenContract);
+    setToken(tokenContract);
   };
 
   useEffect(() => {
@@ -276,15 +274,15 @@ const ArchivesPage = () => {
                 );
               })} */}
             <Flex w={"full"} justifyContent={"space-between"} zIndex={"10"}>
-              <Flex w={"40%"} direction={"column"} bg={"background"} gap={4}>
+              <Flex w={"30%"} direction={"column"} bg={"background"} gap={4}>
                 <Flex>
                   <Input
                     type="text"
                     placeholder="Search"
                     height={"50px"}
                     rounded={"sm"}
-                    fontSize={"22px"}
-                    _placeholder={{ fontSize: "22px" }}
+                    fontSize={"20px"}
+                    _placeholder={{ fontSize: "20px" }}
                   />
                 </Flex>
                 <Accordion
@@ -299,7 +297,7 @@ const ArchivesPage = () => {
                           as="span"
                           flex="1"
                           textAlign="left"
-                          fontSize={"22px"}
+                          fontSize={"20px"}
                         >
                           Categories
                         </Box>
@@ -325,7 +323,7 @@ const ArchivesPage = () => {
                           as="span"
                           flex="1"
                           textAlign="left"
-                          fontSize={"22px"}
+                          fontSize={"20px"}
                         >
                           Types
                         </Box>
@@ -353,7 +351,7 @@ const ArchivesPage = () => {
                           as="span"
                           flex="1"
                           textAlign="left"
-                          fontSize={"22px"}
+                          fontSize={"20px"}
                         >
                           Price Range
                         </Box>

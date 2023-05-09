@@ -13,6 +13,8 @@ const initialState: MarketSliceType = {
     address: "",
     abi: [],
   },
+  marketInstance: {},
+  nftInstance: {},
 };
 
 const marketSlice = createSlice({
@@ -26,10 +28,15 @@ const marketSlice = createSlice({
     setMarketItems: (state, action) => {
       state.marketItems = action.payload.marketItems;
     },
+    setContractInstance: (state, action) => {
+      state.marketInstance = action.payload.marketInstance;
+      state.nftInstance = action.payload.nftInstance;
+    },
   },
 });
 
-export const { setContractData, setMarketItems } = marketSlice.actions;
+export const { setContractData, setMarketItems, setContractInstance } =
+  marketSlice.actions;
 export default marketSlice.reducer;
 export const selectMarketItems = (state: RootState) => state.market.marketItems;
 export const selectMarketSlice = (state: RootState) => state.market;

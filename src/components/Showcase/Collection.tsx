@@ -1,99 +1,60 @@
-import { Flex, Text, list } from "@chakra-ui/react";
+import { Flex, Text, Hide, useMediaQuery } from "@chakra-ui/react";
 import CustomBadge from "../Badge/CustomBadge";
 import MarketCard from "../Card/MarketCard";
-import {
-  selectMarket,
-  selectMarketItems,
-} from "../../features/market/marketSlice";
 import { useSelector } from "react-redux";
 import NoResult from "../NoResult";
 import NormalButton from "../Button/NormalButton";
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
-import {
-  selectCurrentUser,
-  selectCurrentWallet,
-  selectUserData,
-} from "../../features/auth/authSlice";
+import { selectUserData } from "../../features/auth/authSlice";
 import { useNavigate } from "react-router-dom";
+import { RootState } from "../../types/StoreType";
 
 const Collection = () => {
+  const { marketItems: marketData } = useSelector(
+    (state: RootState) => state.market
+  );
+  const [isLargerThan1346] = useMediaQuery("(min-width: 1346px)");
+  const [isLargerThan768] = useMediaQuery("(min-width: 768px)");
   const currentUser = useSelector(selectUserData);
-  const id = useSelector(selectCurrentUser);
-  const marketContract = useSelector(selectMarket);
-  const wallet = useSelector(selectCurrentWallet);
-  const [market, setMarket] = useState<any>([]);
-  const [marketItems, setMarketItems] = useState<any>([]);
-  const [flag, setFlag] = useState<boolean>(false);
+  const [marketItems, setMarketItems] = useState<any>(marketData);
+
   const navigate = useNavigate();
-
-  const LoadContract = async () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    const market = new ethers.Contract(
-      marketContract.address,
-      marketContract.abi,
-      signer
-    );
-    setMarket(market);
-  };
-
-  const fetchMarketData = async () => {
-    const listing = await market._getListings();
-    const refined = [];
-
-    const limit = listing.length > 4 ? 4 : listing.length;
-    for (let i = listing.length - 1; i >= listing.length - limit; i--) {
-      refined.push({
-        _id: listing[i]._id,
-        name: listing[i][2]._name,
-        price: parseInt(listing[i]._price._hex) / 1000000000000000000,
-        image: listing[i][2]._asset,
-        owner: listing[i][2]._owner,
-      });
-    }
-    if (currentUser !== null) {
-      const filtered = refined.filter((item: any) => {
-        return item.owner.toUpperCase() !== currentUser.address.toUpperCase();
-      });
-      setMarketItems(filtered);
-    } else {
-      setMarketItems(refined);
-    }
-  };
-
-  useEffect(() => {
-    if (market) {
-      setFlag(true);
-    }
-  }, [market]);
-
-  useEffect(() => {
-    LoadContract();
-  }, [id]);
-
-  useEffect(() => {
-    if (market && flag) {
-      fetchMarketData();
-    }
-  }, [market]);
 
   return (
     <>
-      <Flex justifyContent={"space-between"}>
+      <Flex
+        justifyContent={{
+          sm: "center",
+          md: "space-between",
+          lg: "space-between",
+          xl: "space-between",
+        }}
+      >
+        <Hide below="md">
+          <Text
+            as={Flex}
+            fontSize={{
+              sm: "18px",
+              md: "28px",
+            }}
+            fontWeight={"600"}
+            alignItems={"center"}
+            gap={5}
+          >
+            Recent Products
+            <CustomBadge text="new" color="successLight " bg="greenLight" />
+          </Text>
+        </Hide>
         <Text
           as={Flex}
-          fontSize={"28px"}
-          fontWeight={"600"}
           alignItems={"center"}
-          gap={5}
-        >
-          Collections Products
-          <CustomBadge text="40+" color="orange" bg="orangeLight" />
-        </Text>
-
-        <Text
-          fontSize={"13px"}
+          fontSize={{
+            sm: "15px",
+            md: "13px",
+            lg: "13px",
+            xl: "13px",
+          }}
           fontWeight={"700"}
           letterSpacing={"2px"}
           textDecoration={"underline"}
@@ -103,18 +64,58 @@ const Collection = () => {
           LATEST 4 PRODUCTS
         </Text>
       </Flex>
-      <Flex
-        gap={5}
-        mt={"20px"}
-        w={"full"}
-        alignItems={"center"}
-        justifyContent={"center"}
-      >
-        {marketItems.length === 0 ? <NoResult /> : null}
-        {marketItems.map((item: any) => {
-          return <MarketCard key={item.name} item={item} />;
-        })}
-      </Flex>
+      {isLargerThan1346 && (
+        <Flex
+          gap={5}
+          mt={"20px"}
+          w={"full"}
+          alignItems={"center"}
+          justifyContent={"space-between"}
+        >
+          {marketItems.slice(0, 4).map((item: any) => {
+            return <MarketCard key={item.name} item={item} />;
+          })}
+        </Flex>
+      )}
+      {!isLargerThan1346 && isLargerThan768 && (
+        <Flex direction={"column"} alignItems={"center"} w={"full"}>
+          <Flex
+            gap={5}
+            mt={"20px"}
+            w={"full"}
+            alignItems={"center"}
+            justifyContent={"space-between"}
+          >
+            {marketItems.slice(0, 2).map((item: any) => {
+              return <MarketCard key={item.name} item={item} />;
+            })}
+          </Flex>
+          <Flex
+            gap={5}
+            mt={"20px"}
+            w={"full"}
+            alignItems={"center"}
+            justifyContent={"space-between"}
+          >
+            {marketItems.slice(2, 4).map((item: any) => {
+              return <MarketCard key={item.name} item={item} />;
+            })}
+          </Flex>
+        </Flex>
+      )}
+      {!isLargerThan768 && (
+        <Flex
+          direction={"column"}
+          mt={"20px"}
+          gap={5}
+          alignItems={"center"}
+          w={"full"}
+        >
+          {marketItems.map((item: any) => {
+            return <MarketCard key={item.name} item={item} />;
+          })}
+        </Flex>
+      )}
       <Flex w={"100%"} justifyContent={"center"} pt={"30px"}>
         <NormalButton
           width={"380px"}

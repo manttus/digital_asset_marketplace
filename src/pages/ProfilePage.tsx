@@ -46,6 +46,8 @@ import NormalButton from "../components/Button/NormalButton";
 import { useForm } from "react-hook-form";
 import CustomIconButton from "../components/Button/CustomIconButton";
 import { VscRemove } from "react-icons/vsc";
+import { motion } from "framer-motion";
+import { bottomVariants } from "../theme/animation/variants";
 const socket = io("http://localhost:3001/");
 
 const ProfilePage = () => {
@@ -133,6 +135,7 @@ const ProfilePage = () => {
         message,
         senderId: profileData._id,
         receiverId: messageId!.id,
+        senderName: profileData.username,
       },
       room
     );
@@ -332,7 +335,7 @@ const ProfilePage = () => {
   };
 
   return (
-    <Flex direction={"column"} px={"10"}>
+    <Flex direction={"column"} px={"10"} as={motion.div}>
       <Profile
         addImage={AddImage}
         isEditPage={isEditPage}

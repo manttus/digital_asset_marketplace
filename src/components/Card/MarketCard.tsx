@@ -1,36 +1,47 @@
-import { Flex, Box, Text, Image, Avatar, Divider } from "@chakra-ui/react";
-import Illustration from "../../assets/eth1.gif";
-import { useEffect, useState } from "react";
-
+import { Flex, Box, Text, Image } from "@chakra-ui/react";
 import CustomLink from "../Links/CustomLink";
-import { FaArrowRight } from "react-icons/fa";
 
 const MarketCard = ({ item }: any) => {
   return (
     <Flex
-      width={"300px"}
+      minWidth={"280px"}
+      width={{
+        sm: "200px",
+        md: "600px",
+        lg: "700px",
+        xl: "400px",
+      }}
       direction={"column"}
       rounded={"5px"}
-      shadow={"sm"}
+      shadow={"md"}
       bg={"white"}
-      p={"20px"}
+      p={"10px"}
+      border={"1px solid "}
+      borderColor={"gray.300"}
+      position={"relative"}
     >
       <Image
         src={item.image}
-        h={"250px"}
+        h={{
+          sm: "200px",
+          md: "300px",
+          lg: "450px",
+          xl: "250px",
+        }}
         w={"100%"}
         rounded={"5px"}
         transition={"all 0.5s ease-in-out"}
         _hover={{
-          transform: "scale(1.02)",
+          transform: "scale(1.01)",
           transition: "all 0.5s ease-in-out",
         }}
       />
       <Box>
         <Flex
           direction={"column"}
-          px={"4px"}
-          pt={"25px"}
+          px={"10px"}
+          pt={"20px"}
+          pb={"5px"}
           letterSpacing={"0.4px"}
         >
           <Flex justifyContent={"space-between"}>
@@ -47,21 +58,6 @@ const MarketCard = ({ item }: any) => {
             </Box>
           </Flex>
           <Text fontSize={"15px"} color={"fontGhost"} fontWeight={"500"}></Text>
-        </Flex>
-
-        <Divider w={"full"} py={"10px"} />
-        <Flex
-          direction={"column"}
-          px={"4px"}
-          pt={"15px"}
-          letterSpacing={"0.2px"}
-        >
-          <Flex alignItems={"center"} justifyContent={"space-between"}>
-            <Text fontSize={"18px"} fontWeight={"700"}>
-              {item.price} ETH
-            </Text>
-            <FaArrowRight color="#3361FF" size={"20px"} />
-          </Flex>
         </Flex>
       </Box>
     </Flex>

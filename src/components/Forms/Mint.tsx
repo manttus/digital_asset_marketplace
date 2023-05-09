@@ -10,17 +10,18 @@ import {
   Select,
   Box,
   Stack,
+  Link,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import NormalButton from "../Button/NormalButton";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 type MintProps = {
   mintAsset: (
     name: string,
     description: string,
     image: string,
-    price: string,
     category: string,
     type: string
   ) => Promise<void>;
@@ -31,9 +32,9 @@ type MintFormType = {
   name: string;
   description: string;
   image: string;
-  price: string;
   category: string;
   type: string;
+  terms: boolean;
 };
 
 const Mint = ({ mintAsset, categories }: MintProps) => {
@@ -47,17 +48,18 @@ const Mint = ({ mintAsset, categories }: MintProps) => {
       display={"flex"}
       flexDirection={"column"}
       gap={"10"}
+      mb={"20"}
       zIndex={2}
       onSubmit={handleSubmit((data) => {
         mintAsset(
           data.name,
           data.description,
           data.image,
-          data.price,
           data.category,
           data.type
         );
         reset();
+        setImage(null);
       })}
     >
       <HStack spacing={5}>
@@ -71,6 +73,7 @@ const Mint = ({ mintAsset, categories }: MintProps) => {
             h={12}
             rounded={"sm"}
             fontWeight={"500"}
+            borderColor={"gray.300"}
           />
         </FormControl>
       </HStack>
@@ -84,27 +87,16 @@ const Mint = ({ mintAsset, categories }: MintProps) => {
               required: true,
             })}
             fontWeight={"500"}
+            borderColor={"gray.300"}
           >
             <option value={""} defaultChecked>
               Select Type
             </option>
-            <option value={"ART"}>ART</option>
-            <option value={"VIDEO"}>VIDEO</option>
-            <option value={"GIFS"}>GIFS</option>
+            <option value={"GIFS"}>GIF</option>
+            <option value={"ART"}>Image</option>
+            <option value={"VIDEO"}>Video</option>
           </Select>
         </FormControl>
-        {/* <FormControl isRequired>
-          <FormLabel>Proposed Price</FormLabel>
-          <Input
-            {...register("price", {
-              required: true,
-            })}
-            type={"text"}
-            h={12}
-            rounded={"sm"}
-            fontWeight={"500"}
-          />
-        </FormControl> */}
         <FormControl isRequired>
           <FormLabel>Category</FormLabel>
           <Select
@@ -114,6 +106,7 @@ const Mint = ({ mintAsset, categories }: MintProps) => {
               required: true,
             })}
             fontWeight={"500"}
+            borderColor={"gray.300"}
           >
             <option value={""} defaultChecked>
               Select Category
@@ -173,11 +166,25 @@ const Mint = ({ mintAsset, categories }: MintProps) => {
         <FormControl isRequired>
           <FormLabel> Description </FormLabel>
           <Textarea
+            borderColor={"gray.300"}
             {...register("description", {
               required: true,
             })}
             rounded={"sm"}
           />
+        </FormControl>
+      </HStack>
+      <HStack spacing={5}>
+        <FormControl isRequired>
+          <Checkbox
+            {...register("terms", {
+              required: true,
+            })}
+            borderColor={"gray.400"}
+          >
+            I agree that checking this shows my acceptance of the{" "}
+            <Link color={"buttonPrimary"}>Terms and Conditions .</Link>
+          </Checkbox>
         </FormControl>
       </HStack>
 

@@ -19,8 +19,10 @@ import useCustomToast from "./hooks/useToast";
 import detectEthereumProvider from "@metamask/detect-provider";
 import jwt_decode from "jwt-decode";
 import { RootState } from "./types/StoreType";
+import Transactions from "./admin/pages/Transaction";
+import Manage from "./admin/pages/Manage";
 
-import { Socket, io } from "socket.io-client";
+import { io } from "socket.io-client";
 
 const socket = io("http://localhost:3001/");
 
@@ -38,6 +40,9 @@ import {
   setUserId,
   setWallet,
 } from "./features/auth/authSlice";
+import AdminLogin from "./admin/pages/LoginPage";
+import AdminNavbar from "./admin/components/AdminNavbar";
+import Dashboard from "./admin/pages/Dashboard";
 
 const App = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -64,7 +69,7 @@ const App = () => {
   useEffect(() => {
     socket.on("notification", (notification) => {
       showToast(`Message from ${notification.senderName}`, "info", 2000);
-      setNotification((prev) => [...prev, notification]);
+      setNotification((prev: any) => [...prev, notification]);
     });
   }, []);
 
@@ -266,6 +271,27 @@ const App = () => {
         />
       ),
       children: NavRoutes,
+    },
+    {
+      path: "/admin/auth",
+      element: <AdminLogin />,
+    },
+    {
+      element: <AdminNavbar />,
+      children: [
+        {
+          path: "/admin/dash",
+          element: <Dashboard />,
+        },
+        {
+          path: "/admin/tran",
+          element: <Transactions />,
+        },
+        {
+          path: "/admin/manage",
+          element: <Manage />,
+        },
+      ],
     },
   ]);
 

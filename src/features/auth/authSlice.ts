@@ -31,16 +31,13 @@ const authSlice = createSlice({
       state.token = action.payload.token;
     },
     setUserData: (state, action) => {
-      console.log(action.payload.user);
       state.data = action.payload.user;
-      console.log(state.user);
     },
     setWallet: (state, action) => {
       state.wallet = action.payload.address;
       state.balance = action.payload.balance;
     },
     setUserId: (state, action) => {
-      console.log(action.payload.user);
       state.user = action.payload.user;
     },
     logout: (state) => {

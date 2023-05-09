@@ -1,37 +1,55 @@
-import { Flex, Text, Box, Editable } from "@chakra-ui/react";
+import { Flex, Text } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
-import { RiEditBoxLine } from "react-icons/ri";
+import {
+  RiEditBoxLine,
+  RiUserUnfollowLine,
+  RiUserFollowLine,
+} from "react-icons/ri";
 import CustomIconButton from "../Button/CustomIconButton";
-import FeedTabs from "./FeedTab";
-import { useSelector } from "react-redux";
-import { selectUserData } from "../../features/auth/authSlice";
-import { AbiCoder } from "ethers/lib/utils";
 
 type DetailsProps = {
   isEditPage: boolean;
   setEditPage: (value: boolean) => void;
+  profileId: string | undefined;
+  profileData: any;
+  id: string;
+  followHandler: (profileId: string, indicator: string) => void;
 };
 
-const Details = ({ isEditPage, setEditPage }: DetailsProps) => {
-  const user = useSelector(selectUserData);
+const Details = ({
+  isEditPage,
+  setEditPage,
+  id,
+  profileId,
+  profileData,
+  followHandler,
+}: DetailsProps) => {
+  const [followStatus, setFollowStatus] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (profileData) {
+      const isFollowing = profileData.followers.filter(
+        (follower: any) => follower._id === id
+      );
+      isFollowing.length > 0 ? setFollowStatus(true) : setFollowStatus(false);
+    }
+  }, [profileData]);
+
   const details = [
     {
-      count: user?.following.length,
+      count: profileData?.following.length,
       label: "Following",
     },
     {
-      count: user?.followers.length,
+      count: profileData?.followers.length,
       label: "Followers",
     },
-    // {
-    //   count: user?.favourites.length,
-    //   label: "Favourites",
-    // },
   ];
 
   return (
     <Flex direction={"column"}>
-      <Flex w={"full"} mt={"40px"} mb={"50px"}>
+      <Flex w={"full"} mt={"40px"} mb={"20px"}>
         <Flex direction={"row"} w={"full"} alignItems={"center"}>
           <Flex
             alignItems={"center"}
@@ -47,24 +65,48 @@ const Details = ({ isEditPage, setEditPage }: DetailsProps) => {
             justifyContent={"space-between"}
           >
             <Flex gap={10} alignItems={"Center"}>
-              <Text fontSize={"2xl"} fontWeight={"600"}>
-                @{user?.username.toLowerCase()}
+              <Text fontSize={"2xl"} fontWeight={"600"} ml={"5"}>
+                @{profileData?.username.toLowerCase()}
               </Text>
-              <CustomIconButton
-                aria="Edit"
-                icon={
-                  !isEditPage ? (
-                    <RiEditBoxLine size={"22px"} />
-                  ) : (
-                    <AiOutlineClose size={"22px"} />
-                  )
-                }
-                type={"outline"}
-                color={"gray.200"}
-                onClick={() => {
-                  setEditPage(!isEditPage);
-                }}
-              />
+              {profileId === undefined && (
+                <CustomIconButton
+                  aria="Edit"
+                  icon={
+                    !isEditPage ? (
+                      <RiEditBoxLine size={"22px"} />
+                    ) : (
+                      <AiOutlineClose size={"22px"} />
+                    )
+                  }
+                  type={"outline"}
+                  color={"gray.200"}
+                  onClick={() => {
+                    setEditPage(!isEditPage);
+                  }}
+                />
+              )}
+              {profileId &&
+                (!followStatus ? (
+                  <CustomIconButton
+                    icon={<RiUserFollowLine size={"22px"} />}
+                    type={"outline"}
+                    aria="Follow"
+                    onClick={() => {
+                      followHandler(profileId, "follow");
+                      setFollowStatus(true);
+                    }}
+                  />
+                ) : (
+                  <CustomIconButton
+                    icon={<RiUserUnfollowLine size={"22px"} />}
+                    type={"outline"}
+                    aria="Follow"
+                    onClick={() => {
+                      followHandler(profileId, "unfollow");
+                      setFollowStatus(false);
+                    }}
+                  />
+                ))}
             </Flex>
             <Flex gap={5}>
               {details.map((items) => {

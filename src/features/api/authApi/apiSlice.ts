@@ -32,6 +32,13 @@ export const marketApi = createApi({
         body: credentials,
       }),
     }),
+    adminLogin: builder.mutation({
+      query: (credentials: { username: string; password: string }) => ({
+        url: "/user/admin/signin",
+        method: "POST",
+        body: credentials,
+      }),
+    }),
     register: builder.mutation({
       query: (credentials: Signup) => ({
         url: "/user/signup",
@@ -147,6 +154,18 @@ export const marketApi = createApi({
         body: data,
       }),
     }),
+    getUsers: builder.mutation<any, void>({
+      query: () => ({
+        url: "/admin/getUsers",
+        method: "GET",
+      }),
+    }),
+    disableUser: builder.mutation<any, { id: string }>({
+      query: (data: { id: string }) => ({
+        url: `/admin/disableUser/${data.id}`,
+        method: "PATCH",
+      }),
+    }),
   }),
 });
 
@@ -165,4 +184,6 @@ export const {
   usePostFeedMutation,
   useGetPostsMutation,
   usePostLikeMutation,
+  useGetUsersMutation,
+  useDisableUserMutation,
 } = marketApi;

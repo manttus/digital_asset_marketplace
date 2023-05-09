@@ -1,43 +1,34 @@
-import {
-  Flex,
-  Text,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogContent,
-  AlertDialogOverlay,
-  Button,
-  useDisclosure,
-  Divider,
-} from "@chakra-ui/react";
+import { Flex, Text, useDisclosure } from "@chakra-ui/react";
 
 import illustration1 from "../assets/register.png";
 import Mint from "../components/Forms/Mint";
 import { useSelector } from "react-redux";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { ethers } from "ethers";
-import { selectToken } from "../features/market/marketSlice";
+import { selectMarket, selectToken } from "../features/market/marketSlice";
 import Circular from "../components/Abstract/Circular";
 import { selectCurrentWallet } from "../features/auth/authSlice";
 import NoConnection from "../components/NoConnection";
 import { RootState } from "../types/StoreType";
 import useToast from "../hooks/useToast";
 import { usePostFeedMutation } from "../features/api/authApi/apiSlice";
+import { bottomVariants } from "../theme/animation/variants";
+import { motion } from "framer-motion";
 
 const MintPage = () => {
   const id = useSelector((state: RootState) => state.auth.user);
   const contract = useSelector(selectToken);
+  const market = useSelector(selectMarket);
   const [postFeed] = usePostFeedMutation();
   const walletCategory = useSelector((state: RootState) => state.auth.data);
   const { isOpen, onToggle, onClose } = useDisclosure();
   const wallet = useSelector(selectCurrentWallet);
   const [token, setTokenInst] = useState<any>(null);
+  const [shop, setShopInst] = useState<any>(null);
   const [categories, setCategories] = useState<any>([]);
   const [mintDetails, setMintDetails] = useState<any>({});
   const cloudName = import.meta.env.VITE_CLOUD_NAME;
   const { showToast } = useToast();
-  const cancelRef = useRef<any>();
 
   const getCategory = () => {
     if (wallet) {
@@ -61,6 +52,8 @@ const MintPage = () => {
       contract.abi,
       signer
     );
+    const shop = await new ethers.Contract(market.address, market.abi, signer);
+    setShopInst(shop);
     setTokenInst(token);
   };
 
@@ -134,18 +127,21 @@ const MintPage = () => {
           type,
           wallet
         );
+        console.log(response);
         const receipt = await response.wait();
         const tokenId = receipt.events[0].args[2];
-
         await postFeed({
           id: id!,
           token_name: name,
           token_id: parseInt(tokenId._hex.toString()).toString(),
           token_url: data.secure_url,
         }).unwrap();
-
         showToast("Asset Minted", "success", 2000);
+        console.log(tokenId, wallet);
+        await shop._createInitialListing(tokenId, wallet);
+        showToast("Asset Listed", "success", 2000);
       } catch (err: Error | any) {
+        console.log(err);
         showToast("Server Error", "error", 2000);
       }
     } else {
@@ -185,6 +181,10 @@ const MintPage = () => {
           fontWeight={"bold"}
           color={"white"}
           zIndex={"10"}
+          as={motion.p}
+          variants={bottomVariants}
+          initial={"hidden"}
+          animate={"visible"}
         >
           Your asset awaits .
         </Text>
@@ -206,8 +206,13 @@ const MintPage = () => {
         <Flex
           direction={"column"}
           w={"full"}
+          zIndex={1}
           alignItems={"center"}
           position={"relative"}
+          as={motion.div}
+          variants={bottomVariants}
+          initial={"hidden"}
+          animate={"visible"}
         >
           {wallet ? (
             <Mint mintAsset={mintAsset} categories={categories} />

@@ -79,15 +79,21 @@ const AuthModal = ({
         setEmail("");
         setUsername("");
       }}
+      isCentered
     >
       <ModalOverlay />
       <ModalContent
         as={"form"}
         onSubmit={handleSubmit((value) => {
-          setEmail(value.email);
-          setUsername(value.username);
-          submitHandler(value);
-          reset();
+          if (email !== value.email) {
+            setEmail(value.email);
+            setUsername(value.username);
+            submitHandler(value);
+            reset();
+          } else {
+            setOtpField(true);
+            reset();
+          }
         })}
       >
         <ModalHeader>
@@ -207,12 +213,21 @@ const AuthModal = ({
         <Divider />
         <ModalFooter>
           {!otpField ? (
-            <NormalButton
-              text={"Send"}
-              py="20px"
-              fontSize="14px"
+            <Button
+              type="submit"
+              bg={"buttonPrimary"}
+              color={"white"}
               isLoading={isSendLoading}
-            />
+              transition={"all 0.3s ease-in-out"}
+              _hover={{
+                bg: "buttonPrimary",
+                color: "white",
+                transform: "scale(1.03)",
+                transition: "all 0.3s ease-in-out",
+              }}
+            >
+              Send
+            </Button>
           ) : (
             <Flex
               w={"100%"}

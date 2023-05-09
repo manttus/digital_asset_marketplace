@@ -1,4 +1,4 @@
-import { Flex, Text, Box, Image, Input } from "@chakra-ui/react";
+import { Flex, Text, Box, Image, Input, Hide } from "@chakra-ui/react";
 import NormalButton from "./Button/NormalButton";
 import logo from "../assets/logo2.png";
 import CustomIconButton from "./Button/CustomIconButton";
@@ -6,29 +6,59 @@ import { BsGithub, BsLinkedin, BsTwitter } from "react-icons/bs";
 
 const Footer = () => {
   return (
-    <Flex direction={"column"} mt={"50px"} zIndex={2}>
+    <Flex direction={"column"} zIndex={4}>
       <Flex
         px={"60px"}
         pt={"40px"}
         pb={"25px"}
-        gap={40}
+        direction={{
+          sm: "column",
+          md: "column",
+          lg: "row",
+        }}
+        gap={{
+          sm: "5",
+        }}
         borderY={"1px"}
         borderColor={"gray.200"}
-        marginTop={"40px"}
-        justifyContent={"space-between"}
-        alignItems={"space-between"}
+        justifyContent={{
+          sm: "center",
+          md: "center",
+          lg: "space-between",
+        }}
+        alignItems={{
+          sm: "center",
+          md: "center",
+          lg: "space-between",
+        }}
       >
         <Flex
           direction={"column"}
-          w={"20%"}
+          w={{
+            sm: "50%",
+            md: "80%",
+            lg: "20%",
+          }}
           gap={12}
           transition={"all 0.5s ease-in-out"}
           textAlign={"justify"}
           lineHeight={"30px"}
           cursor={"pointer"}
-          justifyContent={"center"}
+          justifyContent={"start"}
+          alignItems={{
+            sm: "center",
+            md: "center",
+            lg: "start",
+          }}
+          marginLeft={"110px"}
         >
-          <Box as={Flex} w={"75px"} alignItems={"center"} gap={2}>
+          <Box
+            as={Flex}
+            w={"70px"}
+            justifyContent={"end"}
+            alignItems={"center"}
+            gap={2}
+          >
             <Image src={logo} alt="logo" />
             <Text fontSize={"23px"} fontWeight={"600"}>
               Mintables
@@ -37,18 +67,36 @@ const Footer = () => {
         </Flex>
 
         <Flex
-          gap={2}
-          w={"60%"}
+          zIndex={3}
+          gap={{
+            sm: 5,
+            md: 5,
+            lg: 2,
+          }}
+          w={{
+            sm: "100%",
+            md: "100%",
+            lg: "60%",
+          }}
           textAlign={"justify"}
           lineHeight={"30px"}
           transition={"all 0.5s ease-in-out"}
           cursor={"pointer"}
-          justifyContent={"end"}
+          justifyContent={{
+            sm: "center",
+            md: "center",
+            lg: "end",
+          }}
           alignItems={"center"}
           mt={1}
         >
-          <Flex w={"300px"}>
-            <Input placeholder="Email Address" py={"25px"} />
+          <Flex w={"300px"} zIndex={3}>
+            <Input
+              placeholder="Email Address"
+              py={"25px"}
+              rounded={"sm"}
+              borderColor={"gray.400"}
+            />
           </Flex>
           <NormalButton text="Subscribe" type="filled" />
         </Flex>
@@ -61,30 +109,50 @@ const Footer = () => {
         justifyContent={"space-between"}
         alignItems={"center"}
       >
-        Copyright © 2022. All right reserved.
-        <Flex alignItems={"center"} gap={5} w={"20%"} justifyContent={"end"}>
+        <Hide below="lg">Copyright © 2022. All right reserved. </Hide>
+        <Flex
+          alignItems={"center"}
+          gap={5}
+          w={{
+            sm: "100%",
+            md: "100%",
+            lg: "20%",
+          }}
+          justifyContent={{
+            sm: "center",
+            md: "center",
+            lg: "end",
+          }}
+        >
           <Flex gap={4}>
             <CustomIconButton
               icon={<BsTwitter size={"20px"} />}
               aria={"twitter"}
               type={"outline"}
               color={"buttonPrimary"}
-              onClick={() => console.log("twitter")}
+              onClick={() => {
+                window.location.href = "https://twitter.com";
+              }}
             />
 
             <CustomIconButton
               icon={<BsLinkedin size={"20px"} />}
-              aria={"twitter"}
+              aria={"Linkedin"}
               type={"outline"}
               color={"buttonPrimary"}
-              onClick={() => console.log("twitter")}
+              onClick={() => {
+                window.location.href =
+                  "https://www.linkedin.com/in/raymon-basnyat-281382222/";
+              }}
             />
             <CustomIconButton
               icon={<BsGithub size={"25px"} />}
               aria={"twitter"}
               type={"outline"}
               color={"buttonPrimary"}
-              onClick={() => console.log("twitter")}
+              onClick={() => {
+                window.location.href = "https://github.com/manttus";
+              }}
             />
           </Flex>
         </Flex>

@@ -44,6 +44,7 @@ const Login = ({ sendOtp, isLoading, oauth }: LoginProps) => {
             })}
             focusBorderColor={"buttonPrimary"}
             placeholder={"Email or Phone"}
+            fontSize={"18px"}
             type={"text"}
             py={6}
             px={5}
@@ -57,6 +58,7 @@ const Login = ({ sendOtp, isLoading, oauth }: LoginProps) => {
             })}
             placeholder={"Password"}
             focusBorderColor={"buttonPrimary"}
+            fontSize={"18px"}
             type={"password"}
             py={6}
             px={5}
