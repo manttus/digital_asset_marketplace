@@ -1,18 +1,14 @@
 import { Flex, Text, Avatar, HStack } from "@chakra-ui/react";
 import { BsInstagram, BsTwitter } from "react-icons/bs";
-import { IoIosArrowForward } from "react-icons/io";
 
 import Illustration from "../../assets/abstract1.webp";
 import CustomBadge from "../Badge/CustomBadge";
 import CustomIconButton from "../Button/CustomIconButton";
 import CustomLink from "../Links/CustomLink";
 import NormalButton from "../Button/NormalButton";
-import { useSelector } from "react-redux";
-import { selectMarketItems } from "../../features/market/marketSlice";
 import NoResult from "../NoResult";
 
-const Featured = () => {
-  const marketData = useSelector(selectMarketItems);
+const Featured = ({ featured }: any) => {
   return (
     <Flex py={"20px"} bg={"background"} direction={"column"} gap={5}>
       <Flex w={"full"} justifyContent={"space-between"}>
@@ -35,10 +31,11 @@ const Featured = () => {
           textUnderlineOffset={"10px"}
           textDecorationThickness={"1.5px"}
         >
-          SORTED BY LATEST
+          SORTED BY LIKES
         </Text>
       </Flex>
-      {marketData.length === 0 ? (
+
+      {featured.post ? (
         <Flex w={"full"} shadow={"sm"} border={"1px solid #E2E8F0"}>
           <Flex w={"50%"} direction={"column"} bg={"white"} rounded={"10px"}>
             <Flex
@@ -48,13 +45,13 @@ const Featured = () => {
               justifyContent={"space-between"}
             >
               <Flex alignItems={"center"} gap={4} cursor={"pointer"}>
-                <Avatar size={"md"} />
+                <Avatar size={"md"} src={featured?.user.profileImage} />
                 <Text
                   fontWeight={"600"}
                   fontSize={"15px"}
                   letterSpacing={"0.4px"}
                 >
-                  Michael Noris
+                  {featured?.user.username}
                 </Text>
               </Flex>
               <Flex>
@@ -63,19 +60,23 @@ const Featured = () => {
                     icon={<BsInstagram size={"20px"} />}
                     aria={"Instagram"}
                     type={"filled"}
-                    onClick={() => {}}
+                    onClick={() => {
+                      window.open(featured?.user.social.instagram, "_blank");
+                    }}
                   />
                   <CustomIconButton
                     icon={<BsTwitter size={"20px"} />}
                     aria={"Twitter"}
                     type={"filled"}
-                    onClick={() => {}}
+                    onClick={() => {
+                      window.open(featured?.user.social.twitter, "_blank");
+                    }}
                   />
                 </HStack>
               </Flex>
             </Flex>
             <Flex
-              mt={"20px"}
+              pt={"40px"}
               direction={"column"}
               justifyContent={"center"}
               alignItems={"center"}
@@ -86,7 +87,7 @@ const Featured = () => {
                 color="successLight"
                 text="Best Popular"
               />
-              <CustomLink size="38px" text="Missing Puzzle" to="mum" />
+              <CustomLink size="38px" text={featured?.post.title} to="mum" />
               <Text
                 color={"fontGhost"}
                 px={"100px"}
@@ -121,7 +122,6 @@ const Featured = () => {
                   text="Check Product"
                   type="outline"
                   width="380px"
-                  rightIcon={<IoIosArrowForward />}
                   onClick={() => {}}
                   bg={"buttonHover"}
                 />
@@ -130,9 +130,11 @@ const Featured = () => {
           </Flex>
           <Flex
             w={"50%"}
-            bgImg={Illustration}
+            bgImg={featured?.post.tokenUrl}
             bgPos={"center"}
-            height={"600px"}
+            bgSize={"cover"}
+            bgRepeat={"no-repeat"}
+            height={"700px"}
             roundedRight={"10px"}
           ></Flex>
         </Flex>

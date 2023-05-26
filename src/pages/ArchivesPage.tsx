@@ -1,5 +1,4 @@
 import {
-  Box,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
@@ -26,11 +25,22 @@ import {
   SliderFilledTrack,
   SliderThumb,
   Checkbox,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalBody,
+  Box,
+  IconButton,
+  InputGroup,
+  InputLeftElement,
+  InputLeftAddon,
+  InputRightAddon,
+  InputRightElement,
 } from "@chakra-ui/react";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { VscSettings, VscAdd } from "react-icons/vsc";
+import { VscAdd } from "react-icons/vsc";
 import { useDispatch, useSelector } from "react-redux";
 import Circular from "../components/Abstract/Circular";
 import CustomBadge from "../components/Badge/CustomBadge";
@@ -48,10 +58,18 @@ import {
 import { selectMarket, selectToken } from "../features/market/marketSlice";
 import NoConnection from "../components/NoConnection";
 import { BiImageAdd } from "react-icons/bi";
-import CollectionCard from "../components/Card/CollectionCard";
+
+import ArchiveCard from "../components/Card/ArchiveCard";
+import { bottomVariants } from "../theme/animation/variants";
+import { motion } from "framer-motion";
+import NormalButton from "../components/Button/NormalButton";
+import useCustomToast from "../hooks/useToast";
+import { AddIcon, MinusIcon } from "@chakra-ui/icons";
+import NoResult from "../components/NoResult";
 
 const ArchivesPage = () => {
   const currentUser = useSelector(selectUserData);
+  const userData = useSelector(selectUserData);
   const contract = useSelector(selectToken);
   const market = useSelector(selectMarket);
   const wallet = useSelector(selectCurrentWallet);
@@ -61,10 +79,12 @@ const ArchivesPage = () => {
   const [avatarImage, setAvatar] = useState<string>("");
   const [bannerImage, setBanner] = useState<string>("");
   const [listings, setListings] = useState<any>([]);
-  const [archives, setArchives] = useState<any>([]);
   const [token, setToken] = useState<any>();
+  const [tempListing, setTempListing] = useState<any>([]);
   const [marketContract, setMarketContract] = useState<any>();
   const [flag, setFlag] = useState<boolean>(false);
+  const [selectedAsset, setSelectedAsset] = useState<any>();
+  const [ethCounter, setEthCounter] = useState<number>(0);
   const cloudName = import.meta.env.VITE_CLOUD_NAME;
 
   type AddCategory = {
@@ -75,18 +95,22 @@ const ArchivesPage = () => {
   };
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isListOpen,
+    onOpen: onListOpen,
+    onClose: onListClose,
+  } = useDisclosure();
   const { register, handleSubmit } = useForm<AddCategory>();
   const dispatch = useDispatch();
+  const { showToast } = useCustomToast();
 
   const loadListing = async () => {
     if (wallet) {
-      const listing = await marketContract._getListings();
-      console.log(listing);
-      // setArchives(currentUser.category);
-      // const listing = await token._getTokens(wallet);
-      // if (listing.length === 0) return;
-      // const reversed = [...listing].reverse();
-      // setListings(reversed);
+      const listing = await marketContract._getMyListings(wallet);
+      if (listing.length === 0) return;
+      const reversed = [...listing].reverse();
+      setListings(reversed);
+      setTempListing(reversed);
     }
   };
 
@@ -103,8 +127,6 @@ const ArchivesPage = () => {
       market.abi,
       signer
     );
-    const initialListing = await marketContract._getListings();
-    console.log(initialListing);
     setMarketContract(marketContract);
     setToken(tokenContract);
   };
@@ -151,6 +173,41 @@ const ArchivesPage = () => {
     }
   };
 
+  const listingHandler = async (indi: boolean | null) => {
+    if (indi === null) return;
+    const id = parseInt(selectedAsset._id._hex);
+    if (ethCounter === 0 && !indi)
+      return showToast("Invalid Price", "error", 2000);
+    if (indi) {
+      marketContract._cancelListing(id, wallet).then(() => {
+        showToast("Market Listing Cancelled", "success", 2000);
+        onListClose();
+        loadListing();
+      });
+    } else {
+      const priceinWei = ethers.utils.parseEther(ethCounter.toString());
+      marketContract
+        ._createListing(id, priceinWei, wallet)
+        .then((tx: any) => {
+          // Wait for the transaction to be mined
+          return tx.wait(1);
+        })
+        .then(() => {
+          showToast("Market Listing Created", "success", 2000);
+          onListClose();
+          // Fetch the listing again from the contract
+          return loadListing();
+        })
+        .then(() => {
+          // Listing fetched successfully
+          // Do any additional processing or rendering here
+        })
+        .catch((err: Error | unknown) => {
+          showToast("Failed to List", "error", 2000);
+        });
+    }
+  };
+
   const createCategory = async ({
     name,
     avatar,
@@ -166,7 +223,7 @@ const ArchivesPage = () => {
     const bannerUrl = await AddImage(banner);
     const data = {
       id: currentUser!._id,
-      name,
+      name: name.trim(),
       avatar: avatarUrl,
       banner: bannerUrl,
       type,
@@ -174,6 +231,7 @@ const ArchivesPage = () => {
     try {
       const response = await addCategory(data).unwrap();
       if (response.message === "Success") {
+        showToast("Category Created", "success", 2000);
         setisLoading(false);
         onClose();
         const userData = await user(currentUser!._id).unwrap();
@@ -187,11 +245,51 @@ const ArchivesPage = () => {
       }
     } catch (err) {
       console.log(err);
+      setisLoading(false);
+      showToast("Failed to Create Category", "error", 2000);
+    }
+  };
+
+  const searchHandler = (text: string) => {
+    // Filter the data based on the search criteria
+    const filtered = listings.filter((item: any) => {
+      console.log(item);
+      if (item._token[5].toLowerCase().includes(text.toLowerCase())) {
+        return true;
+      }
+    });
+    setTempListing(filtered);
+  };
+
+  const sortHandler = (type: string) => {
+    if (type === "listed") {
+      const filtered = listings.filter((item: any) => {
+        if (item._active) {
+          return true;
+        }
+      });
+      setTempListing(filtered);
+    }
+    if (type === "unlisted") {
+      const filtered = listings.filter((item: any) => {
+        if (!item._active) {
+          return true;
+        }
+      });
+      setTempListing(filtered);
+    }
+    if (type === "all") {
+      setTempListing(listings);
     }
   };
 
   return (
-    <>
+    <Flex
+      as={motion.div}
+      variants={bottomVariants}
+      initial={"hidden"}
+      animate={"visible"}
+    >
       <Grid
         height={"full"}
         width={"full"}
@@ -234,13 +332,6 @@ const ArchivesPage = () => {
                     onOpen();
                   }}
                 />
-                <CustomIconButton
-                  aria="filter"
-                  color="gray.200"
-                  icon={<VscSettings size={"25px"} />}
-                  type={"outline"}
-                  onClick={() => {}}
-                />
               </>
             )}
           </Flex>
@@ -258,128 +349,73 @@ const ArchivesPage = () => {
             px={"50px"}
             justifyContent={"center"}
           >
-            {/* {archives.length === 0 && (
-              <Text fontSize={"30px"} fontWeight={"600"} color={"buttonHover"}>
-                No Archives
-              </Text>
-            )}
-            {archives &&
-              archives.map((archive: any) => {
-                return (
-                  <CollectionCard
-                    key={archive._id}
-                    listings={listings}
-                    archive={archive}
-                  />
-                );
-              })} */}
-            <Flex w={"full"} justifyContent={"space-between"} zIndex={"10"}>
-              <Flex w={"30%"} direction={"column"} bg={"background"} gap={4}>
-                <Flex>
+            <Flex
+              w={"full"}
+              direction={"column"}
+              justifyContent={"space-between"}
+              zIndex={"10"}
+              gap={8}
+            >
+              <Flex w={"100%"} justifyContent={"space-between"}>
+                <Box w={"50%"}>
                   <Input
                     type="text"
-                    placeholder="Search"
-                    height={"50px"}
-                    rounded={"sm"}
+                    height={"60px"}
+                    zIndex={"99999"}
+                    placeholder="Search Assets"
                     fontSize={"20px"}
-                    _placeholder={{ fontSize: "20px" }}
+                    bg={"white"}
+                    onChange={(e) => {
+                      searchHandler(e.target.value);
+                    }}
                   />
-                </Flex>
-                <Accordion
-                  allowToggle
-                  display={"flex"}
-                  flexDirection={"column"}
-                >
-                  <AccordionItem>
-                    <h2>
-                      <AccordionButton height={"60px"}>
-                        <Box
-                          as="span"
-                          flex="1"
-                          textAlign="left"
-                          fontSize={"20px"}
-                        >
-                          Categories
-                        </Box>
-                        <AccordionIcon />
-                      </AccordionButton>
-                    </h2>
-                    <AccordionPanel pb={4}>
-                      <Input
-                        type="text"
-                        placeholder="Category Name"
-                        height={"50px"}
-                        rounded={"sm"}
-                        fontSize={"20px"}
-                        _placeholder={{ fontSize: "22px" }}
-                      />
-                    </AccordionPanel>
-                  </AccordionItem>
-
-                  <AccordionItem>
-                    <h2>
-                      <AccordionButton height={"60px"}>
-                        <Box
-                          as="span"
-                          flex="1"
-                          textAlign="left"
-                          fontSize={"20px"}
-                        >
-                          Types
-                        </Box>
-                        <AccordionIcon />
-                      </AccordionButton>
-                    </h2>
-                    <AccordionPanel pb={4}>
-                      <Flex direction={"column"} gap={"2"}>
-                        <Checkbox borderColor={"gray.400"}>
-                          <Text fontSize={"22px"}>Image</Text>
-                        </Checkbox>
-                        <Checkbox borderColor={"gray.400"}>
-                          <Text fontSize={"22px"}>GIFs</Text>
-                        </Checkbox>
-                        <Checkbox borderColor={"gray.400"}>
-                          <Text fontSize={"22px"}>Video</Text>
-                        </Checkbox>
-                      </Flex>
-                    </AccordionPanel>
-                  </AccordionItem>
-                  <AccordionItem>
-                    <h2>
-                      <AccordionButton height={"60px"}>
-                        <Box
-                          as="span"
-                          flex="1"
-                          textAlign="left"
-                          fontSize={"20px"}
-                        >
-                          Price Range
-                        </Box>
-                        <AccordionIcon />
-                      </AccordionButton>
-                    </h2>
-                    <AccordionPanel pb={4}>
-                      <Slider aria-label="slider-ex-1" defaultValue={30}>
-                        <SliderTrack>
-                          <SliderFilledTrack />
-                        </SliderTrack>
-                        <SliderThumb />
-                      </Slider>
-                    </AccordionPanel>
-                  </AccordionItem>
-                </Accordion>
+                </Box>
+                <Box w={"20%"}>
+                  <Select
+                    height={"60px"}
+                    bg={"white"}
+                    onChange={(e) => {
+                      sortHandler(e.target.value);
+                    }}
+                    fontSize={"20px"}
+                  >
+                    <option value="all">All</option>
+                    <option value="listed">Listed</option>
+                    <option value="unlisted">UnListed</option>
+                  </Select>
+                </Box>
               </Flex>
-              <Flex w={"80%"} height={"500px"}>
-                {/* {archives &&
-                  archives.map((archive: any) => {
+              <Flex w={"full"} wrap={"wrap"} gap={8} as={motion.div}>
+                {tempListing.length === 0 && (
+                  <Flex
+                    fontSize={"30px"}
+                    w={"full"}
+                    fontWeight={"600"}
+                    color={"buttonHover"}
+                    height={"300px"}
+                    justifyContent={"center"}
+                    alignItems={"center"}
+                  >
+                    <NoResult />
+                  </Flex>
+                )}
+                {tempListing &&
+                  tempListing.map((archive: any) => {
                     return (
-                      <CollectionCard
+                      <ArchiveCard
                         key={archive._id}
-                        listings={listings}
-                        archive={archive}
+                        image={archive._token[2]}
+                        name={archive._token[5]}
+                        _id={archive._id}
+                        description={""}
+                        price={ethers.utils.formatEther(archive._price)}
+                        onClick={() => {
+                          setSelectedAsset(archive);
+                          onListOpen();
+                        }}
                       />
                     );
-                  })} */}
+                  })}
               </Flex>
             </Flex>
           </Flex>
@@ -400,13 +436,14 @@ const ArchivesPage = () => {
           </Flex>
         )}
       </Grid>
-      <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
+      <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
         <DrawerOverlay overflow={"hidden"} />
         <DrawerContent>
           <Flex
             direction={"column"}
             w={"full"}
             as={"form"}
+            height={"full"}
             onSubmit={handleSubmit((value) => {
               createCategory({
                 name: value.name,
@@ -420,7 +457,6 @@ const ArchivesPage = () => {
             <DrawerHeader
               borderBottomWidth="1px"
               fontSize={"18px"}
-              h={"50px"}
               display={"flex"}
               alignItems={"center"}
             >
@@ -433,7 +469,11 @@ const ArchivesPage = () => {
               justifyContent={"center"}
               alignItems={"center"}
             >
-              <Stack spacing="24px">
+              <Stack
+                spacing="24px"
+                display={"flex"}
+                justifyContent={"space-between"}
+              >
                 <Box>
                   <Input
                     id="username"
@@ -441,6 +481,9 @@ const ArchivesPage = () => {
                       required: true,
                     })}
                     placeholder="Enter Category Name"
+                    rounded={"sm"}
+                    height={"50px"}
+                    fontSize={"18px"}
                   />
                 </Box>
 
@@ -449,8 +492,8 @@ const ArchivesPage = () => {
                   <Flex
                     left={"50"}
                     top={"160"}
-                    width={"150px"}
-                    height={"150px"}
+                    width={"200px"}
+                    height={"200px"}
                     bg={"gray.200"}
                     rounded={"full"}
                     justifyContent={"center"}
@@ -497,7 +540,7 @@ const ArchivesPage = () => {
                 <Flex direction={"column"} alignItems={"center"} w={"full"}>
                   <FormLabel htmlFor="owner">Upload Banner</FormLabel>
                   <Flex
-                    height={"100px"}
+                    height={"150px"}
                     bg={"gray.200"}
                     rounded={"10px"}
                     justifyContent={"center"}
@@ -542,23 +585,8 @@ const ArchivesPage = () => {
                     </Flex>
                   </Flex>
                 </Flex>
-                <Box>
-                  <Select
-                    id="owner"
-                    {...register("type", {
-                      required: true,
-                    })}
-                    defaultValue={"Select Category Type"}
-                  >
-                    <option value="IMAGE">Image</option>
-                    <option value="VIDEO">Video</option>
-                    <option value="GIFS">GIF</option>
-                    <option value="ALL CATEGORIES"> All Category </option>
-                  </Select>
-                </Box>
               </Stack>
             </DrawerBody>
-
             <DrawerFooter borderTopWidth="1px">
               <Button variant="outline" mr={3} onClick={onClose}>
                 Cancel
@@ -578,8 +606,197 @@ const ArchivesPage = () => {
           </Flex>
         </DrawerContent>
       </Drawer>
-    </>
+      <Modal
+        isOpen={isListOpen}
+        onClose={onListClose}
+        size={"4xl"}
+        isCentered
+        onCloseComplete={() => {
+          setSelectedAsset(null);
+          setEthCounter(0);
+        }}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalBody
+            display={"flex"}
+            justifyContent={"space-between"}
+            alignItems={"center"}
+            p={5}
+          >
+            <Flex
+              border={"1px solid"}
+              rounded={"md"}
+              borderColor={"gray.200"}
+              bgImage={selectedAsset ? `url(${selectedAsset._token[2]})` : ""}
+              w={"500px"}
+              height={"500px"}
+              bgSize={"cover"}
+              bgPos={"center"}
+            ></Flex>
+
+            <Flex
+              direction={"column"}
+              justifyContent={"space-between"}
+              height={"500px"}
+              alignItems={"center"}
+              w={"40%"}
+              pt={10}
+            >
+              <Flex
+                fontSize={"28px"}
+                fontWeight={"bold"}
+                borderBottom={"1px solid"}
+                borderColor={"gray.400"}
+                cursor={"pointer"}
+                gap={4}
+              >
+                {selectedAsset ? selectedAsset._token[5] : ""}
+                <CustomBadge
+                  bg="red.100"
+                  color="red.400"
+                  text={selectedAsset ? selectedAsset._id._hex : "0x00"}
+                />
+              </Flex>
+              <Flex w={"150px"}>
+                <InputGroup display={"flex"} justifyContent={"center"}>
+                  <Input
+                    variant={"flushed"}
+                    type={"number"}
+                    py={7}
+                    value={ethCounter}
+                    display={"flex"}
+                    fontSize={"20px"}
+                    fontWeight={"bold"}
+                    justifyContent={"center"}
+                    defaultChecked={false}
+                    onChange={(e) => {
+                      if (parseInt(e.target.value) >= 100000) {
+                        showToast("Limit Reached", "error", 2000);
+                      } else {
+                        setEthCounter(parseInt(e.target.value));
+                      }
+                    }}
+                  />
+                  <InputRightElement
+                    children={"ETH"}
+                    bg={"gray.200"}
+                    color={"fontBlack"}
+                    fontSize={"18px"}
+                    fontWeight={"500"}
+                    border={"none"}
+                    w={"60px"}
+                  />
+                </InputGroup>
+              </Flex>
+              <Flex gap={2} alignItems={"center"}>
+                <IconButton
+                  rounded={"full"}
+                  icon={<AddIcon />}
+                  aria-label="plus"
+                  size={"lg"}
+                  w={"100px"}
+                  bg={"buttonPrimary"}
+                  _hover={{
+                    bg: "buttonPrimary",
+                    transform: "scale(1.03)",
+                  }}
+                  border={"1px solid"}
+                  borderColor={"gray.200"}
+                  color={"white"}
+                  onClick={() => {
+                    if (ethCounter <= 100000) {
+                      setEthCounter(ethCounter + 1);
+                    }
+                  }}
+                />
+
+                <IconButton
+                  rounded={"full"}
+                  icon={<MinusIcon />}
+                  variant={"outline"}
+                  aria-label="minus"
+                  size={"lg"}
+                  w={"100px"}
+                  _hover={{
+                    bg: "buttonPrimary",
+                    transform: "scale(1.03)",
+                  }}
+                  bg={"buttonPrimary"}
+                  border={"1px solid"}
+                  color={"white"}
+                  borderColor={"gray.200"}
+                  onClick={() => {
+                    if (ethCounter > 0) {
+                      setEthCounter(ethCounter - 1);
+                    }
+                  }}
+                />
+              </Flex>
+
+              <Flex direction={"column"} gap={5}>
+                <Flex
+                  gap={"1"}
+                  borderBottom={"1px solid"}
+                  borderColor={"gray.200"}
+                  pb={4}
+                >
+                  {fixedPrices.map((item) => {
+                    return (
+                      <Box
+                        key={item}
+                        display={"flex"}
+                        px={"9"}
+                        transition={"all 0.3s ease-in-out"}
+                        py={2}
+                        _hover={{
+                          bg: "gray.100",
+                          transform: "scale(1.05)",
+                          transition: "all 0.3s ease-in-out",
+                        }}
+                        rounded={"full"}
+                        w={"40px"}
+                        border={"1px solid"}
+                        borderColor={"gray.300"}
+                        justifyContent={"center"}
+                        alignItems={"center"}
+                        cursor={"pointer"}
+                        onClick={() => {
+                          setEthCounter(item);
+                        }}
+                      >
+                        <Text fontSize={"18px"} fontWeight={"500"}>
+                          {item}
+                        </Text>
+                      </Box>
+                    );
+                  })}
+                </Flex>
+
+                <NormalButton
+                  type="filled"
+                  width="330px"
+                  text={
+                    selectedAsset && !selectedAsset._active
+                      ? "Add to Market"
+                      : "Remove from Market"
+                  }
+                  onClick={() => {
+                    console.log(selectedAsset ? selectedAsset._active : null);
+                    listingHandler(
+                      selectedAsset ? selectedAsset._active : null
+                    );
+                  }}
+                />
+              </Flex>
+            </Flex>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </Flex>
   );
 };
+
+const fixedPrices = [5, 10, 20, 50];
 
 export default ArchivesPage;

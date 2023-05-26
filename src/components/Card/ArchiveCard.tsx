@@ -7,13 +7,16 @@ const ArchiveCard = ({
   description,
   image,
   _id,
+  onClick,
+  price,
 }: {
   name: string;
   description: string;
   image: string;
   _id: any;
+  price: string;
+  onClick: () => void;
 }) => {
-  const navigate = useNavigate();
   return (
     <Flex
       width={"250px"}
@@ -22,8 +25,10 @@ const ArchiveCard = ({
       shadow={"sm"}
       bg={"white"}
       p={"15px"}
-      my={"20px"}
+      mb={"20px"}
       border={"1px solid #E2E8F0"}
+      cursor={"pointer"}
+      onClick={onClick}
     >
       <Image
         src={image}
@@ -36,26 +41,38 @@ const ArchiveCard = ({
         }}
         height={"220px"}
         width={"220px"}
-        onClick={() => {
-          navigate("/details", {
-            state: { name, description, image, _id },
-          });
-        }}
       />
       <Box>
         <Flex
-          px={"20px"}
           pt={"20px"}
           letterSpacing={"0.4px"}
           justifyContent={"space-between"}
           alignItems={"center"}
         >
           <Box>
-            <CustomLink text={name} to="" size="18px" weight="700" />
+            <Text
+              fontSize={"18px"}
+              fontWeight={"500"}
+              color={"fontBlack"}
+              lineHeight={"1.5"}
+            >
+              {_id._hex}
+            </Text>
           </Box>
-          <Text fontSize={"15px"} color={"fontGhost"} fontWeight={"500"}>
-            {description}
-          </Text>
+          <Flex
+            fontSize={"18px"}
+            w={"100px"}
+            color={"fontBlack"}
+            fontWeight={"500"}
+            border={"1px solid"}
+            borderColor={"gray.200"}
+            rounded={"full"}
+            p={2}
+            justifyContent={"center"}
+            alignItems={"center"}
+          >
+            {price}
+          </Flex>
         </Flex>
       </Box>
     </Flex>

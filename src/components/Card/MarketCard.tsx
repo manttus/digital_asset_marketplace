@@ -1,15 +1,16 @@
 import { Flex, Box, Text, Image } from "@chakra-ui/react";
 import CustomLink from "../Links/CustomLink";
+import { ethers } from "ethers";
 
-const MarketCard = ({ item }: any) => {
+const MarketCard = ({ item, onClick }: any) => {
   return (
     <Flex
-      minWidth={"280px"}
+      minWidth={"200px"}
       width={{
         sm: "200px",
         md: "600px",
         lg: "700px",
-        xl: "400px",
+        xl: "380px",
       }}
       direction={"column"}
       rounded={"5px"}
@@ -19,14 +20,15 @@ const MarketCard = ({ item }: any) => {
       border={"1px solid "}
       borderColor={"gray.300"}
       position={"relative"}
+      onClick={onClick}
     >
       <Image
-        src={item.image}
+        src={item._token._asset}
         h={{
           sm: "200px",
           md: "300px",
           lg: "450px",
-          xl: "250px",
+          xl: "350px",
         }}
         w={"100%"}
         rounded={"5px"}
@@ -46,18 +48,24 @@ const MarketCard = ({ item }: any) => {
         >
           <Flex justifyContent={"space-between"}>
             <Box>
-              <CustomLink text={item.name} to="mum" size="18px" weight="700" />
-            </Box>
-            <Box>
               <CustomLink
-                text={item._id._hex}
+                text={item._token._name}
                 to="mum"
                 size="18px"
                 weight="700"
               />
             </Box>
+            <Box cursor={"pointer"}>
+              <Text
+                fontSize={"18px"}
+                fontWeight={"700"}
+                size="18px"
+                cursor={"pointer"}
+              >
+                {parseInt(ethers.utils.formatEther(item._price))} ETH
+              </Text>
+            </Box>
           </Flex>
-          <Text fontSize={"15px"} color={"fontGhost"} fontWeight={"500"}></Text>
         </Flex>
       </Box>
     </Flex>

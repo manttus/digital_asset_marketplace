@@ -3,8 +3,25 @@ import NormalButton from "./Button/NormalButton";
 import logo from "../assets/logo2.png";
 import CustomIconButton from "./Button/CustomIconButton";
 import { BsGithub, BsLinkedin, BsTwitter } from "react-icons/bs";
+import { useSelector } from "react-redux";
+import { selectCurrentUser, selectUserData } from "../features/auth/authSlice";
+import useCustomToast from "../hooks/useToast";
+import { useState } from "react";
 
-const Footer = () => {
+const Footer = ({ sendNewsLetter }: { sendNewsLetter: any }) => {
+  const [user, setUser] = useState<any>(null);
+  const { showToast } = useCustomToast();
+  const userData = useSelector(selectUserData);
+  const handleSubscribe = async () => {
+    try {
+      const res = await sendNewsLetter(user).unwrap();
+      console.log(res);
+      showToast("Subscribed", "success", 2000);
+    } catch (err) {
+      console.log(err);
+      showToast("Failed", "error", 2000);
+    }
+  };
   return (
     <Flex direction={"column"} zIndex={4}>
       <Flex
@@ -96,9 +113,18 @@ const Footer = () => {
               py={"25px"}
               rounded={"sm"}
               borderColor={"gray.400"}
+              onChange={(e) => {
+                setUser(e.target.value);
+              }}
             />
           </Flex>
-          <NormalButton text="Subscribe" type="filled" />
+          <NormalButton
+            text="Subscribe"
+            type="filled"
+            onClick={() => {
+              handleSubscribe();
+            }}
+          />
         </Flex>
       </Flex>
       <Flex

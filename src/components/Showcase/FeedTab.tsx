@@ -13,6 +13,7 @@ import { usePostLikeMutation } from "../../features/api/authApi/apiSlice";
 import { selectCurrentUser } from "../../features/auth/authSlice";
 import useCustomToast from "../../hooks/useToast";
 import { useUserMutation } from "../../features/api/authApi/apiSlice";
+import NoPost from "./NoPosts";
 
 const TabItems = [
   {
@@ -36,6 +37,7 @@ const FeedTabs = ({ feedItems }: { feedItems: any }) => {
   const [postLike] = usePostLikeMutation();
   const [user] = useUserMutation();
   const dispatch = useDispatch();
+
   const handleLike = async (indi: string, data: any) => {
     try {
       await postLike({
@@ -61,8 +63,6 @@ const FeedTabs = ({ feedItems }: { feedItems: any }) => {
   };
 
   const checkLiked = (id: string) => {
-    console.log(id);
-    console.log(userData.liked);
     return userData.liked.includes(id);
   };
   return (
@@ -79,6 +79,7 @@ const FeedTabs = ({ feedItems }: { feedItems: any }) => {
       <TabPanels>
         <TabPanel>
           <Flex direction={"column"} my={10} gap={10}>
+            {feedItems.length === 0 && <NoPost text="No Posts" />}
             {feedItems.map((item: any) => {
               return (
                 <FeedCard
@@ -93,6 +94,9 @@ const FeedTabs = ({ feedItems }: { feedItems: any }) => {
         </TabPanel>
         <TabPanel>
           <Flex direction={"column"} my={10} gap={10}>
+            {userData !== null && userData.following.length === 0 && (
+              <NoPost text="No Following" />
+            )}
             {feedItems.map((item: any) => {
               if (checkFollow(item.user._id)) {
                 return (
@@ -109,6 +113,9 @@ const FeedTabs = ({ feedItems }: { feedItems: any }) => {
         </TabPanel>
         <TabPanel>
           <Flex direction={"column"} my={10} gap={10}>
+            {userData !== null && userData.liked.length === 0 && (
+              <NoPost text="No Liked" />
+            )}
             {feedItems.map((item: any) => {
               if (checkLiked(item._id)) {
                 return (

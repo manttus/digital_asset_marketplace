@@ -2,6 +2,7 @@ import { Flex, Input } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { BiImageAdd } from "react-icons/bi";
 import { useEffect, useState } from "react";
+import { bottomVariants } from "../../theme/animation/variants";
 
 type ProfileProps = {
   addImage: (e: FileList | null, flag: string) => void;
@@ -33,14 +34,16 @@ const Profile = ({ addImage, isEditPage, userData }: ProfileProps) => {
   };
 
   return (
-    <Flex direction={"column"} w={"full"} height={"320px"}>
-      <Flex
-        position={"relative"}
-        w={"full"}
-        mb={"12"}
-        shadow={"md"}
-        rounded={"sm"}
-      >
+    <Flex
+      direction={"column"}
+      w={"full"}
+      height={"320px"}
+      as={motion.div}
+      variants={bottomVariants}
+      initial={"hidden"}
+      animate={"visible"}
+    >
+      <Flex position={"relative"} w={"full"} shadow={"md"} rounded={"sm"}>
         <Flex
           height={"250px"}
           bg={"fontGhost"}

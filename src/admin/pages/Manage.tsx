@@ -29,11 +29,13 @@ const Manage = () => {
   const [getUser] = useGetUsersMutation();
   const [disable] = useDisableUserMutation();
   const [users, setUsers] = useState<any>([]);
+  const [temp, setTemp] = useState<any>([]);
   const { showToast } = useCustomToast();
   const fetchUserData = async () => {
     try {
       const response = await getUser().unwrap();
       setUsers(response.user);
+      setTemp(response.user);
     } catch (error) {
       console.log(error);
     }
@@ -47,11 +49,45 @@ const Manage = () => {
       const response = await disable({
         id,
       }).unwrap();
-      console.log("disabled");
-      showToast("Account Disabled", "success", 2000);
+      showToast("Status Changed", "success", 2000);
       fetchUserData();
     } catch (error) {
+      console.log(error);
       showToast("Error Disabling Account", "error", 2000);
+    }
+  };
+
+  const search = (e: any) => {
+    const value = e.target.value;
+    if (value === "") {
+      setTemp(users);
+    } else {
+      const filtered = users.filter((user: any) => {
+        return (
+          user.username.toLowerCase().includes(value.toLowerCase()) ||
+          user.email.toLowerCase().includes(value.toLowerCase())
+        );
+      });
+      setTemp(filtered);
+    }
+  };
+
+  const sort = (e: any) => {
+    const value = e.target.value;
+    if (value === "recent") {
+      const sorted = [...users].sort((a: any, b: any) => {
+        return (
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+      });
+      setUsers(sorted);
+    } else {
+      const sorted = [...users].sort((a: any, b: any) => {
+        return (
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        );
+      });
+      setUsers(sorted);
     }
   };
 
@@ -74,15 +110,10 @@ const Manage = () => {
                 type={"text"}
                 placeholder="Search Address or Username"
                 rounded={"sm"}
+                onChange={search}
               />
               <InputLeftElement children={<Search2Icon color={"gray.400"} />} />
             </InputGroup>
-          </Flex>
-          <Flex w={"200px"}>
-            <Select placeholder="Select option" rounded={"sm"}>
-              <option value="option1">Recent </option>
-              <option value="option2">Oldest </option>
-            </Select>
           </Flex>
         </Flex>
         <Flex w={"full"}>
@@ -104,21 +135,21 @@ const Manage = () => {
                 </Tr>
               </Thead>
               <Tbody>
-                {users.map((user: any) => {
+                {temp.map((user: any) => {
                   const address =
                     user.address.slice(0, 10) + "..." + user.address.slice(-10);
                   return (
                     <Tr key={user._id}>
                       <Td>{user.email}</Td>
-                      <Td>{address}</Td>
+                      <Td>{user.address}</Td>
                       <Td>{user.username}</Td>
                       <Td>
                         {!user.isDisabled ? (
                           <NormalButton
                             text="Disable"
                             type="filled"
-                            px="10"
-                            fontSize="14"
+                            width="100px"
+                            fontSize="16"
                             py={"1px"}
                             onClick={() => {
                               disableAccount(user._id);
@@ -129,8 +160,8 @@ const Manage = () => {
                             text="Enable"
                             bg="green.500"
                             type="filled"
-                            px="10"
-                            fontSize="14"
+                            width="100px"
+                            fontSize="16"
                             py={"1px"}
                             onClick={() => {
                               disableAccount(user._id);

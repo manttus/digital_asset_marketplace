@@ -32,6 +32,7 @@ import {
   useSendMutation,
   useVerifyMutation,
   useRegisterMutation,
+  useGetNotificationQuery,
 } from "./features/api/authApi/apiSlice";
 
 import {
@@ -42,11 +43,14 @@ import {
 } from "./features/auth/authSlice";
 import AdminLogin from "./admin/pages/LoginPage";
 import AdminNavbar from "./admin/components/AdminNavbar";
-import Dashboard from "./admin/pages/Dashboard";
+
+import NoPage from "./pages/No Page";
+import AdminRoute from "./routes/AdminRoute";
 
 const App = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const id = useSelector((state: RootState) => state.auth.user);
+
   const { value, setItem, removeItem } = useLocalStorage("wallet");
   const [address, setAddress] = useState<string>("");
   const [notification, setNotification] = useState<any>([]);
@@ -65,6 +69,14 @@ const App = () => {
   } = useLocalStorage("Tokens");
 
   const { showToast } = useCustomToast();
+
+  const { data, refetch } = useGetNotificationQuery(id!);
+
+  useEffect(() => {
+    if (data) {
+      setNotification(data.data);
+    }
+  }, [data]);
 
   useEffect(() => {
     socket.on("notification", (notification) => {
@@ -136,8 +148,17 @@ const App = () => {
         } else {
           showToast("Account Not Registered", "error", 2000);
         }
+      } else {
+        if (response.message === "Invalid OTP") {
+          showToast("Invalid OTP", "error", 2000);
+        } else {
+          showToast("Account Not Registered", "error", 2000);
+        }
       }
-    } catch (err: Error | unknown) {}
+    } catch (err: Error | unknown) {
+      console.log(err);
+      showToast("Account Not Registered", "error", 2000);
+    }
   };
 
   const metaMaskHandler = async () => {
@@ -175,7 +196,7 @@ const App = () => {
           const data = await user(id._id).unwrap();
           setItem(JSON.stringify({ wallet: address, balance: balanceInEth }));
           dispatch(setWallet({ address: address, balance: balanceInEth }));
-          console.log(id._id);
+
           dispatch(setUserId({ user: id._id }));
           dispatch(setUserData({ user: data.user }));
         }
@@ -193,6 +214,9 @@ const App = () => {
           if (data.message === "Account Invalid") {
             showToast("Account Invalid", "error", 2000);
             onOpen();
+          }
+          if (data.message === "Account Disabled") {
+            showToast("Account Disabled", "warning", 2000);
           }
         }
       }
@@ -268,6 +292,7 @@ const App = () => {
           address={address}
           isSendLoading={isLoading}
           notification={notification}
+          refetch={refetch}
         />
       ),
       children: NavRoutes,
@@ -278,20 +303,11 @@ const App = () => {
     },
     {
       element: <AdminNavbar />,
-      children: [
-        {
-          path: "/admin/dash",
-          element: <Dashboard />,
-        },
-        {
-          path: "/admin/tran",
-          element: <Transactions />,
-        },
-        {
-          path: "/admin/manage",
-          element: <Manage />,
-        },
-      ],
+      children: AdminRoute,
+    },
+    {
+      path: "*",
+      element: <NoPage />,
     },
   ]);
 

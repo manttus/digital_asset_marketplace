@@ -3,9 +3,12 @@ import { MdLink } from "react-icons/md";
 import { MdFavoriteBorder, MdFavorite } from "react-icons/md";
 import CustomIconButton from "../Button/CustomIconButton";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "../../features/auth/authSlice";
 
 const FeedCard = ({ data, liked, handleLike }: any) => {
   const navigate = useNavigate();
+  const id = useSelector(selectCurrentUser);
   return (
     <Box
       as={Stack}
@@ -17,17 +20,19 @@ const FeedCard = ({ data, liked, handleLike }: any) => {
       rounded={"md"}
     >
       <Flex justifyContent={"space-between"} alignItems={"center"}>
-        <Flex alignItems={"center"} gap={6}>
+        <Flex alignItems={"center"} gap={3}>
           <Avatar
             src={data.user.profileImage}
-            size={"lg"}
+            size={"md"}
             onClick={() => {
-              navigate(`/profile/${data.user._id}`);
+              if (data.user._id !== id) {
+                navigate(`/profile/${data.user._id}`);
+              }
             }}
             cursor={"pointer"}
           />
-          <Flex fontSize={"18px"} gap={2} alignItems={"center"}>
-            <b>{data.user.username.split(0, 10)}</b>created <b>{data.title}</b>
+          <Flex fontSize={"16px"} gap={2} alignItems={"center"}>
+            <b>{data.user.username.split(0, 10)}</b> created <b>{data.title}</b>
           </Flex>
         </Flex>
 

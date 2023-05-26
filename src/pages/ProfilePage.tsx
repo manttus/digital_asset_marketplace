@@ -17,7 +17,7 @@ import {
 import { useEffect, useState, useRef } from "react";
 import Details from "../components/Showcase/Details";
 import Profile from "../components/Showcase/Profile";
-import { RiSendPlaneFill } from "react-icons/ri";
+import { RiMessageFill, RiSendPlaneFill } from "react-icons/ri";
 import { FiUser } from "react-icons/fi";
 import { RxTwitterLogo } from "react-icons/rx";
 
@@ -48,6 +48,7 @@ import CustomIconButton from "../components/Button/CustomIconButton";
 import { VscRemove } from "react-icons/vsc";
 import { motion } from "framer-motion";
 import { bottomVariants } from "../theme/animation/variants";
+import { BiMessageDetail } from "react-icons/bi";
 const socket = io("http://localhost:3001/");
 
 const ProfilePage = () => {
@@ -136,6 +137,7 @@ const ProfilePage = () => {
         senderId: profileData._id,
         receiverId: messageId!.id,
         senderName: profileData.username,
+        senderProfile: profileData.profileImage,
       },
       room
     );
@@ -335,13 +337,49 @@ const ProfilePage = () => {
   };
 
   return (
-    <Flex direction={"column"} px={"10"} as={motion.div}>
+    <Flex direction={"column"} px={"10"}>
       <Profile
         addImage={AddImage}
         isEditPage={isEditPage}
         userData={profileData}
       />
-      <Flex w={"full"} direction={"column"} position={"relative"}>
+      {isEditPage && (
+        <Flex w={"full"} justifyContent={"end"} transition={"all 0.3s in-out"}>
+          <Flex alignItems={"center"} gap={6}>
+            <Flex alignItems={"center"} gap={3}>
+              <CustomIconButton
+                icon={<VscRemove />}
+                onClick={() => {
+                  deleteImage("Profile");
+                }}
+                aria="remove profile"
+                type="outline"
+              />
+              Remove Profile
+            </Flex>
+            <Flex alignItems={"center"} gap={3}>
+              <CustomIconButton
+                icon={<VscRemove />}
+                onClick={() => {
+                  deleteImage("Background");
+                }}
+                aria="remove banner"
+                type="outline"
+              />
+              Remove Banner
+            </Flex>
+          </Flex>
+        </Flex>
+      )}
+      <Flex
+        w={"full"}
+        direction={"column"}
+        position={"relative"}
+        as={motion.div}
+        variants={bottomVariants}
+        initial={"hidden"}
+        animate={"visible"}
+      >
         <Details
           isEditPage={isEditPage}
           setEditPage={setIsEditPage}
@@ -352,7 +390,15 @@ const ProfilePage = () => {
         />
         {!profileId && (
           <Flex w={"100%"} justifyContent={"start"}>
-            <Flex w={"55%"} justifyContent={"center"}>
+            <Flex
+              w={{
+                base: "100%",
+                sm: "100%",
+                md: "100%",
+                lg: "55%",
+              }}
+              justifyContent={"center"}
+            >
               {isEditPage ? (
                 <Flex
                   as={"form"}
@@ -446,31 +492,7 @@ const ProfilePage = () => {
                       </InputGroup>
                     </FormControl>
                   </HStack>
-                  <HStack w={"full"} justifyContent={"space-between"}>
-                    <Flex alignItems={"center"} gap={6}>
-                      <Flex alignItems={"center"} gap={3}>
-                        <CustomIconButton
-                          icon={<VscRemove />}
-                          onClick={() => {
-                            deleteImage("Profile");
-                          }}
-                          aria="remove profile"
-                          type="outline"
-                        />
-                        Remove Profile
-                      </Flex>
-                      <Flex alignItems={"center"} gap={3}>
-                        <CustomIconButton
-                          icon={<VscRemove />}
-                          onClick={() => {
-                            deleteImage("Background");
-                          }}
-                          aria="remove banner"
-                          type="outline"
-                        />
-                        Remove Banner
-                      </Flex>
-                    </Flex>
+                  <HStack w={"full"} justifyContent={"end"}>
                     <NormalButton
                       text="Save Changes"
                       fontSize="18px"
@@ -485,33 +507,48 @@ const ProfilePage = () => {
           </Flex>
         )}
       </Flex>
-      <Flex justifyContent={"end"} position={"sticky"} bottom={0}>
+      <Flex
+        justifyContent={"end"}
+        position={"sticky"}
+        bottom={5}
+        px={10}
+        zIndex={"99"}
+      >
         <Flex
           bg={"background"}
-          rounded={"md"}
           cursor={"pointer"}
           direction={"column"}
           transition={"all 0.1s ease"}
-          w={"360px"}
-          borderX={"1px solid"}
-          borderTop={"1px solid"}
-          borderColor={"gray.300"}
+          rounded={"full"}
+          borderColor={"buttonPrimary"}
         >
           <Menu autoSelect={false}>
             <Flex
               as={MenuButton}
-              h={"50px"}
-              px={"5"}
+              h={"80px"}
+              w={"80px"}
               transition={"all 0.2s ease"}
               onClick={() => {
                 setIsExpanded(!isExpanded);
               }}
+              justifyContent={"center"}
+              alignItems={"center"}
+              rounded={"full"}
+              border={"1px solid"}
+              color={"buttonPrimary"}
+              _hover={{
+                bg: "buttonHover",
+                color: "white",
+                borderColor: "buttonHover",
+              }}
             >
-              <Text fontWeight={"600"} fontSize={"18px"}>
-                Messages
-              </Text>
+              <Flex w={"full"} justifyContent={"center"} alignItems={"center"}>
+                <BiMessageDetail size={"32px"} />
+              </Flex>
             </Flex>
             <MenuList
+              marginBottom={"-30px"}
+              marginRight={20}
               bg={"background"}
               display={"flex"}
               rounded={"md"}
@@ -532,7 +569,7 @@ const ProfilePage = () => {
               {!messageId ? (
                 <>
                   <Flex
-                    zIndex={"2"}
+                    zIndex={"10"}
                     position={"sticky"}
                     top={0}
                     px={"10px"}
@@ -553,6 +590,16 @@ const ProfilePage = () => {
                       onChange={(e) => searchHandler(e)}
                     />
                   </Flex>
+                  {tempMessage.length === 0 && (
+                    <Flex
+                      w={"full"}
+                      height={"220px"}
+                      justifyContent={"center"}
+                      alignItems={"center"}
+                    >
+                      No Followings
+                    </Flex>
+                  )}
                   {tempMessage.map((user: any) => (
                     <Flex
                       key={user.username}
@@ -561,7 +608,7 @@ const ProfilePage = () => {
                       h={"60px"}
                       alignItems={"center"}
                       py={"8"}
-                      gap={"2"}
+                      gap={"4"}
                       onClick={() => {
                         setMessageId({
                           id: user.id,

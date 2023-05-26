@@ -15,25 +15,39 @@ import { useForm } from "react-hook-form";
 import useCustomToast from "../../hooks/useToast";
 import { motion } from "framer-motion";
 import { bottomVariants } from "../../theme/animation/variants";
+import { useAdminLoginMutation } from "../../features/api/authApi/apiSlice";
+import { useNavigate } from "react-router-dom";
+import useLocalStorage from "../../hooks/useLocalStorage";
 
 const AdminLogin = () => {
   const { showToast } = useCustomToast();
+  const [adminLogin] = useAdminLoginMutation();
+  const { value, setItem, removeItem } = useLocalStorage("admin");
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     formState: {
-      errors: { username, password },
+      errors: { email, password },
     },
   } = useForm<{
-    username: string;
+    email: string;
     password: string;
   }>();
 
-  const authHandler = (data: { username: string; password: string }) => {
-    if (data.username === "admin" && data.password === "admin") {
+  const authHandler = async (data: { email: string; password: string }) => {
+    try {
+      const response = await adminLogin(data).unwrap();
       showToast("Login Successful", "success", 2000);
-    } else {
-      showToast("Invalid Credentials", "error", 2000);
+      setItem(JSON.stringify(response.accessToken));
+      navigate("/admin/dash");
+    } catch (err: any) {
+      console.log(err);
+      if (err.data.message === "Account Invalid") {
+        showToast("Login Failed", "error", 2000);
+      } else {
+        showToast("Server Error", "error", 2000);
+      }
     }
   };
 
@@ -51,7 +65,7 @@ const AdminLogin = () => {
         py={16}
         px={6}
         as={"form"}
-        onSubmit={handleSubmit((data: { username: string; password: string }) =>
+        onSubmit={handleSubmit((data: { email: string; password: string }) =>
           authHandler(data)
         )}
       >
@@ -74,14 +88,14 @@ const AdminLogin = () => {
             <Image src={logo} w={"100px"} />
           </Stack>
           <Stack spacing={4} w={"full"}>
-            <FormControl id="email" isInvalid={username ? true : false}>
+            <FormControl id="email" isInvalid={email ? true : false}>
               <FormLabel>Username</FormLabel>
 
               <Input
-                {...register("username", {
+                {...register("email", {
                   required: true,
                 })}
-                type="text"
+                type="email"
               />
             </FormControl>
             <FormControl id="password" isInvalid={password ? true : false}>

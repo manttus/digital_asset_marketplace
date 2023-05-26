@@ -21,7 +21,7 @@ import CustomLink from "./Links/CustomLink";
 import CustomIconButton from "./Button/CustomIconButton";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { AiOutlineClose } from "react-icons/ai";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Overlay from "./Overlay";
 import { motion } from "framer-motion";
 import Footer from "./Footer";
@@ -30,14 +30,20 @@ import {
   selectCurrentBalance,
   selectCurrentToken,
   selectCurrentWallet,
+  selectCurrentUser,
 } from "../features/auth/authSlice";
 import ScrollToTop from "./ScrollToTop";
 import { useDispatch } from "react-redux";
 import logo from "../assets/logo2.png";
-import { FaEthereum } from "react-icons/fa";
+import { FaEthereum, FaArrowUp, FaArrowDown } from "react-icons/fa";
 import { FiUser } from "react-icons/fi";
 import { AiOutlineDisconnect } from "react-icons/ai";
 import AuthModal from "./AuthModal";
+import {
+  useGetNotificationQuery,
+  useSendNewsLetterMutation,
+} from "../features/api/authApi/apiSlice";
+import { Socket } from "socket.io-client";
 
 declare global {
   interface Window {
@@ -76,6 +82,7 @@ type NavbarProps = {
   address: string;
   isSendLoading: boolean;
   notification: any;
+  refetch: any;
 };
 
 const navlinks = [
@@ -110,9 +117,11 @@ const Navbar = ({
   address,
   notification,
   isSendLoading,
+  refetch,
 }: NavbarProps) => {
   const navigate = useNavigate();
   const state = useSelector(selectCurrentToken);
+  const id = useSelector(selectCurrentUser);
   const wallet = useSelector(selectCurrentWallet);
   const balance = useSelector(selectCurrentBalance);
   const [overlay, setOverlay] = useState<boolean>(false);
@@ -120,6 +129,9 @@ const Navbar = ({
   const [email, setEmail] = useState<string>("");
   const [username, setUsername] = useState<string>("");
   const [otpValue, setOtpValue] = useState<string>("");
+
+  const [send, isLoading] = useSendNewsLetterMutation();
+
   const submitHandler = async (value: any) => {
     try {
       const resposne = await sendOtp(value.email);
@@ -134,6 +146,20 @@ const Navbar = ({
   const registerHandler = () => {
     signupHandler(email, otpValue, username);
   };
+
+  const [scrollPosition, setScrollPosition] = useState(0);
+
+  const handleScroll = () => {
+    const currentPosition = window.pageYOffset;
+    setScrollPosition(currentPosition);
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   return (
     <>
@@ -212,30 +238,53 @@ const Navbar = ({
             alignItems={"center"}
             rounded={"200px"}
             justifyContent={"end"}
-            gap={3}
+            gap={1}
           >
             <Hide below="xl">
-              <Menu autoSelect={false}>
-                <Flex
-                  h={"40px"}
-                  w={"40px"}
-                  rounded={"full"}
-                  border={"1px solid"}
-                  borderColor={"gray.500"}
-                  justifyContent={"center"}
-                  alignItems={"center"}
-                  cursor={"pointer"}
-                  as={MenuButton}
-                >
-                  {notification.length}
-                </Flex>
-                <MenuList
-                  bg={"background"}
-                  rounded={"lg"}
-                  shadow={"md"}
-                  overflow={"hidden"}
-                ></MenuList>
-              </Menu>
+              {/* {wallet && (
+                <Menu autoSelect={false}>
+                  <Flex
+                    h={"35px"}
+                    w={"35px"}
+                    rounded={"full"}
+                    border={"1px solid"}
+                    borderColor={"gray.500"}
+                    justifyContent={"center"}
+                    alignItems={"center"}
+                    cursor={"pointer"}
+                    as={MenuButton}
+                  >
+                    {notification.length}
+                  </Flex>
+                  <MenuList
+                    bg={"background"}
+                    rounded={"lg"}
+                    shadow={"md"}
+                    overflow={"hidden"}
+                  >
+                    {notification.length === 0 && (
+                      <Flex py={5} w={"full"} justifyContent={"center"}>
+                        <Text>No New Notifications</Text>
+                      </Flex>
+                    )}
+                    {notification.map((item: any, index: number) => (
+                      <>
+                        <MenuItem display={"flex"} gap={3} key={item.id} px={5}>
+                          <Avatar src={item.senderProfile} />
+                          {`New Message from ${item.senderName}`}
+                        </MenuItem>
+                        {index !== notification.length - 1 && <MenuDivider />}
+                      </>
+                    ))}
+                    <MenuDivider />
+                    <Flex w={"full"} justifyContent={"center"}>
+                      <Text onClick={() => {}} cursor={"pointer"}>
+                        Mark as Read
+                      </Text>
+                    </Flex>
+                  </MenuList>
+                </Menu>
+              )} */}
 
               {!wallet ? (
                 <CustomButton
@@ -297,7 +346,7 @@ const Navbar = ({
                       <>
                         <MenuItem
                           bg={"background"}
-                          key={item.path}
+                          key={item.name}
                           onClick={() => {
                             if (item.name === "Sign Out") {
                               disconnect();
@@ -460,7 +509,34 @@ const Navbar = ({
         </>
       </Overlay>
       <Outlet />
-      <Footer />
+      <Box
+        display={"flex"}
+        position={"sticky"}
+        bottom={0}
+        pb={"10px"}
+        px={"25px"}
+        zIndex={99}
+        justifyContent={"flex-end"}
+      >
+        <CustomIconButton
+          type="outline"
+          icon={scrollPosition > 100 ? <FaArrowUp /> : <FaArrowDown />}
+          aria="scroll"
+          onClick={() => {
+            if (scrollPosition > 100) {
+              // Scroll to Top
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            } else {
+              // Scroll to Bottom
+              window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: "smooth",
+              });
+            }
+          }}
+        />
+      </Box>
+      <Footer sendNewsLetter={send} />
     </>
   );
 };

@@ -1,6 +1,6 @@
 import { Flex, Text, useDisclosure } from "@chakra-ui/react";
 
-import illustration1 from "../assets/register.png";
+import illustration1 from "../assets/abstract5.jpg";
 import Mint from "../components/Forms/Mint";
 import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
@@ -14,6 +14,9 @@ import useToast from "../hooks/useToast";
 import { usePostFeedMutation } from "../features/api/authApi/apiSlice";
 import { bottomVariants } from "../theme/animation/variants";
 import { motion } from "framer-motion";
+import useHttp from "../hooks/useHttp";
+import { io } from "socket.io-client";
+const socket = io("http://localhost:3001/");
 
 const MintPage = () => {
   const id = useSelector((state: RootState) => state.auth.user);
@@ -27,6 +30,7 @@ const MintPage = () => {
   const [shop, setShopInst] = useState<any>(null);
   const [categories, setCategories] = useState<any>([]);
   const [mintDetails, setMintDetails] = useState<any>({});
+  const [isMinting, setIsMinting] = useState<boolean>(false);
   const cloudName = import.meta.env.VITE_CLOUD_NAME;
   const { showToast } = useToast();
 
@@ -57,6 +61,31 @@ const MintPage = () => {
     setTokenInst(token);
   };
 
+  const checkExisting = async (formData: FormData) => {
+    const checkExistingRequestConfig = {
+      url: `https://api.cloudinary.com/v1_1/${cloudName}/resources/image/upload`,
+      method: "GET",
+    };
+
+    const existingResponse = await fetch(checkExistingRequestConfig.url, {
+      method: checkExistingRequestConfig.method,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        Authorization: `Bearer ${import.meta.env.VITE_CLOUD_KEY}`,
+      },
+    });
+    const existingImageData = await existingResponse.json();
+
+    const existingImage = existingImageData.resources.find((resource: any) => {
+      return resource.public_id === formData.get("file");
+    });
+    if (existingImage) {
+      return true;
+    }
+    return false;
+  };
+
   const mintAsset = async (
     name: string,
     description: string,
@@ -64,89 +93,107 @@ const MintPage = () => {
     category: string,
     type: string
   ) => {
-    // console.log(name, description, image, price, category, type);
-    // const formData = new FormData();
-    // formData.append("file", image[0]);
-    // formData.append("pinataMetadata", JSON.stringify({ name }));
-    // formData.append("pinataOptions", JSON.stringify({ cidVersion: 1 }));
-    // const requestConfig = {
-    //   url: "https://api.pinata.cloud/pinning/pinFileToIPFS",
-    //   method: "POST",
-    //   headers: {
-    //     Authorization: `Bearer ${import.meta.env.VITE_PINATA_JWT} `,
-    //   },
-    //   body: formData,
-    // };
-    // const { sendRequest } = useHttp(requestConfig, async (data: any) => {
-    //   if (!data.error) {
-    //     console.log(data);
-    //     const asset = `https://gateway.pinata.cloud/ipfs/${data.IpfsHash}`;
-    //     try {
-    //       await token._mint(name, asset, category, type, wallet);
-    //       setErrorState({
-    //         message: "Asset Minted",
-    //         type: "success",
-    //         action: "SET_MESSAGE",
-    //       });
-    //       setOpen(true);
-    //     } catch (err: Error | any) {
-    //       console.log(err);
-    //       setErrorState({
-    //         message: err.data.data.reason,
-    //         type: "error",
-    //         action: "SET_MESSAGE",
-    //       });
-    //       setOpen(true);
-    //     }
-    //   }
-    // });
-    // sendRequest();
+    setIsMinting(true);
     const formData = new FormData();
-    formData.append("file", image![0]);
-    formData.append("upload_preset", import.meta.env.VITE_CLOUD_UPLOAD_PRESET);
+    formData.append("file", image[0]);
+    formData.append("pinataMetadata", JSON.stringify({ name }));
+    formData.append("pinataOptions", JSON.stringify({ cidVersion: 1 }));
     const requestConfig = {
-      url: `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+      url: "https://api.pinata.cloud/pinning/pinFileToIPFS",
       method: "POST",
+      headers: {
+        Authorization: `Bearer ${import.meta.env.VITE_PINATA_JWT} `,
+      },
       body: formData,
     };
 
-    const response = await fetch(requestConfig.url, {
-      method: requestConfig.method,
-      body: requestConfig.body,
-    });
-
-    if (response.ok) {
-      showToast("Image Uploaded", "success", 2000);
-      const data = await response.json();
-
-      try {
-        const response = await token._mint(
-          name,
-          data.secure_url,
-          category,
-          type,
-          wallet
-        );
-        console.log(response);
-        const receipt = await response.wait();
-        const tokenId = receipt.events[0].args[2];
-        await postFeed({
-          id: id!,
-          token_name: name,
-          token_id: parseInt(tokenId._hex.toString()).toString(),
-          token_url: data.secure_url,
-        }).unwrap();
-        showToast("Asset Minted", "success", 2000);
-        console.log(tokenId, wallet);
-        await shop._createInitialListing(tokenId, wallet);
-        showToast("Asset Listed", "success", 2000);
-      } catch (err: Error | any) {
-        console.log(err);
-        showToast("Server Error", "error", 2000);
+    const { sendRequest } = useHttp(requestConfig, async (data: any) => {
+      if (!data.error) {
+        const asset = `https://gateway.pinata.cloud/ipfs/${data.IpfsHash}`;
+        try {
+          const response = await token._mint(
+            name,
+            asset,
+            category,
+            type,
+            wallet,
+            description
+          );
+          const { hash, from, to, gasPrice, nonce, value } = response;
+          socket.emit("new-transaction", {
+            hash,
+            from,
+            to,
+            gasPrice: ethers.utils.formatEther(gasPrice).toString(),
+            nonce: nonce.toString(),
+            value: ethers.utils.formatEther(value).toString(),
+          });
+          const receipt = await response.wait();
+          const tokenId = receipt.events[0].args[2];
+          await postFeed({
+            id: id!,
+            token_name: name,
+            token_id: parseInt(tokenId._hex.toString()).toString(),
+            token_url: asset,
+          }).unwrap();
+          showToast("Asset Listed", "success", 2000);
+          setIsMinting(false);
+        } catch (err: Error | any) {
+          console.log(err);
+          showToast("Asset Already Minted", "error", 2000);
+          setIsMinting(false);
+        }
       }
-    } else {
-      showToast("Image Upload Failed", "error", 2000);
-    }
+    });
+    sendRequest();
+    // const formData = new FormData();
+    // formData.append("file", image![0]);
+    // formData.append("upload_preset", import.meta.env.VITE_CLOUD_UPLOAD_PRESET);
+
+    // const requestConfig = {
+    //   url: `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+    //   method: "POST",
+    //   body: formData,
+    // };
+
+    // const response = await fetch(requestConfig.url, {
+    //   method: requestConfig.method,
+    //   body: requestConfig.body,
+    // });
+
+    // if (response.ok) {
+    //   showToast("Image Uploaded", "success", 2000);
+    //   const data = await response.json();
+
+    //   try {
+    //     const response = await token._mint(
+    //       name,
+    //       data.secure_url,
+    //       category,
+    //       type,
+    //       wallet,
+    //       description
+    //     );
+    //     // console.log(response);
+    //     const receipt = await response.wait();
+    //     const tokenId = receipt.events[0].args[2];
+    //     await postFeed({
+    //       id: id!,
+    //       token_name: name,
+    //       token_id: parseInt(tokenId._hex.toString()).toString(),
+    //       token_url: data.secure_url,
+    //     }).unwrap();
+    //     showToast("Asset Minted", "success", 2000);
+    //     // console.log(tokenId, wallet);
+    //     // await shop._createInitialListing(tokenId, wallet);
+    //     // showToast("Asset Listed", "success", 2000);
+    //   } catch (err: Error | any) {
+    //     console.log(err);
+    //     showToast("Server Error", "error", 2000);
+    //   }
+    // } else {
+    //   showToast("Image Upload Failed", "error", 2000);
+    // }
   };
 
   return (
@@ -215,7 +262,11 @@ const MintPage = () => {
           animate={"visible"}
         >
           {wallet ? (
-            <Mint mintAsset={mintAsset} categories={categories} />
+            <Mint
+              mintAsset={mintAsset}
+              categories={categories}
+              isMinting={isMinting}
+            />
           ) : (
             <Flex py={"100"}>
               <NoConnection />

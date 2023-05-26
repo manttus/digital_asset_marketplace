@@ -13,17 +13,18 @@ import {
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 
 import logo from "../../assets/logo2.png";
-import { Outlet, NavLink as NavigationLink } from "react-router-dom";
+import {
+  Outlet,
+  NavLink as NavigationLink,
+  useNavigate,
+} from "react-router-dom";
 import NormalButton from "../../components/Button/NormalButton";
+import useCustomToast from "../../hooks/useToast";
 
 const Links = [
   {
     link: "admin/dash",
     name: "Dashboard",
-  },
-  {
-    link: "admin/tran",
-    name: "Transactions",
   },
   {
     link: "admin/manage",
@@ -49,6 +50,8 @@ const NavLink = ({ children, link }: { children: string; link: string }) => (
 
 const AdminNavbar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const navigate = useNavigate();
+  const { showToast } = useCustomToast();
 
   return (
     <>
@@ -83,6 +86,11 @@ const AdminNavbar = () => {
               text="Logout"
               py="5px"
               fontSize="16px"
+              onClick={() => {
+                localStorage.removeItem("admin");
+                showToast("Logged out", "success", 3000);
+                navigate("/admin/auth");
+              }}
             />
           </Flex>
         </Flex>

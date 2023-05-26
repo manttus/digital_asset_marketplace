@@ -33,8 +33,8 @@ export const marketApi = createApi({
       }),
     }),
     adminLogin: builder.mutation({
-      query: (credentials: { username: string; password: string }) => ({
-        url: "/user/admin/signin",
+      query: (credentials: { email: string; password: string }) => ({
+        url: "/admin/auth",
         method: "POST",
         body: credentials,
       }),
@@ -166,6 +166,49 @@ export const marketApi = createApi({
         method: "PATCH",
       }),
     }),
+    getStats: builder.query<any, void>({
+      query: () => ({
+        url: `/admin/getStatistics`,
+        method: "get",
+      }),
+    }),
+    getLandingData: builder.query<any, void>({
+      query: () => ({
+        url: `/user/LandingData`,
+        method: "GET",
+      }),
+    }),
+    getNotification: builder.query<any, string>({
+      query: (id) => ({
+        url: `/user/notifications/${id}`,
+        method: "GET",
+      }),
+    }),
+    getCategories: builder.query<any, void>({
+      query: () => ({
+        url: `/user/getCateogry`,
+        method: "GET",
+      }),
+    }),
+    getSingleCat: builder.query<any, string>({
+      query: (name: string) => ({
+        url: `/user/getSingleCategories/${name}`,
+        method: "GET",
+      }),
+    }),
+    getAllTrans: builder.query<any, void>({
+      query: () => ({
+        url: `/admin/getAllTransactions`,
+        method: "GET",
+      }),
+    }),
+    sendNewsLetter: builder.mutation<any, string>({
+      query: (email: string) => ({
+        url: `/user/newsLetter`,
+        method: "POST",
+        body: { email },
+      }),
+    }),
   }),
 });
 
@@ -186,4 +229,12 @@ export const {
   usePostLikeMutation,
   useGetUsersMutation,
   useDisableUserMutation,
+  useAdminLoginMutation,
+  useGetStatsQuery,
+  useGetLandingDataQuery,
+  useGetNotificationQuery,
+  useGetCategoriesQuery,
+  useGetSingleCatQuery,
+  useGetAllTransQuery,
+  useSendNewsLetterMutation,
 } = marketApi;

@@ -9,3 +9,7 @@
   background-color: #f9fafc;
   letter-spacing: -0.04em;
 }
+
+html::-webkit-scrollbar {
+  display: none;
+}

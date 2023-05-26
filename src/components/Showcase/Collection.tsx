@@ -1,28 +1,67 @@
-import { Flex, Text, Hide, useMediaQuery } from "@chakra-ui/react";
+import {
+  Flex,
+  Text,
+  Hide,
+  useMediaQuery,
+  useDisclosure,
+} from "@chakra-ui/react";
 import CustomBadge from "../Badge/CustomBadge";
 import MarketCard from "../Card/MarketCard";
 import { useSelector } from "react-redux";
 import NoResult from "../NoResult";
 import NormalButton from "../Button/NormalButton";
-import { useEffect, useState } from "react";
-import { ethers } from "ethers";
-import { selectUserData } from "../../features/auth/authSlice";
+import {
+  selectCurrentWallet,
+  selectUserData,
+} from "../../features/auth/authSlice";
 import { useNavigate } from "react-router-dom";
-import { RootState } from "../../types/StoreType";
+import BuyModal from "../BuyModal";
+import { useEffect, useState } from "react";
+import { selectMarket } from "../../features/market/marketSlice";
+import { ethers } from "ethers";
 
-const Collection = () => {
-  const { marketItems: marketData } = useSelector(
-    (state: RootState) => state.market
-  );
+const Collection = ({ marketItems }: { marketItems: any }) => {
   const [isLargerThan1346] = useMediaQuery("(min-width: 1346px)");
   const [isLargerThan768] = useMediaQuery("(min-width: 768px)");
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [selected, setSelected] = useState<any>(null); // [1
   const currentUser = useSelector(selectUserData);
-  const [marketItems, setMarketItems] = useState<any>(marketData);
-
   const navigate = useNavigate();
+  const wallet = useSelector(selectCurrentWallet);
+  const market = useSelector(selectMarket);
+  const [shop, setShopInst] = useState<any>(null);
+
+  const loadContract = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const shop = await new ethers.Contract(market.address, market.abi, signer);
+    setShopInst(shop);
+  };
+
+  useEffect(() => {
+    if (market) {
+      loadContract();
+    }
+  }, [market]);
+
+  const checkIfExists = (wallet: string | null, marketItems: any) => {
+    let flag = false;
+    marketItems.forEach((item: any) => {
+      if (item._token._owner.toLowerCase() !== wallet?.toLowerCase()) {
+        flag = true;
+      }
+    });
+    return flag;
+  };
 
   return (
     <>
+      <BuyModal
+        isOpen={isOpen}
+        onClose={onClose}
+        selected={selected}
+        shop={shop}
+      />
       <Flex
         justifyContent={{
           sm: "center",
@@ -70,10 +109,25 @@ const Collection = () => {
           mt={"20px"}
           w={"full"}
           alignItems={"center"}
-          justifyContent={"space-between"}
+          justifyContent={"center"}
         >
-          {marketItems.slice(0, 4).map((item: any) => {
-            return <MarketCard key={item.name} item={item} />;
+          {!checkIfExists(wallet, marketItems) && <NoResult />}
+          {marketItems.map((item: any) => {
+            console.log(
+              item._token._owner.toLowerCase() === wallet?.toLowerCase()
+            );
+            if (item._token._owner.toLowerCase() !== wallet?.toLowerCase()) {
+              return (
+                <MarketCard
+                  key={item._token._owner}
+                  item={item}
+                  onClick={() => {
+                    setSelected(item);
+                    onOpen();
+                  }}
+                />
+              );
+            }
           })}
         </Flex>
       )}
@@ -84,21 +138,46 @@ const Collection = () => {
             mt={"20px"}
             w={"full"}
             alignItems={"center"}
-            justifyContent={"space-between"}
+            justifyContent={"center"}
           >
-            {marketItems.slice(0, 2).map((item: any) => {
-              return <MarketCard key={item.name} item={item} />;
+            {!checkIfExists(wallet, marketItems) && <NoResult />}
+            {marketItems.map((item: any) => {
+              if (item._token._owner.toLowerCase() !== wallet?.toLowerCase()) {
+                return (
+                  <MarketCard
+                    key={item._token._owner}
+                    item={item}
+                    onClick={() => {
+                      setSelected(item);
+                      onOpen();
+                    }}
+                  />
+                );
+              }
             })}
           </Flex>
+
           <Flex
             gap={5}
             mt={"20px"}
             w={"full"}
             alignItems={"center"}
-            justifyContent={"space-between"}
+            justifyContent={"center"}
           >
-            {marketItems.slice(2, 4).map((item: any) => {
-              return <MarketCard key={item.name} item={item} />;
+            {!checkIfExists(wallet, marketItems) && <NoResult />}
+            {marketItems.map((item: any) => {
+              if (item._token._owner.toLowerCase() !== wallet?.toLowerCase()) {
+                return (
+                  <MarketCard
+                    key={item._token._owner}
+                    item={item}
+                    onClick={() => {
+                      setSelected(item);
+                      onOpen();
+                    }}
+                  />
+                );
+              }
             })}
           </Flex>
         </Flex>
@@ -111,8 +190,20 @@ const Collection = () => {
           alignItems={"center"}
           w={"full"}
         >
+          {!checkIfExists(wallet, marketItems) && <NoResult />}
           {marketItems.map((item: any) => {
-            return <MarketCard key={item.name} item={item} />;
+            if (item._token._owner.toLowerCase() !== wallet?.toLowerCase()) {
+              return (
+                <MarketCard
+                  key={item._token._owner}
+                  item={item}
+                  onClick={() => {
+                    setSelected(item);
+                    onOpen();
+                  }}
+                />
+              );
+            }
           })}
         </Flex>
       )}

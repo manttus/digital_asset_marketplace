@@ -2,21 +2,13 @@ import { Box, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const CollectionCard = ({ listings, archive }: any) => {
-  const [lisitng, setListings] = useState<any>([]);
+const CollectionCard = ({ lisitng, category }: any) => {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const data = listings.filter((listing: any) => {
-      return listing._category === archive?.name;
-    });
-    setListings(data);
-  }, [listings, archive]);
 
   return (
     <Box
       display={"grid"}
-      width={"300px"}
+      width={"325px"}
       gridTemplateColumns={"100px 20% 20%"}
       gridTemplateRows={"100px 110px 40px"}
       gap={1}
@@ -31,33 +23,33 @@ const CollectionCard = ({ listings, archive }: any) => {
         transition: "all 0.2s ease-in-out",
       }}
       onClick={() => {
-        navigate(`/archive/${archive?.name}`, { state: { lisitng, archive } });
+        navigate(`/archive/${category?.name}`);
       }}
     >
       <Box
-        bgImg={lisitng[0]?._asset ? lisitng[0]?._asset : ""}
+        bgImg={lisitng[0]?._token ? lisitng[0]?._token._asset : ""}
         bgSize={"cover"}
         bgPosition={"center"}
         gridRow={"span 2"}
         gridColumn={"span 2"}
         rounded={"md"}
-        bg={!lisitng[0]?._asset ? "fontGhost" : ""}
+        bg={!lisitng[0] ? "fontGhost" : ""}
       ></Box>
       <Box
         gridColumn={"span 2"}
         rounded={"md"}
-        bgImg={lisitng[1]?._asset ? lisitng[1]?._asset : ""}
+        bgImg={lisitng[1]?._token ? lisitng[1]?._token._asset : ""}
         bgSize={"cover"}
         bgPosition={"center"}
-        bg={!lisitng[1]?._asset ? "fontGhost" : ""}
+        bg={!lisitng[1] ? "fontGhost" : ""}
       ></Box>
       <Box
         gridColumn={"span 2"}
         rounded={"md"}
-        bgImg={lisitng[2]?._asset ? lisitng[2]?._asset : ""}
+        bgImg={lisitng[2]?._token ? lisitng[2]?._token._asset : ""}
         bgSize={"cover"}
         bgPosition={"center"}
-        bg={!lisitng[2]?._asset ? "fontGhost" : ""}
+        bg={!lisitng[2] ? "fontGhost" : ""}
       ></Box>
       <Box
         gridColumn={"span 4"}
@@ -67,7 +59,7 @@ const CollectionCard = ({ listings, archive }: any) => {
         justifyContent={"space-between"}
         alignItems={"center"}
       >
-        <Text fontWeight={"600"}>{archive?.name}</Text>
+        <Text fontWeight={"600"}>{category?.name}</Text>
       </Box>
     </Box>
   );
